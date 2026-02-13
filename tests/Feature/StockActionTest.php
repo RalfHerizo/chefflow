@@ -34,3 +34,18 @@ it('déduit les stocks d\'ingrédients lors d\'une vente', function () {
 
     expect((float)$viande->stock_quantity)->toBe(700.0);
 });
+
+it('annule toute la transaction si un ingrédient manque', function () {
+
+    $sel = Ingredient::create(['name'=>'sel','unit'=>'g', 'stock_quantity' => 2]);
+    
+    $burger = Product::create(['name'=>'Burger Salé', 'price'=>1000]);
+    $burger->ingredients()->attach($sel->id, ['amount'=>5]);
+
+    $action = new SellProductAction();
+    expect( fn() => $action->execute($burger, 1) )->toThrow(Exception::class);
+
+    $sel->fresh();
+    expect($sel->stock_quantity)->toEqual(2);
+
+});
