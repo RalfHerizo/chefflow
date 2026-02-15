@@ -1,9 +1,21 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 
-export default function Dashboard({ingredients}) {
+export default function Dashboard({auth,ingredients, products}) {
 
-    console.log(ingredients);
+    // Initialisation du formulaire Inertia
+    const { data, setData, post, processing, reset } = useForm({
+        product_id: '',
+        quantity: 1,
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        // On appelle la route qu'on a créée hier !
+        post(route('products.sell'), {
+            onSuccess: () => reset(), // On vide le formulaire si ça marche
+        });
+    };
     
     return (
         <AuthenticatedLayout
@@ -21,6 +33,38 @@ export default function Dashboard({ingredients}) {
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             You're logged in!
                         </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow mb-6">
+                        <h3 className="font-bold mb-4">Enregistrer une vente</h3>
+                        <form onSubmit={submit} className="flex items-end gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Produit</label>
+                                <select 
+                                    value={data.product_id} 
+                                    onChange={e => setData('product_id', e.target.value)}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                >
+                                    <option value="">Choisir...</option>
+                                    {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Quantité</label>
+                                <input 
+                                    type="number" 
+                                    value={data.quantity} 
+                                    onChange={e => setData('quantity', e.target.value)}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                />
+                            </div>
+                            <button 
+                                type="submit" 
+                                disabled={processing}
+                                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
+                            >
+                                {processing ? 'Traitement...' : 'Vendre'}
+                            </button>
+                        </form>
                     </div>
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <h3 className="text-lg font-bold mb-4">État des Stocks</h3>
