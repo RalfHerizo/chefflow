@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 
-export default function Dashboard({auth,ingredients, products}) {
+export default function Dashboard({auth,ingredients, products, flash, errors}) {
 
     // Initialisation du formulaire Inertia
     const { data, setData, post, processing, reset } = useForm({
@@ -32,9 +32,24 @@ export default function Dashboard({auth,ingredients, products}) {
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             You're logged in!
+                            {
+                                flash.message && (
+                                    <div className='bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4'>
+                                        {flash.message}
+                                    </div>
+                                )
+                            }
+
+                            {
+                                errors.error && (
+                                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" >
+                                        { errors.error }
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
-                    <div className="bg-white p-6 rounded-lg shadow mb-6">
+                    <div className="bg-white p-6 rounded-lg shadow my-6">
                         <h3 className="font-bold mb-4">Enregistrer une vente</h3>
                         <form onSubmit={submit} className="flex items-end gap-4">
                             <div>
