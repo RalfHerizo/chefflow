@@ -15,6 +15,8 @@ class SellProductAction
 
      public function execute(Product $product, int $quantity): void
      {
+        $product->load('ingredients');
+        
         DB::transaction(function() use ($product, $quantity){
             
             if (!$product->is_active) {

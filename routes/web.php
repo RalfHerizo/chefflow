@@ -7,4 +7,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/sell',[OrderController::class,'store'])->name('products.sell');
+Route::post('/sell',[OrderController::class,'store'])->name('products.sell');
