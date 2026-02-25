@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Ingredient extends Model
 {
@@ -15,7 +16,7 @@ class Ingredient extends Model
     }
     
     public function isLowStock(): Attribute{
-        return make(
+        return Attribute::make(
             get: fn (mixed $value, array $attributes) =>
                 (float)$attributes['stock_quantity'] <= (float)$attributes['alert_threshold'], //inférieure ou égale
             );
