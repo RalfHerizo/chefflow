@@ -13,11 +13,11 @@ class SellProductAction
      * @throws Exception
      */
 
-     public function execute(Product $product, int $quantity): void
+     public function execute(Product $product, int $quantity): Order
      {
         $product->load('ingredients');
         
-        DB::transaction(function() use ($product, $quantity){
+        return DB::transaction(function() use ($product, $quantity){
             
             if (!$product->is_active) {
                 throw new Exception("Disabled product");
@@ -33,6 +33,12 @@ class SellProductAction
                 
                 $ingredient->decrement('stock_quantity', $amountToSubstract);
             }
+
+            return Order::create([
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'total_price' => $product->price * $quantity,
+            ]);
 
         });
      }
