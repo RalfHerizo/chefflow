@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Exception;

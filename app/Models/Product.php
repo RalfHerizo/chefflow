@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Ingredient;
-// IMPORTANT : Ajoute ces deux imports !
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute; 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['name','price','is_active', 'price_in_euro'];
     
     public function ingredients(): BelongsToMany{
