@@ -21,6 +21,19 @@ Ce projet n'est pas un simple CRUD. Il a été bâti avec une approche **"Enterp
 * **Database :** MySQL (avec Transactions SQL pour l'intégrité)
 * **Environnement :** Docker (Laravel Sail)
 
+## Défis Techniques Relevés
+- **Intégrité des données :** Utilisation de transactions SQL pour garantir que le stock ne diminue que si la vente est validée.
+- **Calculs de précision :** Gestion des stocks avec des décimales (g, kg, L) pour éviter les erreurs d'arrondi fatales en cuisine.
+- **Expérience SPA :** Navigation fluide sans rechargement de page grâce à Inertia.js.
+
+## État d'avancement (Current Progress)
+- [x] **Architecture Core :** Modèles Ingredients, Products et Pivot (Recettes).
+- [x] **Moteur de Vente :** `SellProductAction` gérant les déductions automatiques.
+- [x] **Dashboard Interactif :** Interface React avec mise à jour des stocks en temps réel via Inertia `useForm`.
+- [ ] **Alertes Intelligentes :** Indicateurs visuels quand le stock passe sous le seuil critique (Jour 4).
+- [ ] **Système de Notifications :** Alertes par e-mail/toasts pour les ruptures de stock.
+- [ ] **Historique des ventes :** Rapports détaillés et analytics.
+
 ---
 
 ## Architecture des Données
