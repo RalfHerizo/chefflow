@@ -3,9 +3,10 @@
 namespace App\Actions;
 
 use App\Models\Order;
-use Illuminate\Supporte\Facades\DB;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
-Class ConcelOrderAction
+Class CancelOrderAction
 {
     public function execute(Order $order): void
     {

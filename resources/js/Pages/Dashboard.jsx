@@ -1,9 +1,9 @@
 import { IngredientCard } from '@/Components/IngredientCard';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import toast from 'react-hot-toast';
 
-export default function Dashboard({auth,ingredients, products, flash, errors}) {
+export default function Dashboard({auth,ingredients, products, flash, errors, orders}) {
 
     // Initialisation du formulaire Inertia
     const { data, setData, post, processing, reset } = useForm({
@@ -22,6 +22,14 @@ export default function Dashboard({auth,ingredients, products, flash, errors}) {
                 toast.error(errors.error || 'Stock insuffisant! Erreur lors de la vente');
             }
         });
+    };
+
+    const handleCancel = (orderId) => {
+        if (confirm('Annuler cette commande et restaurer le stock ?')) {
+            router.delete(route('orders.destroy', orderId), {
+                onSuccess: () => toast.success('Commande annulée'),
+            });
+        }
     };
     
     return (
@@ -55,6 +63,36 @@ export default function Dashboard({auth,ingredients, products, flash, errors}) {
                                 )
                             }
                         </div>
+                    </div>
+                    <div className="mt-8 bg-white shadow sm:rounded-lg p-6">
+                        <h3 className="text-lg font-bold mb-4">Dernières Ventes</h3>
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produit</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantité</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {orders.map((order) => (
+                                    <tr key={order.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">{order.product.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">x{order.quantity}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{order.total_price / 100}€</td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button 
+                                                onClick={() => handleCancel(order.id)}
+                                                className="text-red-600 hover:text-red-900 font-bold"
+                                            >
+                                                Annuler
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                     <div className="bg-white p-6 rounded-lg shadow my-6">
                         <h3 className="font-bold mb-4">Enregistrer une vente</h3>

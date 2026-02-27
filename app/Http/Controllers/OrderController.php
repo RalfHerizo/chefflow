@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Actions\SellProductAction;
+use App\Actions\CancelOrderAction;
 use Exception;
 
 class OrderController extends Controller
@@ -26,5 +28,11 @@ class OrderController extends Controller
         }catch(Exception $error){
             return back()->withErrors([ 'error'=> $error->getMessage() ]);
         }
+    }
+
+    public function destroy(Order $order, CancelOrderAction $cancelAction){
+        $cancelAction->execute($order);
+
+        return back()->with('message', 'Commande annulée et stocks restaurés.');
     }
 }
