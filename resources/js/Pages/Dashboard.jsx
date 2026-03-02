@@ -2,6 +2,7 @@ import { IngredientCard } from '@/Components/IngredientCard';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import toast from 'react-hot-toast';
+import StatCard from '@/Components/Dashboard/StatCard';
 
 export default function Dashboard({auth,ingredients, products, flash, errors, orders}) {
 
@@ -40,8 +41,6 @@ export default function Dashboard({auth,ingredients, products, flash, errors, or
                 </h2>
             }
         >
-            <Head title="Dashboard" />
-
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
