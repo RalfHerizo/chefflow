@@ -1,10 +1,18 @@
 import InventoryGrid from '@/Components/Dashboard/InventoryGrid';
 import RecentOrdersTable from '@/Components/Dashboard/RecentOrdersTable';
+import RevenueChart from '@/Components/Dashboard/RevenueChart';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, useForm } from '@inertiajs/react';
 import toast from 'react-hot-toast';
 
-export default function Dashboard({ ingredients, products, flash, errors, orders }) {
+export default function Dashboard({
+    ingredients,
+    products,
+    flash,
+    errors,
+    orders,
+    weeklyRevenue,
+}) {
     const { data, setData, post, processing, reset } = useForm({
         product_id: '',
         quantity: 1,
@@ -87,6 +95,10 @@ export default function Dashboard({ ingredients, products, flash, errors, orders
                             {processing ? 'Traitement...' : 'Vendre'}
                         </button>
                     </form>
+                </section>
+
+                <section className="space-y-3">
+                    <RevenueChart data={weeklyRevenue ?? []} />
                 </section>
 
                 <section className="space-y-3">
