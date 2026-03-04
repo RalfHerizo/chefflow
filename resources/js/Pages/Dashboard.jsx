@@ -1,8 +1,10 @@
 import InventoryGrid from '@/Components/Dashboard/InventoryGrid';
 import RecentOrdersTable from '@/Components/Dashboard/RecentOrdersTable';
 import RevenueChart from '@/Components/Dashboard/RevenueChart';
+import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, useForm } from '@inertiajs/react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function Dashboard({
@@ -13,6 +15,8 @@ export default function Dashboard({
     orders,
     weeklyRevenue,
 }) {
+    const [orderToCancel, setOrderToCancel] = useState(null);
+
     const { data, setData, post, processing, reset } = useForm({
         product_id: '',
         quantity: 1,
@@ -32,12 +36,19 @@ export default function Dashboard({
         });
     };
 
-    const handleCancel = (orderId) => {
-        if (window.confirm('Annuler cette commande et restaurer le stock ?')) {
-            router.delete(route('orders.destroy', orderId), {
-                onSuccess: () => toast.success('Commande annulee'),
-            });
+    const requestCancel = (orderId) => {
+        setOrderToCancel(orderId);
+    };
+
+    const confirmCancel = () => {
+        if (!orderToCancel) {
+            return;
         }
+
+        router.delete(route('orders.destroy', orderToCancel), {
+            onSuccess: () => toast.success('Commande annulee'),
+            onFinish: () => setOrderToCancel(null),
+        });
     };
 
     return (
@@ -103,7 +114,7 @@ export default function Dashboard({
 
                 <section className="space-y-3">
                     <h3 className="text-lg font-semibold text-slate-800">Recent Orders</h3>
-                    <RecentOrdersTable orders={orders} onCancelOrder={handleCancel} />
+                    <RecentOrdersTable orders={orders} onCancelOrder={requestCancel} />
                 </section>
 
                 <section className="space-y-3">
@@ -111,6 +122,20 @@ export default function Dashboard({
                     <InventoryGrid ingredients={ingredients} />
                 </section>
             </div>
+
+            <ConfirmationDialog
+                open={Boolean(orderToCancel)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setOrderToCancel(null);
+                    }
+                }}
+                title="Annuler cette commande ?"
+                description="Le stock associe sera restaure automatiquement."
+                confirmLabel="Annuler la commande"
+                destructive
+                onConfirm={confirmCancel}
+            />
         </AuthenticatedLayout>
     );
 }
