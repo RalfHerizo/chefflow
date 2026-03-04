@@ -2,6 +2,7 @@ import IngredientForm from '@/Components/Ingredients/IngredientForm';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 import {
     Dialog,
     DialogContent,
@@ -43,6 +44,7 @@ export default function IngredientsIndex({ ingredients, flash }) {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editingIngredient, setEditingIngredient] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
+    const [ingredientToDelete, setIngredientToDelete] = useState(null);
 
     const createForm = useForm(DEFAULT_FORM);
     const editForm = useForm(DEFAULT_FORM);
@@ -83,13 +85,14 @@ export default function IngredientsIndex({ ingredients, flash }) {
         });
     };
 
-    const handleDelete = (ingredient) => {
-        if (!window.confirm(`Supprimer l'ingredient "${ingredient.name}" ?`)) {
+    const confirmDeleteIngredient = () => {
+        if (!ingredientToDelete) {
             return;
         }
 
-        router.delete(route('ingredients.destroy', ingredient.id), {
+        router.delete(route('ingredients.destroy', ingredientToDelete.id), {
             onSuccess: () => toast.success('Ingredient supprime'),
+            onFinish: () => setIngredientToDelete(null),
         });
     };
 
@@ -199,9 +202,7 @@ export default function IngredientsIndex({ ingredients, flash }) {
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             className="text-red-600 hover:text-red-700"
-                                                            onClick={() =>
-                                                                handleDelete(ingredient)
-                                                            }
+                                                            onClick={() => setIngredientToDelete(ingredient)}
                                                         >
                                                             Supprimer
                                                         </DropdownMenuItem>
@@ -235,6 +236,24 @@ export default function IngredientsIndex({ ingredients, flash }) {
                     />
                 </DialogContent>
             </Dialog>
+
+            <ConfirmationDialog
+                open={Boolean(ingredientToDelete)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setIngredientToDelete(null);
+                    }
+                }}
+                title="Supprimer cet ingredient ?"
+                description={
+                    ingredientToDelete
+                        ? `Cette action est irreversible pour "${ingredientToDelete.name}".`
+                        : ''
+                }
+                confirmLabel="Supprimer"
+                destructive
+                onConfirm={confirmDeleteIngredient}
+            />
         </AuthenticatedLayout>
     );
 }
