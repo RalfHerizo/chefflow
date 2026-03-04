@@ -10,6 +10,10 @@ const PAGE_CONTENT = {
         title: 'Profile',
         subtitle: 'Manage your account information and security settings.',
     },
+    'Ingredients/Index': {
+        title: 'Ingredients',
+        subtitle: 'Control stock levels and low-threshold alerts.',
+    },
 };
 
 function resolveHeaderContent(component, userName) {

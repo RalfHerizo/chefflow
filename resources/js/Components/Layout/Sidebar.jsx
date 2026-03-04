@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import {
     ClipboardList,
+    CookingPot,
     LayoutDashboard,
     LogOut,
     Settings,
@@ -37,6 +38,15 @@ function resolveMenuItems() {
             href: route('products.index'),
             active: route().current('products.*'),
             icon: ShoppingBag,
+        });
+    }
+
+    if (hasRoute('ingredients.index')) {
+        items.push({
+            label: 'Ingredients',
+            href: route('ingredients.index'),
+            active: route().current('ingredients.*'),
+            icon: CookingPot,
         });
     }
 
