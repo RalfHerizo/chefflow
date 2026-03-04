@@ -1,9 +1,43 @@
 import { Search } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
+
+const PAGE_CONTENT = {
+    Dashboard: {
+        title: 'Dashboard',
+        subtitle: 'Pilot your restaurant activity in real time.',
+    },
+    'Profile/Edit': {
+        title: 'Profile',
+        subtitle: 'Manage your account information and security settings.',
+    },
+};
+
+function resolveHeaderContent(component, userName) {
+    const content = PAGE_CONTENT[component];
+
+    if (content) {
+        return content;
+    }
+
+    return {
+        title: component?.split('/').slice(-1)[0] || 'ChefFlow',
+        subtitle: `Hello ${userName || 'User'}, welcome back!`,
+    };
+}
 
 export default function TopHeader({ user }) {
+    const { component } = usePage();
+    const headerContent = resolveHeaderContent(component, user?.name);
+
     return (
-        <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-[#F8F4F1]/95 px-8 py-4 backdrop-blur-sm">
+        <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-[#F8F4F1] px-8 py-4 backdrop-blur-sm">
             <div className="flex items-center justify-between gap-4">
+                <div>
+                    <h2 className="text-2xl font-semibold leading-tight text-slate-800">
+                        {headerContent.title}
+                    </h2>
+                    <p className="text-sm text-slate-500">{headerContent.subtitle}</p>
+                </div>
                 <div className="relative w-full max-w-xl">
                     <Search
                         size={18}

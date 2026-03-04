@@ -42,7 +42,7 @@ function resolveMenuItems() {
 
     if (hasRoute('profile.edit')) {
         items.push({
-            label: 'Parametres',
+            label: 'Paramètres',
             href: route('profile.edit'),
             active: route().current('profile.*'),
             icon: Settings,

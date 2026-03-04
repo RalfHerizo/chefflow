@@ -1,12 +1,10 @@
-import { IngredientCard } from '@/Components/IngredientCard';
+import InventoryGrid from '@/Components/Dashboard/InventoryGrid';
+import RecentOrdersTable from '@/Components/Dashboard/RecentOrdersTable';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import toast from 'react-hot-toast';
-import StatCard from '@/Components/Dashboard/StatCard';
 
-export default function Dashboard({auth,ingredients, products, flash, errors, orders}) {
-
-    // Initialisation du formulaire Inertia
+export default function Dashboard({ ingredients, products, flash, errors, orders }) {
     const { data, setData, post, processing, reset } = useForm({
         product_id: '',
         quantity: 1,
@@ -14,132 +12,93 @@ export default function Dashboard({auth,ingredients, products, flash, errors, or
 
     const submit = (e) => {
         e.preventDefault();
+
         post(route('products.sell'), {
             onSuccess: () => {
-                toast.success('Vente enregistrée !');
-                reset(); // On vide le formulaire si ça marche
+                toast.success('Vente enregistree');
+                reset();
             },
-            onError: (errors) => {
-                toast.error(errors.error || 'Stock insuffisant! Erreur lors de la vente');
-            }
+            onError: (formErrors) => {
+                toast.error(formErrors.error || 'Stock insuffisant');
+            },
         });
     };
 
     const handleCancel = (orderId) => {
-        if (confirm('Annuler cette commande et restaurer le stock ?')) {
+        if (window.confirm('Annuler cette commande et restaurer le stock ?')) {
             router.delete(route('orders.destroy', orderId), {
-                onSuccess: () => toast.success('Commande annulée'),
+                onSuccess: () => toast.success('Commande annulee'),
             });
         }
     };
-    
+
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Dashboard
-                </h2>
-            }
-        >
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            You're logged in!
-                            {
-                                flash.message && (
-                                    <div className='bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4'>
-                                        {flash.message}
-                                    </div>
-                                )
-                            }
+        <AuthenticatedLayout>
+            <Head title="Dashboard" />
 
-                            {
-                                errors.error && (
-                                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" >
-                                        { errors.error }
-                                    </div>
-                                )
-                            }
-                        </div>
+            <div className="mx-auto max-w-7xl space-y-6">
+                {flash?.message ? (
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                        {flash.message}
                     </div>
-                    <div className="mt-8 bg-white shadow sm:rounded-lg p-6">
-                        <h3 className="text-lg font-bold mb-4">Dernières Ventes</h3>
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produit</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantité</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {orders.map((order) => (
-                                    <tr key={order.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap">{order.product.name}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">x{order.quantity}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{order.total_price / 100}€</td>
-                                        <td className="px-6 py-4 text-right">
-                                            <button 
-                                                onClick={() => handleCancel(order.id)}
-                                                className="text-red-600 hover:text-red-900 font-bold"
-                                            >
-                                                Annuler
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                ) : null}
+
+                {errors?.error ? (
+                    <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                        {errors.error}
                     </div>
-                    <div className="bg-white p-6 rounded-lg shadow my-6">
-                        <h3 className="font-bold mb-4">Enregistrer une vente</h3>
-                        <form onSubmit={submit} className="flex items-end gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Produit</label>
-                                <select 
-                                    value={data.product_id} 
-                                    onChange={e => setData('product_id', e.target.value)}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                >
-                                    <option value="">Choisir...</option>
-                                    {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Quantité</label>
-                                <input 
-                                    type="number" 
-                                    value={data.quantity} 
-                                    onChange={e => setData('quantity', e.target.value)}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                />
-                            </div>
-                            <button 
-                                type="submit" 
-                                disabled={processing}
-                                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
+                ) : null}
+
+                <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm">
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800">Enregistrer une vente</h3>
+                    <form onSubmit={submit} className="flex flex-wrap items-end gap-4">
+                        <div className="min-w-[220px] flex-1">
+                            <label className="mb-1 block text-sm font-medium text-slate-600">Produit</label>
+                            <select
+                                value={data.product_id}
+                                onChange={(e) => setData('product_id', e.target.value)}
+                                className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm shadow-sm outline-none focus:border-[#FF7E47]"
                             >
-                                {processing ? 'Traitement...' : 'Vendre'}
-                            </button>
-                        </form>
-                    </div>
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                        <h3 className="text-lg font-bold mb-4">État des Stocks</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {ingredients.map((ingredient) => (
-                                <IngredientCard key={ingredient.id} ingredient={ingredient} />
-                            ))}
+                                <option value="">Choisir...</option>
+                                {products.map((product) => (
+                                    <option key={product.id} value={product.id}>
+                                        {product.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-                    </div>
-                </div>
+
+                        <div className="w-36">
+                            <label className="mb-1 block text-sm font-medium text-slate-600">Quantite</label>
+                            <input
+                                type="number"
+                                min="1"
+                                value={data.quantity}
+                                onChange={(e) => setData('quantity', e.target.value)}
+                                className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm shadow-sm outline-none focus:border-[#FF7E47]"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="h-11 rounded-xl bg-[#FF7E47] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#e86f3d] disabled:opacity-50"
+                        >
+                            {processing ? 'Traitement...' : 'Vendre'}
+                        </button>
+                    </form>
+                </section>
+
+                <section className="space-y-3">
+                    <h3 className="text-lg font-semibold text-slate-800">Recent Orders</h3>
+                    <RecentOrdersTable orders={orders} onCancelOrder={handleCancel} />
+                </section>
+
+                <section className="space-y-3">
+                    <h3 className="text-lg font-semibold text-slate-800">Inventory Status</h3>
+                    <InventoryGrid ingredients={ingredients} />
+                </section>
             </div>
-
-            
-            
-
-            
         </AuthenticatedLayout>
     );
 }
