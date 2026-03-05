@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
+import { formatAmountDisplay } from '@/lib/amountConversion';
 import {
     Dialog,
     DialogContent,
@@ -229,7 +230,12 @@ export default function ProductsIndex({ products }) {
                                     <ul className="space-y-1 text-sm text-slate-600">
                                         {previewProduct.ingredients.map((ingredient) => (
                                             <li key={ingredient.id}>
-                                                {ingredient.name} - {ingredient.amount} {ingredient.unit}
+                                                {ingredient.name} -{' '}
+                                                {formatAmountDisplay(
+                                                    ingredient.amount,
+                                                    ingredient.unit,
+                                                )}{' '}
+                                                {ingredient.unit}
                                             </li>
                                         ))}
                                     </ul>
