@@ -37,6 +37,7 @@ export default function CreateProduct({ ingredients }) {
         () => data.ingredients.filter((line) => Boolean(line.id)).length,
         [data.ingredients],
     );
+    const hasIngredients = ingredients.length > 0;
 
     const addIngredient = () => {
         setData('ingredients', [...data.ingredients, { ...EMPTY_LINE }]);
@@ -72,9 +73,7 @@ export default function CreateProduct({ ingredients }) {
             nextErrors.price = 'Le prix doit etre positif.';
         }
 
-        const hasIngredient = data.ingredients.some(
-            (line) => line.id && Number(line.amount) > 0,
-        );
+        const hasIngredient = data.ingredients.some((line) => line.id && Number(line.amount) > 0);
         if (!hasIngredient) {
             nextErrors.ingredients = 'Selectionne au moins un ingredient avec une quantite.';
         }
@@ -202,6 +201,13 @@ export default function CreateProduct({ ingredients }) {
                             <CardTitle>Recette</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            {!hasIngredients ? (
+                                <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                                    Il n'y a pas encore d'ingredient disponible. Ajoute d'abord des
+                                    ingredients dans la page Inventaire.
+                                </div>
+                            ) : null}
+
                             <div className="space-y-3">
                                 {data.ingredients.map((line, index) => (
                                     <div
@@ -210,6 +216,7 @@ export default function CreateProduct({ ingredients }) {
                                     >
                                         <Select
                                             value={line.id ? String(line.id) : ''}
+                                            disabled={!hasIngredients}
                                             onValueChange={(value) =>
                                                 updateIngredientLine(index, 'id', value)
                                             }
@@ -218,14 +225,20 @@ export default function CreateProduct({ ingredients }) {
                                                 <SelectValue placeholder="Choisir un ingredient" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {ingredients.map((ingredient) => (
-                                                    <SelectItem
-                                                        key={ingredient.id}
-                                                        value={String(ingredient.id)}
-                                                    >
-                                                        {ingredient.name} ({ingredient.unit})
-                                                    </SelectItem>
-                                                ))}
+                                                {hasIngredients ? (
+                                                    ingredients.map((ingredient) => (
+                                                        <SelectItem
+                                                            key={ingredient.id}
+                                                            value={String(ingredient.id)}
+                                                        >
+                                                            {ingredient.name} ({ingredient.unit})
+                                                        </SelectItem>
+                                                    ))
+                                                ) : (
+                                                    <div className="px-2 py-1.5 text-sm text-slate-500">
+                                                        Aucun ingredient disponible.
+                                                    </div>
+                                                )}
                                             </SelectContent>
                                         </Select>
 
@@ -233,6 +246,7 @@ export default function CreateProduct({ ingredients }) {
                                             type="number"
                                             min="0"
                                             step="0.0001"
+                                            disabled={!hasIngredients}
                                             value={line.amount}
                                             onChange={(e) =>
                                                 updateIngredientLine(index, 'amount', e.target.value)
@@ -261,6 +275,7 @@ export default function CreateProduct({ ingredients }) {
                                     type="button"
                                     variant="outline"
                                     onClick={addIngredient}
+                                    disabled={!hasIngredients}
                                     className="border-[#FF7E47] text-[#FF7E47] hover:bg-orange-50"
                                 >
                                     <Plus />
