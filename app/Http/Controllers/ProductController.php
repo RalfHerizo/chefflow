@@ -175,4 +175,13 @@ class ProductController extends Controller
 
         return to_route('products.index')->with('message', 'Produit supprime avec succes.');
     }
+
+    public function toggleStatus(Product $product): RedirectResponse
+    {
+        $product->update([
+            'is_active' => !$product->is_active,
+        ]);
+
+        return back();
+    }
 }

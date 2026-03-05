@@ -45,6 +45,7 @@ function formatPrice(cents) {
 export default function ProductsIndex({ products }) {
     const [previewProduct, setPreviewProduct] = useState(null);
     const [productToDelete, setProductToDelete] = useState(null);
+    const [statusLoadingId, setStatusLoadingId] = useState(null);
 
     const handleDeleteProduct = () => {
         if (!productToDelete) {
@@ -52,8 +53,16 @@ export default function ProductsIndex({ products }) {
         }
 
         router.delete(route('products.destroy', productToDelete.id), {
-            onSuccess: () => toast.success('Produit supprime avec succes.'),
+            onSuccess: () => toast.success('Produit supprime avec succès.'),
             onFinish: () => setProductToDelete(null),
+        });
+    };
+
+    const toggleStatus = (product) => {
+        setStatusLoadingId(product.id);
+        router.patch(route('products.toggle-status', product.id), undefined, {
+            preserveScroll: true,
+            onFinish: () => setStatusLoadingId(null),
         });
     };
 
@@ -69,14 +78,14 @@ export default function ProductsIndex({ products }) {
                                 Liste des produits
                             </h3>
                             <p className="text-sm text-slate-500">
-                                Consulte les produits et leur recette associee.
+                                Consulte les produits et leur recette associée.
                             </p>
                         </div>
 
                         <Button asChild className="rounded-xl bg-[#FF7E47] text-white hover:bg-[#e86f3d]">
                             <Link href={route('products.create')}>
                                 <Plus />
-                                Creer un nouveau produit
+                                Créer un nouveau produit
                             </Link>
                         </Button>
                     </div>
@@ -129,15 +138,19 @@ export default function ProductsIndex({ products }) {
                                                 {product.ingredients_count} ingredient(s)
                                             </TableCell>
                                             <TableCell className="px-4">
-                                                <Badge
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    disabled={statusLoadingId === product.id}
+                                                    onClick={() => toggleStatus(product)}
                                                     className={
                                                         product.is_active
-                                                            ? 'border-transparent bg-emerald-100 text-emerald-700'
-                                                            : 'border-transparent bg-slate-200 text-slate-700'
+                                                            ? 'h-8 border-emerald-200 bg-emerald-50 px-3 text-emerald-700 hover:bg-emerald-100'
+                                                            : 'h-8 border-slate-300 bg-slate-100 px-3 text-slate-700 hover:bg-slate-200'
                                                     }
                                                 >
                                                     {product.is_active ? 'Actif' : 'Inactif'}
-                                                </Badge>
+                                                </Button>
                                             </TableCell>
                                             <TableCell className="px-4 text-right">
                                                 <DropdownMenu>
@@ -150,14 +163,12 @@ export default function ProductsIndex({ products }) {
                                                         <DropdownMenuItem
                                                             onClick={() => setPreviewProduct(product)}
                                                         >
-                                                            <Eye />
-                                                            Preview
+                                                            Voir
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem asChild>
                                                             <Link
                                                                 href={route('products.edit', product.id)}
                                                             >
-                                                                <Pencil />
                                                                 Modifier
                                                             </Link>
                                                         </DropdownMenuItem>
@@ -165,7 +176,6 @@ export default function ProductsIndex({ products }) {
                                                             className="text-red-600 hover:text-red-700"
                                                             onClick={() => setProductToDelete(product)}
                                                         >
-                                                            <Trash2 />
                                                             Supprimer
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
@@ -190,7 +200,7 @@ export default function ProductsIndex({ products }) {
                     </DialogHeader>
 
                     {previewProduct ? (
-                        <div className="space-y-4">
+                        <div className="space-y-4 mt-5">
                             <div className="flex items-center gap-4">
                                 <img
                                     src={
