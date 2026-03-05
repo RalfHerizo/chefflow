@@ -12,7 +12,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','price','is_active', 'price_in_euro'];
+    protected $fillable = ['name', 'category', 'image_url', 'price', 'is_active', 'price_in_euro'];
     
     public function ingredients(): BelongsToMany{
 
