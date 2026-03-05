@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Ingredient extends Model
 {
-    protected $fillable = ['name','unit','stock_quantity','alert_threshold'];
+    protected $fillable = ['name', 'image_url', 'unit', 'stock_quantity', 'alert_threshold'];
     
     public function products(){
 

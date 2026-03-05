@@ -21,6 +21,7 @@ class IngredientController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
+            'image_url' => ['nullable', 'url', 'max:2048'],
             'unit' => ['required', 'string', 'max:20'],
             'stock_quantity' => ['required', 'numeric', 'min:0'],
             'alert_threshold' => ['required', 'numeric', 'min:0'],
@@ -35,6 +36,7 @@ class IngredientController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
+            'image_url' => ['nullable', 'url', 'max:2048'],
             'unit' => ['required', 'string', 'max:20'],
             'stock_quantity' => ['required', 'numeric', 'min:0'],
             'alert_threshold' => ['required', 'numeric', 'min:0'],

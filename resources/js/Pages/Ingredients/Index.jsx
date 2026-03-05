@@ -32,13 +32,17 @@ import toast from 'react-hot-toast';
 
 const DEFAULT_FORM = {
     name: '',
+    image_url: '',
     unit: 'kg',
     stock_quantity: '',
     alert_threshold: '',
 };
 
+const INGREDIENT_THUMBNAIL_PLACEHOLDER =
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">ING</text></svg>';
+
 /**
- * @param {{ ingredients: Array<{id: number, name: string, unit: string, stock_quantity: number|string, alert_threshold: number|string}> , flash?: {message?: string} }} props
+ * @param {{ ingredients: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}> , flash?: {message?: string} }} props
  */
 export default function IngredientsIndex({ ingredients, flash }) {
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -64,6 +68,7 @@ export default function IngredientsIndex({ ingredients, flash }) {
         setEditingIngredient(ingredient);
         editForm.setData({
             name: ingredient.name ?? '',
+            image_url: ingredient.image_url ?? '',
             unit: ingredient.unit ?? 'kg',
             stock_quantity: ingredient.stock_quantity ?? '',
             alert_threshold: ingredient.alert_threshold ?? '',
@@ -165,7 +170,17 @@ export default function IngredientsIndex({ ingredients, flash }) {
                                     return (
                                         <TableRow key={ingredient.id}>
                                             <TableCell className="px-4 font-medium text-slate-700">
-                                                {ingredient.name}
+                                                <div className="flex items-center gap-3">
+                                                    <img
+                                                        src={
+                                                            ingredient.image_url ||
+                                                            INGREDIENT_THUMBNAIL_PLACEHOLDER
+                                                        }
+                                                        alt={ingredient.name}
+                                                        className="h-10 w-10 rounded-md object-cover"
+                                                    />
+                                                    <span>{ingredient.name}</span>
+                                                </div>
                                             </TableCell>
                                             <TableCell className="px-4 text-slate-600">
                                                 {ingredient.unit}

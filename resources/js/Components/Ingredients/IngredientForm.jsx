@@ -12,7 +12,7 @@ const UNIT_OPTIONS = ['kg', 'g', 'L', 'ml', 'pcs'];
 
 /**
  * @param {{
- * data: {name: string, unit: string, stock_quantity: number|string, alert_threshold: number|string},
+ * data: {name: string, image_url?: string, unit: string, stock_quantity: number|string, alert_threshold: number|string},
  * setData: (key: string, value: string|number) => void,
  * errors: Record<string, string>,
  * processing: boolean,
@@ -28,6 +28,15 @@ export default function IngredientForm({
     submitLabel = 'Save',
     onSubmit,
 }) {
+    const suggestImageFromName = () => {
+        if (!data.name?.trim()) {
+            return;
+        }
+
+        const query = encodeURIComponent(`${data.name},ingredient,food`);
+        setData('image_url', `https://source.unsplash.com/featured/?${query}`);
+    };
+
     return (
         <form onSubmit={onSubmit} className="mt-4 space-y-4">
             <div className="space-y-1.5">
@@ -40,6 +49,29 @@ export default function IngredientForm({
                     placeholder="Ex: Tomate"
                 />
                 <InputError message={errors.name} />
+            </div>
+
+            <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-700">URL image</label>
+                <div className="flex gap-2">
+                    <input
+                        type="url"
+                        value={data.image_url || ''}
+                        onChange={(e) => setData('image_url', e.target.value)}
+                        className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-[#FF7E47]"
+                        placeholder="https://example.com/image.jpg"
+                    />
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={suggestImageFromName}
+                        disabled={!data.name?.trim()}
+                        className="whitespace-nowrap border-[#FF7E47] text-[#FF7E47] hover:bg-orange-50"
+                    >
+                        Auto image
+                    </Button>
+                </div>
+                <InputError message={errors.image_url} />
             </div>
 
             <div className="space-y-1.5">
