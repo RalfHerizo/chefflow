@@ -1,59 +1,98 @@
-# ChefFlow - SaaS de Gestion de Stock & Production
+# ChefFlow
 
-**ChefFlow** est une application de gestion d'inventaire intelligente conçue pour la restauration, mettant l'accent sur la précision chirurgicale des données et l'automatisation de la production.
+ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking, and quick dashboard insights.
 
----
+## Product Status (Current Progress)
 
-## Philosophie de Développement (Senior-Ready)
+### Done
+- [x] Laravel + Inertia + React foundation with auth pages.
+- [x] Modern app shell: fixed sidebar + top header + content area.
+- [x] Dynamic top header title/subtitle by current Inertia page.
+- [x] Dashboard sales form to register product sales.
+- [x] Recent orders table with action to cancel an order.
+- [x] Confirmation modal for order cancellation (no browser alert).
+- [x] Weekly revenue chart (last 7 days) with Recharts.
+- [x] Ingredient inventory page with Shadcn table.
+- [x] Ingredient create/edit forms in Shadcn dialog.
+- [x] Confirmation modal for ingredient deletion (no browser alert).
+- [x] Ingredient status badge: `Critique` if stock <= threshold, else `Stable`.
+- [x] Ingredient image URL field in form.
+- [x] Ingredient thumbnail displayed next to ingredient name.
 
-Ce projet n'est pas un simple CRUD. Il a été bâti avec une approche **"Enterprise-Grade"** :
+### In Progress / Next
+- [ ] Replace image URL input with drag and drop upload.
+- [ ] Product management pages (list/create/edit/delete).
+- [ ] Orders list page with filtering and pagination.
+- [ ] Better analytics and reporting blocks.
+- [ ] Notifications workflow (stock alerts).
 
-* **TDD (Test-Driven Development) :** 100% de la logique métier (mouvements de stock, calculs de recettes) est couverte par des tests automatisés avec **Pest**.
-* **Intégrité Financière :** Utilisation du stockage en `integers` (centimes) pour les prix afin d'éliminer les erreurs d'arrondis liées aux calculs en virgule flottante.
-* **Précision des Stocks :** Gestion des unités à 4 décimales (`decimal(12,4)`) pour supporter les ingrédients de haute précision (épices, extraits).
-* **Clean Architecture :** Utilisation du pattern **Action** pour isoler la logique métier complexe des contrôleurs.
+## Main Features
 
-## 🚀 Stack Technique
+- Dashboard:
+  - Register sales (`products.sell`).
+  - Show recent orders.
+  - Cancel order and restore stock.
+  - Show weekly revenue chart.
+- Inventory (Ingredients):
+  - List all ingredients.
+  - Create, update, delete ingredients.
+  - Show stock health by threshold.
+  - Store and display ingredient image URL.
 
-* **Backend :** Laravel 11 (PHP 8.2+)
-* **Frontend :** React + Inertia.js + TailwindCSS
-* **Tests :** Pest PHP
-* **Database :** MySQL (avec Transactions SQL pour l'intégrité)
-* **Environnement :** Docker (Laravel Sail)
+## Tech Stack
 
-## Défis Techniques Relevés
-- **Intégrité des données :** Utilisation de transactions SQL pour garantir que le stock ne diminue que si la vente est validée.
-- **Calculs de précision :** Gestion des stocks avec des décimales (g, kg, L) pour éviter les erreurs d'arrondi fatales en cuisine.
-- **Expérience SPA :** Navigation fluide sans rechargement de page grâce à Inertia.js.
+- Backend: Laravel 12, PHP 8.2+
+- Frontend: React 18 + Inertia.js
+- UI: Tailwind CSS + Shadcn UI (Radix primitives)
+- Charts: Recharts
+- Icons: Lucide React
+- Tests: Pest
 
-## État d'avancement (Current Progress)
-- [x] **Architecture Core :** Modèles Ingredients, Products et Pivot (Recettes).
-- [x] **Moteur de Vente :** `SellProductAction` gérant les déductions automatiques.
-- [x] **Dashboard Interactif :** Interface React avec mise à jour des stocks en temps réel via Inertia `useForm`.
-- [ ] **Alertes Intelligentes :** Indicateurs visuels quand le stock passe sous le seuil critique (Jour 4).
-- [ ] **Système de Notifications :** Alertes par e-mail/toasts pour les ruptures de stock.
-- [ ] **Historique des ventes :** Rapports détaillés et analytics.
+## Key Routes
 
----
+- `GET /dashboard` -> dashboard page
+- `POST /sell` -> register sale
+- `DELETE /orders/{order}` -> cancel order
+- `GET /ingredients` -> ingredient index
+- `POST /ingredients` -> create ingredient
+- `PATCH /ingredients/{ingredient}` -> update ingredient
+- `DELETE /ingredients/{ingredient}` -> delete ingredient
 
-## Architecture des Données
+## Setup
 
-Le système repose sur une relation **Many-to-Many** complexe entre les Ingrédients et les Produits.
-
-
-
-Chaque vente de produit déclenche un processus atomique :
-1. Analyse de la recette via la table pivot.
-2. Vérification des stocks avec verrouillage (Lock).
-3. Déduction automatique au prorata des quantités.
-4. Déclenchement d'alertes en cas de franchissement de seuil critique.
-
-## Installation & Tests
+From `chefflow/`:
 
 ```bash
-# Installation des dépendances
 composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
 npm install
+```
 
-# Lancement des tests (Preuve de fiabilité)
+## Run (Development)
+
+Option 1 (recommended from `chefflow/`):
+
+```bash
+composer run dev
+```
+
+Option 2 (Windows helper from repository root):
+
+```bat
+run.bat
+```
+
+## Build and Test
+
+```bash
+npm run build
 php artisan test
+```
+
+## Notes
+
+- Prices are stored as integers (cents) to avoid floating-point issues.
+- Ingredient stock uses decimal precision.
+- Current UX uses confirmation dialogs for destructive actions.
