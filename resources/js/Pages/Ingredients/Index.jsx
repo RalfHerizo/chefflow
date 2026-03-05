@@ -162,71 +162,82 @@ export default function IngredientsIndex({ ingredients, flash }) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {ingredients.map((ingredient) => {
-                                    const currentStock = Number(ingredient.stock_quantity);
-                                    const threshold = Number(ingredient.alert_threshold);
-                                    const isCritical = currentStock <= threshold;
+                                {ingredients.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={6}
+                                            className="px-4 py-8 text-center text-sm text-slate-500"
+                                        >
+                                            Aucun ingredient dispo. Veuillez ajouter un ingredient.
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    ingredients.map((ingredient) => {
+                                        const currentStock = Number(ingredient.stock_quantity);
+                                        const threshold = Number(ingredient.alert_threshold);
+                                        const isCritical = currentStock <= threshold;
 
-                                    return (
-                                        <TableRow key={ingredient.id}>
-                                            <TableCell className="px-4 font-medium text-slate-700">
-                                                <div className="flex items-center gap-3">
-                                                    <img
-                                                        src={
-                                                            ingredient.image_url ||
-                                                            INGREDIENT_THUMBNAIL_PLACEHOLDER
+                                        return (
+                                            <TableRow key={ingredient.id}>
+                                                <TableCell className="px-4 font-medium text-slate-700">
+                                                    <div className="flex items-center gap-3">
+                                                        <img
+                                                            src={
+                                                                ingredient.image_url ||
+                                                                INGREDIENT_THUMBNAIL_PLACEHOLDER
+                                                            }
+                                                            alt={ingredient.name}
+                                                            className="h-10 w-10 rounded-md object-cover"
+                                                        />
+                                                        <span>{ingredient.name}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="px-4 text-slate-600">
+                                                    {ingredient.unit}
+                                                </TableCell>
+                                                <TableCell className="px-4 text-slate-600">
+                                                    {currentStock}
+                                                </TableCell>
+                                                <TableCell className="px-4 text-slate-600">
+                                                    {threshold}
+                                                </TableCell>
+                                                <TableCell className="px-4">
+                                                    <Badge
+                                                        className={
+                                                            isCritical
+                                                                ? 'border-transparent bg-red-100 text-red-700'
+                                                                : 'border-transparent bg-emerald-100 text-emerald-700'
                                                         }
-                                                        alt={ingredient.name}
-                                                        className="h-10 w-10 rounded-md object-cover"
-                                                    />
-                                                    <span>{ingredient.name}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="px-4 text-slate-600">
-                                                {ingredient.unit}
-                                            </TableCell>
-                                            <TableCell className="px-4 text-slate-600">
-                                                {currentStock}
-                                            </TableCell>
-                                            <TableCell className="px-4 text-slate-600">
-                                                {threshold}
-                                            </TableCell>
-                                            <TableCell className="px-4">
-                                                <Badge
-                                                    className={
-                                                        isCritical
-                                                            ? 'border-transparent bg-red-100 text-red-700'
-                                                            : 'border-transparent bg-emerald-100 text-emerald-700'
-                                                    }
-                                                >
-                                                    {isCritical ? 'Critique' : 'Stable'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="px-4 text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="outline" size="icon">
-                                                            <MoreHorizontal />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onClick={() => openEditDialog(ingredient)}
-                                                        >
-                                                            Modifier
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            className="text-red-600 hover:text-red-700"
-                                                            onClick={() => setIngredientToDelete(ingredient)}
-                                                        >
-                                                            Supprimer
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
+                                                    >
+                                                        {isCritical ? 'Critique' : 'Stable'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="px-4 text-right">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="outline" size="icon">
+                                                                <MoreHorizontal />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem
+                                                                onClick={() => openEditDialog(ingredient)}
+                                                            >
+                                                                Modifier
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                className="text-red-600 hover:text-red-700"
+                                                                onClick={() => setIngredientToDelete(ingredient)}
+                                                            >
+                                                                Supprimer
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
+                                )}
                             </TableBody>
                         </Table>
                     </div>
