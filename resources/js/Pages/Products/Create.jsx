@@ -3,6 +3,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import {
+    convertAmount,
+    formatAmountDisplay,
+    getInputStep,
+    getPreferredInputUnit,
+    getUnitOptions,
+} from '@/lib/amountConversion';
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -16,7 +23,7 @@ import toast from 'react-hot-toast';
 
 const CATEGORY_OPTIONS = ['Entree', 'Plat', 'Dessert', 'Boisson'];
 
-const EMPTY_LINE = { id: '', amount: '' };
+const EMPTY_LINE = { id: '', amount: '', input_amount: '', input_unit: '' };
 
 /**
  * @param {{ ingredients: Array<{id: number|string, name: string, unit: string}> }} props
@@ -38,6 +45,10 @@ export default function CreateProduct({ ingredients }) {
         [data.ingredients],
     );
     const hasIngredients = ingredients.length > 0;
+    const ingredientsById = useMemo(
+        () => new Map(ingredients.map((ingredient) => [String(ingredient.id), ingredient])),
+        [ingredients],
+    );
 
     const addIngredient = () => {
         setData('ingredients', [...data.ingredients, { ...EMPTY_LINE }]);
@@ -52,6 +63,58 @@ export default function CreateProduct({ ingredients }) {
         const next = [...data.ingredients];
         next[index] = { ...next[index], [key]: value };
         setData('ingredients', next);
+    };
+
+    const updateLineWithInputAmount = (index, newInputAmount, inputUnit, baseUnit) => {
+        const amountInBase = convertAmount(newInputAmount || 0, inputUnit, baseUnit);
+
+        const next = [...data.ingredients];
+        next[index] = {
+            ...next[index],
+            input_amount: newInputAmount,
+            input_unit: inputUnit,
+            amount: String(amountInBase),
+        };
+        setData('ingredients', next);
+    };
+
+    const handleIngredientChange = (index, ingredientId) => {
+        const ingredient = ingredientsById.get(String(ingredientId));
+        const baseUnit = ingredient?.unit || 'pcs';
+        const preferredUnit = getPreferredInputUnit(baseUnit);
+
+        const next = [...data.ingredients];
+        next[index] = {
+            ...next[index],
+            id: ingredientId,
+            input_unit: preferredUnit,
+            input_amount: '',
+            amount: '',
+        };
+        setData('ingredients', next);
+    };
+
+    const handleUnitChange = (index, nextInputUnit) => {
+        const line = data.ingredients[index];
+        const ingredient = ingredientsById.get(String(line.id));
+        if (!ingredient) {
+            return;
+        }
+
+        const currentInputUnit = line.input_unit || getPreferredInputUnit(ingredient.unit);
+        const currentInputAmount = Number(line.input_amount || 0);
+        const convertedInputAmount = convertAmount(
+            currentInputAmount,
+            currentInputUnit,
+            nextInputUnit,
+        );
+
+        updateLineWithInputAmount(
+            index,
+            line.input_amount ? String(convertedInputAmount) : '',
+            nextInputUnit,
+            ingredient.unit,
+        );
     };
 
     const onPhotoChange = (event) => {
@@ -168,7 +231,7 @@ export default function CreateProduct({ ingredients }) {
 
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-medium text-slate-700">
-                                        Upload Photo
+                                        Ajouter une photo
                                     </label>
                                     <input
                                         type="file"
@@ -208,14 +271,23 @@ export default function CreateProduct({ ingredients }) {
                                 {data.ingredients.map((line, index) => (
                                     <div
                                         key={index}
-                                        className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200/80 p-3 md:grid-cols-[1fr_180px_auto]"
+                                        className="grid grid-cols-1 gap-2 rounded-xl border border-slate-200/80 p-3 md:grid-cols-[1fr_140px_110px_auto]"
                                     >
+                                        {(() => {
+                                            const ingredient = ingredientsById.get(String(line.id));
+                                            const baseUnit = ingredient?.unit || 'pcs';
+                                            const unitOptions = getUnitOptions(baseUnit);
+                                            const currentInputUnit =
+                                                line.input_unit ||
+                                                getPreferredInputUnit(baseUnit);
+                                            const deducedBaseValue = line.amount || 0;
+
+                                            return (
+                                                <>
                                         <Select
                                             value={line.id ? String(line.id) : ''}
                                             disabled={!hasIngredients}
-                                            onValueChange={(value) =>
-                                                updateIngredientLine(index, 'id', value)
-                                            }
+                                            onValueChange={(value) => handleIngredientChange(index, value)}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Choisir un ingredient" />
@@ -237,28 +309,67 @@ export default function CreateProduct({ ingredients }) {
                                                 )}
                                             </SelectContent>
                                         </Select>
-
                                         <input
                                             type="number"
                                             min="0"
-                                            step="0.0001"
-                                            disabled={!hasIngredients}
-                                            value={line.amount}
+                                            step={getInputStep(baseUnit, currentInputUnit)}
+                                            disabled={!hasIngredients || !line.id}
+                                            value={line.input_amount}
                                             onChange={(e) =>
-                                                updateIngredientLine(index, 'amount', e.target.value)
+                                                updateLineWithInputAmount(
+                                                    index,
+                                                    e.target.value,
+                                                    currentInputUnit,
+                                                    baseUnit,
+                                                )
                                             }
-                                            className="h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-[#FF7E47]"
+                                            className="h-10 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-[#FF7E47]"
                                             placeholder="Quantite"
                                         />
+
+                                        <Select
+                                            value={currentInputUnit}
+                                            disabled={!hasIngredients || !line.id}
+                                            onValueChange={(value) => handleUnitChange(index, value)}
+                                        >
+                                            <SelectTrigger className="h-10">
+                                                <SelectValue placeholder="Unite" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {unitOptions.map((option) => (
+                                                    <SelectItem
+                                                        key={option}
+                                                        value={String(option)}
+                                                    >
+                                                        {option}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
 
                                         <Button
                                             type="button"
                                             variant="outline"
                                             onClick={() => removeIngredient(index)}
-                                            className="h-11"
+                                            className="h-10"
                                         >
                                             <Trash2 />
                                         </Button>
+                                                    <div className="md:col-span-4">
+                                                        {line.id && line.input_amount ? (
+                                                            <p className="text-xs text-slate-500">
+                                                                Stock deduit :{' '}
+                                                                {formatAmountDisplay(
+                                                                    deducedBaseValue,
+                                                                    baseUnit,
+                                                                )}{' '}
+                                                                {baseUnit}
+                                                            </p>
+                                                        ) : null}
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
                                     </div>
                                 ))}
                             </div>
