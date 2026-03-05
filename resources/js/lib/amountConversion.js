@@ -119,3 +119,40 @@ export function formatAmountDisplay(value, unit) {
         .toFixed(4)
         .replace(/\.?0+$/, '');
 }
+
+export function formatIngredientAmountForPreview(value, baseUnit) {
+    const unit = normalizeUnit(baseUnit);
+    const numeric = Number(value || 0);
+
+    if (!Number.isFinite(numeric)) {
+        return { value: '0', unit: unit || 'pcs' };
+    }
+
+    if (isPiece(unit)) {
+        return { value: String(Math.round(numeric)), unit: 'pcs' };
+    }
+
+    if (unit === 'kg') {
+        if (numeric < 1) {
+            return { value: formatAmountDisplay(convertAmount(numeric, 'kg', 'g'), 'g'), unit: 'g' };
+        }
+        return { value: formatAmountDisplay(numeric, 'kg'), unit: 'kg' };
+    }
+
+    if (unit === 'l') {
+        if (numeric < 1) {
+            return { value: formatAmountDisplay(convertAmount(numeric, 'l', 'ml'), 'ml'), unit: 'ml' };
+        }
+        return { value: formatAmountDisplay(numeric, 'l'), unit: 'L' };
+    }
+
+    if (unit === 'g') {
+        return { value: formatAmountDisplay(numeric, 'g'), unit: 'g' };
+    }
+
+    if (unit === 'ml') {
+        return { value: formatAmountDisplay(numeric, 'ml'), unit: 'ml' };
+    }
+
+    return { value: formatAmountDisplay(numeric, unit), unit: baseUnit || '' };
+}

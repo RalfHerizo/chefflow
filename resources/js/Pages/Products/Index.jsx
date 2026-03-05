@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
-import { formatAmountDisplay } from '@/lib/amountConversion';
+import { formatIngredientAmountForPreview } from '@/lib/amountConversion';
 import {
     Dialog,
     DialogContent,
@@ -228,16 +228,19 @@ export default function ProductsIndex({ products }) {
                                 <p className="mb-2 text-sm font-medium text-slate-700">Recette</p>
                                 {previewProduct.ingredients?.length ? (
                                     <ul className="space-y-1 text-sm text-slate-600">
-                                        {previewProduct.ingredients.map((ingredient) => (
-                                            <li key={ingredient.id}>
-                                                {ingredient.name} -{' '}
-                                                {formatAmountDisplay(
-                                                    ingredient.amount,
-                                                    ingredient.unit,
-                                                )}{' '}
-                                                {ingredient.unit}
-                                            </li>
-                                        ))}
+                                        {previewProduct.ingredients.map((ingredient) => {
+                                            const previewAmount = formatIngredientAmountForPreview(
+                                                ingredient.amount,
+                                                ingredient.unit,
+                                            );
+
+                                            return (
+                                                <li key={ingredient.id}>
+                                                    {ingredient.name} - {previewAmount.value}{' '}
+                                                    {previewAmount.unit}
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
                                 ) : (
                                     <p className="text-sm text-slate-500">
