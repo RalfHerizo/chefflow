@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store');
     Route::patch('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update');
     Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy'])->name('ingredients.destroy');
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 });

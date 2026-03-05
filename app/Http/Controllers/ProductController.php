@@ -13,6 +13,16 @@ use Inertia\Response;
 
 class ProductController extends Controller
 {
+    public function index(): Response
+    {
+        return Inertia::render('Products/Index', [
+            'products' => Product::query()
+                ->withCount('ingredients')
+                ->orderBy('name')
+                ->get(['id', 'name', 'category', 'image_url', 'price', 'is_active']),
+        ]);
+    }
+
     public function create(): Response
     {
         return Inertia::render('Products/Create', [
@@ -63,6 +73,6 @@ class ProductController extends Controller
             $product->ingredients()->sync($pivotPayload);
         });
 
-        return to_route('dashboard')->with('message', 'Produit cree avec recette.');
+        return to_route('products.index')->with('message', 'Produit cree avec recette.');
     }
 }
