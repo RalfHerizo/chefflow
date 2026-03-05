@@ -22,6 +22,10 @@ const PAGE_CONTENT = {
         title: 'Nouveau Produit',
         subtitle: 'Construisez le produit et sa recette ingredient par ingredient.',
     },
+    'Products/Edit': {
+        title: 'Modifier Produit',
+        subtitle: 'Mettez a jour les informations et la recette du produit.',
+    },
 };
 
 function resolveHeaderContent(component, userName) {
