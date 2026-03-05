@@ -14,6 +14,10 @@ const PAGE_CONTENT = {
         title: 'Ingredients',
         subtitle: 'Control stock levels and low-threshold alerts.',
     },
+    'Products/Index': {
+        title: 'Produits',
+        subtitle: 'Consultez tous les produits et leurs recettes.',
+    },
     'Products/Create': {
         title: 'Nouveau Produit',
         subtitle: 'Construisez le produit et sa recette ingredient par ingredient.',

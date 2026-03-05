@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -102,16 +102,12 @@ export default function CreateProduct({ ingredients }) {
 
             <div className="mx-auto max-w-7xl space-y-6">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-2xl font-semibold text-slate-800">
-                            Nouveau Produit
-                        </h2>
-                        <p className="text-sm text-slate-500">
-                            Cree un produit et compose sa recette.
-                        </p>
-                    </div>
+                    <div />
                     <Button variant="outline" asChild>
-                        <Link href={route('dashboard')}>Retour</Link>
+                        <Link href={route('products.index')}>
+                            <ArrowLeft />
+                            Retour
+                        </Link>
                     </Button>
                 </div>
 

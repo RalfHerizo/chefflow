@@ -32,10 +32,10 @@ function resolveMenuItems() {
         });
     }
 
-    if (hasRoute('products.create')) {
+    if (hasRoute('products.index')) {
         items.push({
             label: 'Produits',
-            href: route('products.create'),
+            href: route('products.index'),
             active: route().current('products.*'),
             icon: ShoppingBag,
         });
