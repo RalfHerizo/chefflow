@@ -34,7 +34,8 @@ export default function EditProduct({ product, ingredients }) {
     const [photoPreview, setPhotoPreview] = useState(product.image_url || null);
     const [clientErrors, setClientErrors] = useState({});
 
-    const { data, setData, patch, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: 'patch',
         name: product.name ?? '',
         price: product.price ?? '',
         category: product.category ?? '',
@@ -167,7 +168,7 @@ export default function EditProduct({ product, ingredients }) {
             return;
         }
 
-        patch(route('products.update', product.id), {
+        post(route('products.update', product.id), {
             forceFormData: true,
             onSuccess: () => {
                 toast.success('Produit modifie avec succes.');
@@ -413,7 +414,7 @@ export default function EditProduct({ product, ingredients }) {
                             disabled={processing}
                             className="rounded-xl bg-[#FF7E47] text-white hover:bg-[#e86f3d]"
                         >
-                            {processing ? 'Traitement...' : 'Mettre a jour le produit'}
+                            {processing ? 'Traitement...' : 'Mettre à jour le produit'}
                         </Button>
                     </div>
                 </form>
