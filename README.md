@@ -18,10 +18,18 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] Ingredient status badge: `Critique` if stock <= threshold, else `Stable`.
 - [x] Ingredient image URL field in form.
 - [x] Ingredient thumbnail displayed next to ingredient name.
+- [x] Products module completed: list/create/edit/delete.
+- [x] Product preview modal with recipe details.
+- [x] Product status toggle (`Actif` / `Inactif`) from list view.
+- [x] Product Builder with dynamic recipe lines (ingredient + amount).
+- [x] Smart input units in recipe builder (`kg/g`, `L/ml`, `pcs`) with conversion to backend base unit.
+- [x] Human-readable amount preview (`0.004 kg` shown as `4 g`).
+- [x] Product image upload support in create/edit forms.
+- [x] Feature tests for recent product and ingredient workflows.
 
 ### In Progress / Next
 - [ ] Replace image URL input with drag and drop upload.
-- [ ] Product management pages (list/create/edit/delete).
+- [ ] Move more controller validation logic to dedicated Form Requests for cleaner architecture.
 - [ ] Orders list page with filtering and pagination.
 - [ ] Better analytics and reporting blocks.
 - [ ] Notifications workflow (stock alerts).
@@ -38,6 +46,12 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
   - Create, update, delete ingredients.
   - Show stock health by threshold.
   - Store and display ingredient image URL.
+- Products:
+  - List products with actions: preview, edit, delete.
+  - Toggle product active status directly from table.
+  - Build and edit recipe lines with per-ingredient quantity.
+  - Convert entered quantities to backend base units before submit.
+  - Upload product photo.
 
 ## Tech Stack
 
@@ -57,6 +71,13 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - `POST /ingredients` -> create ingredient
 - `PATCH /ingredients/{ingredient}` -> update ingredient
 - `DELETE /ingredients/{ingredient}` -> delete ingredient
+- `GET /products` -> products index
+- `GET /products/create` -> product create page
+- `POST /products` -> store product with recipe
+- `GET /products/{product}/edit` -> product edit page
+- `PATCH /products/{product}` -> update product
+- `PATCH /products/{product}/toggle-status` -> toggle status
+- `DELETE /products/{product}` -> delete product
 
 ## Setup
 
@@ -72,16 +93,10 @@ npm install
 
 ## Run (Development)
 
-Option 1 (recommended from `chefflow/`):
+From `chefflow/`:
 
 ```bash
 composer run dev
-```
-
-Option 2 (Windows helper from repository root):
-
-```bat
-run.bat
 ```
 
 ## Build and Test
@@ -91,8 +106,16 @@ npm run build
 php artisan test
 ```
 
+Targeted suites added for latest features:
+
+```bash
+php artisan test tests/Feature/ProductManagementTest.php
+php artisan test tests/Feature/IngredientManagementTest.php
+```
+
 ## Notes
 
 - Prices are stored as integers (cents) to avoid floating-point issues.
 - Ingredient stock uses decimal precision.
 - Current UX uses confirmation dialogs for destructive actions.
+- Form Request extraction is in progress to reinforce clean architecture boundaries.
