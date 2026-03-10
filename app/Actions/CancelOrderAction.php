@@ -4,19 +4,29 @@ namespace App\Actions;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
-Class CancelOrderAction
+class CancelOrderAction
 {
     public function execute(Order $order): void
     {
-        DB::transaction(function () use ($order){
-            $product = $order->product;
-            $quantity = $order->quantity;
+        $order->load('items.product.ingredients');
 
-            foreach($product->ingredients as $ingredient){
-                $toRestore = $ingredient->pivot->amount * $quantity;
-                $ingredient->increment('stock_quantity', $toRestore);
+        DB::transaction(function () use ($order) {
+            $ingredientTotals = [];
+            $ingredientModels = [];
+
+            foreach ($order->items as $item) {
+                $product = $item->product;
+
+                foreach ($product->ingredients as $ingredient) {
+                    $toRestore = $ingredient->pivot->amount * $item->quantity;
+                    $ingredientTotals[$ingredient->id] = ($ingredientTotals[$ingredient->id] ?? 0) + $toRestore;
+                    $ingredientModels[$ingredient->id] = $ingredient;
+                }
+            }
+
+            foreach ($ingredientTotals as $ingredientId => $toRestore) {
+                $ingredientModels[$ingredientId]->increment('stock_quantity', $toRestore);
             }
 
             $order->delete();

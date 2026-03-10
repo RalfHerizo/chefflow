@@ -18,8 +18,9 @@ it('permet de vendre un produit via une requête HTTP', function(){
     $product->ingredients()->attach($ingredient->id, ['amount' => 50]);
 
     $response = $this->post('/sell',[
-        'product_id' => $product->id,
-        'quantity' => 2
+        'items' => [
+            ['id' => $product->id, 'qty' => 2],
+        ],
     ]);
 
     $response->assertStatus(302);

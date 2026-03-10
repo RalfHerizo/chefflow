@@ -38,12 +38,14 @@ function getOrderStatus(order) {
 /**
  * @param {{ orders?: Array<{
  * id: number|string,
- * quantity: number,
  * total_price: number|string,
  * status?: string,
  * is_cancelled?: boolean,
  * cancelled_at?: string|null,
- * product?: { name?: string, image_url?: string|null }
+ * items?: Array<{
+ *   quantity: number,
+ *   product?: { name?: string, image_url?: string|null }
+ * }>
  * }>, onCancelOrder?: (orderId: number|string) => void }} props
  */
 export default function RecentOrdersTable({ orders, onCancelOrder }) {
@@ -83,6 +85,14 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                     {orders.map((order) => {
                         const status = getOrderStatus(order);
                         const isCancelled = status === 'Annule';
+                        const firstItem = order.items?.[0];
+                        const productName = firstItem?.product?.name || 'Panier';
+                        const productImage = firstItem?.product?.image_url || PRODUCT_PLACEHOLDER;
+                        const totalQuantity = (order.items || []).reduce(
+                            (sum, item) => sum + Number(item.quantity || 0),
+                            0,
+                        );
+                        const extraCount = Math.max((order.items?.length || 0) - 1, 0);
                         return (
                             <TableRow key={order.id} className="border-slate-100">
                                 <TableCell className="px-4 font-semibold text-slate-700">
@@ -91,17 +101,18 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                                 <TableCell className="px-4">
                                     <div className="flex items-center gap-3">
                                         <img
-                                            src={order.product?.image_url || PRODUCT_PLACEHOLDER}
-                                            alt={order.product?.name || 'Produit'}
+                                            src={productImage}
+                                            alt={productName}
                                             className="h-9 w-9 rounded-md object-cover"
                                         />
                                         <span className="font-medium text-slate-700">
-                                            {order.product?.name || 'Produit supprime'}
+                                            {productName}
+                                            {extraCount > 0 ? ` +${extraCount}` : ''}
                                         </span>
                                     </div>
                                 </TableCell>
                                 <TableCell className="px-4 text-slate-600">
-                                    x{order.quantity}
+                                    x{totalQuantity}
                                 </TableCell>
                                 <TableCell className="px-4 text-slate-600">
                                     {formatPrice(order.total_price)}

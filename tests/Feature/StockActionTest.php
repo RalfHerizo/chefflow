@@ -25,10 +25,10 @@ it('déduit les stocks d\'ingrédients lors d\'une vente', function () {
 
     $burger->ingredients()->attach($viande->id, ['amount'=>150]);
 
-    $burger->load('ingredients');
-
     $action = new SellProductAction();
-    $action->execute($burger, 2);
+    $action->execute([
+        ['id' => $burger->id, 'qty' => 2],
+    ]);
 
     $viande->refresh();
 
@@ -43,7 +43,9 @@ it('annule toute la transaction si un ingrédient manque', function () {
     $burger->ingredients()->attach($sel->id, ['amount'=>5]);
 
     $action = new SellProductAction();
-    expect( fn() => $action->execute($burger, 1) )->toThrow(Exception::class);
+    expect(fn() => $action->execute([
+        ['id' => $burger->id, 'qty' => 1],
+    ]))->toThrow(Exception::class);
 
     $sel->fresh();
     expect($sel->stock_quantity)->toEqual(2);

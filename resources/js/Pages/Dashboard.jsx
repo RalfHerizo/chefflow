@@ -18,8 +18,7 @@ export default function Dashboard({
     const [orderToCancel, setOrderToCancel] = useState(null);
 
     const { data, setData, post, processing, reset } = useForm({
-        product_id: '',
-        quantity: 1,
+        items: [{ id: '', qty: 1 }],
     });
 
     const submit = (e) => {
@@ -74,8 +73,10 @@ export default function Dashboard({
                         <div className="min-w-[220px] flex-1">
                             <label className="mb-1 block text-sm font-medium text-slate-600">Produit</label>
                             <select
-                                value={data.product_id}
-                                onChange={(e) => setData('product_id', e.target.value)}
+                                value={data.items[0]?.id || ''}
+                                onChange={(e) =>
+                                    setData('items', [{ ...data.items[0], id: e.target.value }])
+                                }
                                 className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm shadow-sm outline-none focus:border-[#FF7E47]"
                             >
                                 <option value="">Choisir...</option>
@@ -92,8 +93,12 @@ export default function Dashboard({
                             <input
                                 type="number"
                                 min="1"
-                                value={data.quantity}
-                                onChange={(e) => setData('quantity', e.target.value)}
+                                value={data.items[0]?.qty || 1}
+                                onChange={(e) =>
+                                    setData('items', [
+                                        { ...data.items[0], qty: Number(e.target.value) },
+                                    ])
+                                }
                                 className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm shadow-sm outline-none focus:border-[#FF7E47]"
                             />
                         </div>

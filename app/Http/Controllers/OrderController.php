@@ -2,37 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\Order;
-use Illuminate\Http\Request;
-use App\Actions\SellProductAction;
 use App\Actions\CancelOrderAction;
+use App\Actions\SellProductAction;
+use App\Models\Order;
 use Exception;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function store(Request $request, SellProductAction $sellProductAction){
-        
-        $validate_data = $request->validate([
-            'product_id'=>'required|exists:products,id',
-            'quantity'=>'required|integer|min:1'
+    public function store(Request $request, SellProductAction $sellProductAction)
+    {
+        $validated = $request->validate([
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.id' => ['required', 'exists:products,id'],
+            'items.*.qty' => ['required', 'integer', 'min:1'],
         ]);
 
-        try{
+        try {
+            $sellProductAction->execute($validated['items']);
 
-            $product = Product::findOrFail($validate_data['product_id']);
-            $sellProductAction->execute($product,$validate_data['quantity']);
-            
-            return back()->with('message','vente réussie! Stock mis à jour');
-
-        }catch(Exception $error){
-            return back()->withErrors([ 'error'=> $error->getMessage() ]);
+            return back()->with('message', 'vente rÃ©ussie! Stock mis Ã  jour');
+        } catch (Exception $error) {
+            return back()->withErrors(['error' => $error->getMessage()]);
         }
     }
 
-    public function destroy(Order $order, CancelOrderAction $cancelAction){
+    public function destroy(Order $order, CancelOrderAction $cancelAction)
+    {
         $cancelAction->execute($order);
 
-        return back()->with('message', 'Commande annulée et stocks restaurés.');
+        return back()->with('message', 'Commande annulÃ©e et stocks restaurÃ©s.');
     }
 }

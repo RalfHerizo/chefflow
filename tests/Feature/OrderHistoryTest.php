@@ -20,7 +20,9 @@ it('records an order after a successful sale', function(){
     $product->ingredients()->attach($ingredient->id, ['amount' => 80]);
 
     $action = new \App\Actions\SellProductAction();
-    $order = $action->execute($product, 2);
+    $order = $action->execute([
+        ['id' => $product->id, 'qty' => 2],
+    ]);
 
     expect(Order::count())->toBe(1);
     expect($order->total_price)->toBe(2000);
