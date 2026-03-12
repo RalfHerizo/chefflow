@@ -59,7 +59,7 @@ export default function OrdersPos({ products }) {
             return [...prev, { ...product, qty: 1 }];
         });
 
-        toast.success(`${product.name} ajoutÃ©`);
+        toast.success(`${product.name} ajouté`);
     };
 
     const incrementQty = (productId) => {
@@ -103,7 +103,7 @@ export default function OrdersPos({ products }) {
 
         post(route('products.sell'), {
             onSuccess: () => {
-                toast.success('Commande validÃ©e');
+                toast.success('Commande validée');
                 setCart([]);
             },
             onError: (formErrors) => {
@@ -126,15 +126,15 @@ export default function OrdersPos({ products }) {
                             Selectionne des produits pour composer le panier.
                         </p>
 
-                        <div className="mt-4 flex flex-wrap gap-3">
-                            <div className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm sm:w-64">
-                                <Search className="h-4 w-4 text-slate-400" />
+                        <div className="mt-4 grid grid-cols-7 items-center gap-3">
+                            <div className=" col-span-6 flex lg:w-full items-center bg-white text-sm  sm:w-64 relative">
+                                <Search className="h-4 w-4 text-slate-400 translate-x-3 absolute" />
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Rechercher..."
-                                    className="w-full border-0 bg-transparent text-slate-700 outline-none placeholder:text-slate-400"
+                                    className="w-full bg-transparent text-slate-700 outline-none placeholder:text-slate-400 rounded-xl pl-9 px-3 py-2 border border-slate-200 shadow-sm focus:shadow-none focus:border-0 focus:outline-[#FF7E47]"
                                 />
                             </div>
 
