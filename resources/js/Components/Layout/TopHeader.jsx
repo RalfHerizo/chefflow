@@ -26,6 +26,10 @@ const PAGE_CONTENT = {
         title: 'Modifier Produit',
         subtitle: 'Mettez a jour les informations et la recette du produit.',
     },
+    'Orders/Pos': {
+        title: 'Caisse',
+        subtitle: 'Prenez une commande rapidement et suivez le panier en temps reel.',
+    },
 };
 
 function resolveHeaderContent(component, userName) {
