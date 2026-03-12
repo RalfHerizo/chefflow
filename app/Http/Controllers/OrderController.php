@@ -5,11 +5,22 @@ namespace App\Http\Controllers;
 use App\Actions\CancelOrderAction;
 use App\Actions\SellProductAction;
 use App\Models\Order;
+use App\Models\Product;
 use Exception;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    public function pos()
+    {
+        return Inertia::render('Orders/Pos', [
+            'products' => Product::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'price', 'image_url', 'category', 'is_active']),
+        ]);
+    }
+
     public function store(Request $request, SellProductAction $sellProductAction)
     {
         $validated = $request->validate([
