@@ -23,11 +23,11 @@ function resolveMenuItems() {
         });
     }
 
-    if (hasRoute('orders.index')) {
+    if (hasRoute('orders.pos')) {
         items.push({
-            label: 'Commandes',
-            href: route('orders.index'),
-            active: route().current('orders.*'),
+            label: 'Caisse',
+            href: route('orders.pos'),
+            active: route().current('orders.pos'),
             icon: ClipboardList,
         });
     }
