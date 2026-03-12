@@ -62,21 +62,21 @@ export default function OrdersPos({ products }) {
         toast.success(`${product.name} ajoutÃ©`);
     };
 
-    const removeFromCart = (productId) => {
+    const incrementQty = (productId) => {
+        setCart((prev) =>
+            prev.map((item) =>
+                item.id === productId ? { ...item, qty: item.qty + 1 } : item,
+            ),
+        );
+    };
+
+    const decrementQty = (productId) => {
         setCart((prev) =>
             prev
                 .map((item) =>
                     item.id === productId ? { ...item, qty: item.qty - 1 } : item,
                 )
                 .filter((item) => item.qty > 0),
-        );
-    };
-
-    const incrementQty = (productId) => {
-        setCart((prev) =>
-            prev.map((item) =>
-                item.id === productId ? { ...item, qty: item.qty + 1 } : item,
-            ),
         );
     };
 
@@ -111,6 +111,8 @@ export default function OrdersPos({ products }) {
             },
         });
     };
+
+    const hasItems = cart.length > 0;
 
     return (
         <AuthenticatedLayout>
@@ -195,10 +197,19 @@ export default function OrdersPos({ products }) {
 
                 <aside className="w-full max-w-xl space-y-4 lg:w-[380px]">
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
-                        <h3 className="text-lg font-semibold text-slate-800">Panier</h3>
-                        <p className="text-sm text-slate-500">
-                            Resume des produits selectionnes.
-                        </p>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-lg font-semibold text-slate-800">Panier</h3>
+                                <p className="text-sm text-slate-500">
+                                    Resume des produits selectionnes.
+                                </p>
+                            </div>
+                            {hasItems ? (
+                                <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-[#FF7E47]">
+                                    {cart.length} article(s)
+                                </span>
+                            ) : null}
+                        </div>
 
                         <ScrollArea className="mt-4 h-64">
                             {cart.length === 0 ? (
@@ -225,7 +236,7 @@ export default function OrdersPos({ products }) {
                                                     type="button"
                                                     variant="outline"
                                                     size="icon"
-                                                    onClick={() => removeFromCart(item.id)}
+                                                    onClick={() => decrementQty(item.id)}
                                                 >
                                                     <Minus />
                                                 </Button>
@@ -270,7 +281,7 @@ export default function OrdersPos({ products }) {
 
                         <Button
                             type="button"
-                            disabled={cart.length === 0 || processing}
+                            disabled={!hasItems || processing}
                             onClick={submitOrder}
                             className="mt-4 h-12 w-full rounded-xl bg-[#FF7E47] text-white hover:bg-[#e86f3d]"
                         >
