@@ -1,7 +1,7 @@
 import Sidebar from '@/Components/Layout/Sidebar';
 import TopHeader from '@/Components/Layout/TopHeader';
 import { usePage } from '@inertiajs/react';
-import { ToastBar, Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 export default function AuthenticatedLayout({ children }) {
     const user = usePage().props.auth.user;
@@ -24,14 +24,8 @@ export default function AuthenticatedLayout({ children }) {
                             className={`${baseClasses} ${toneClasses} animate-in slide-in-from-top-2 fade-in`}
                         >
                             <div className="flex items-center gap-3">
-                                <ToastBar toast={toast}>
-                                    {({ icon, message }) => (
-                                        <>
-                                            <div className="shrink-0">{icon}</div>
-                                            <div className="text-sm font-medium">{message}</div>
-                                        </>
-                                    )}
-                                </ToastBar>
+                                {toast.icon ? <div className="shrink-0">{toast.icon}</div> : null}
+                                <div className="text-sm font-medium">{toast.message}</div>
                             </div>
                             <span className="rounded-xl bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
                                 Undo
