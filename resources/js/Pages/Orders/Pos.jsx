@@ -120,7 +120,7 @@ export default function OrdersPos({ products }) {
 
         post(route('products.sell'), {
             onSuccess: () => {
-                toast.success('Commande validÃ©e');
+                toast.success('Commande validée');
                 clearCart();
             },
             onError: (formErrors) => {
@@ -250,7 +250,7 @@ export default function OrdersPos({ products }) {
                                         </h3>
                                     </div>
                                     <p className="text-sm text-slate-500 mt-2">
-                                        RÃ©sumÃ© des produits selectionnÃ©s.
+                                        Résumé des produits selectionnés.
                                     </p>
                                 </div>
                             </div>
