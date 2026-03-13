@@ -3,7 +3,7 @@ import { Button } from '@/Components/ui/button';
 import { ScrollArea } from '@/Components/ui/scroll-area';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
-import { Minus, Plus, Search } from 'lucide-react';
+import { Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -78,6 +78,10 @@ export default function OrdersPos({ products }) {
                 )
                 .filter((item) => item.qty > 0),
         );
+    };
+
+    const removeLine = (productId) => {
+        setCart((prev) => prev.filter((item) => item.id !== productId));
     };
 
     const totals = useMemo(() => {
@@ -198,11 +202,21 @@ export default function OrdersPos({ products }) {
                 <aside className="w-full max-w-xl space-y-4 lg:w-[380px]">
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
                         <div className="flex items-center justify-between">
-                            <div>
-                                <h3 className="text-lg font-semibold text-slate-800">Panier</h3>
-                                <p className="text-sm text-slate-500">
-                                    Resume des produits selectionnes.
-                                </p>
+                            <div className="flex items-center gap-2">
+                                
+                                <div>
+                                    <div className='flex items-center gap-2' >
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-[#FF7E47]">
+                                            <ShoppingCart className="h-4 w-4" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-slate-800">
+                                            Panier
+                                        </h3>
+                                    </div>
+                                    <p className="text-sm text-slate-500 mt-2">
+                                        Résumé des produits selectionnes.
+                                    </p>
+                                </div>
                             </div>
                             {hasItems ? (
                                 <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-[#FF7E47]">
@@ -230,6 +244,15 @@ export default function OrdersPos({ products }) {
                                                 <p className="text-xs text-slate-500">
                                                     {formatPrice(item.price)}
                                                 </p>
+                                                {item.qty >= 2 ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeLine(item.id)}
+                                                        className="mt-1 text-xs font-medium underline text-slate-400 transition hover:text-[#FF7E47]"
+                                                    >
+                                                        Retirer
+                                                    </button>
+                                                ) : null}
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <Button
@@ -238,7 +261,7 @@ export default function OrdersPos({ products }) {
                                                     size="icon"
                                                     onClick={() => decrementQty(item.id)}
                                                 >
-                                                    <Minus />
+                                                    {item.qty === 1 ? <Trash2 /> : <Minus />}
                                                 </Button>
                                                 <span className="min-w-[24px] text-center text-sm font-semibold text-slate-700">
                                                     {item.qty}
