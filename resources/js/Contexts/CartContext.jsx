@@ -10,7 +10,15 @@ function getInitialCart() {
     try {
         const stored = localStorage.getItem('chefflow_cart');
         const parsed = stored ? JSON.parse(stored) : [];
-        return Array.isArray(parsed) ? parsed : [];
+        if (!Array.isArray(parsed)) {
+            return [];
+        }
+
+        return parsed.map((item) => {
+            const quantity = Number(item?.quantity ?? item?.qty ?? 1);
+            const { qty, ...rest } = item ?? {};
+            return { ...rest, quantity };
+        });
     } catch {
         return [];
     }
@@ -36,11 +44,13 @@ export function CartProvider({ children }) {
             const existing = prev.find((item) => item.id === product.id);
             if (existing) {
                 return prev.map((item) =>
-                    item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
+                    item.id === product.id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item,
                 );
             }
 
-            return [...prev, { ...product, qty: 1 }];
+            return [...prev, { ...product, quantity: 1 }];
         });
     };
 
@@ -56,9 +66,9 @@ export function CartProvider({ children }) {
         setCart((prev) =>
             prev
                 .map((item) =>
-                    item.id === productId ? { ...item, qty: quantity } : item,
+                    item.id === productId ? { ...item, quantity } : item,
                 )
-                .filter((item) => item.qty > 0),
+                .filter((item) => item.quantity > 0),
         );
     };
 
