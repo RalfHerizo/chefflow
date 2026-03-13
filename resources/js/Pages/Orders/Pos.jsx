@@ -292,7 +292,6 @@ export default function OrdersPos({ products }) {
                                         className="absolute bottom-3 right-3 flex h-8 w-10 items-center justify-center gap-1 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#FF7E47] hover:text-[#FF7E47]"
                                         aria-label={`Ajouter ${product.name} au panier`}
                                     >
-                                        <Plus className="h-3.5 w-3.5" />
                                         <ShoppingCart className="h-3.5 w-3.5" />
                                     </button>
                                 ) : null}
