@@ -1,7 +1,8 @@
 import Sidebar from '@/Components/Layout/Sidebar';
 import TopHeader from '@/Components/Layout/TopHeader';
 import { usePage } from '@inertiajs/react';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast as toastApi } from 'react-hot-toast';
+import { X } from 'lucide-react';
 
 export default function AuthenticatedLayout({ children }) {
     const user = usePage().props.auth.user;
@@ -27,9 +28,14 @@ export default function AuthenticatedLayout({ children }) {
                                 {toast.icon ? <div className="shrink-0">{toast.icon}</div> : null}
                                 <div className="text-sm font-medium">{toast.message}</div>
                             </div>
-                            <span className="rounded-xl bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-                                Undo
-                            </span>
+                            <button
+                                type="button"
+                                onClick={() => toastApi.dismiss(toast.id)}
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
+                                aria-label="Fermer la notification"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
                         </div>
                     );
                 }}
