@@ -1,10 +1,11 @@
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { ScrollArea } from '@/Components/ui/scroll-area';
+import { Slider } from '@/Components/ui/slider';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 
@@ -20,6 +21,11 @@ export default function OrdersPos({ products }) {
     const [cart, setCart] = useState([]);
     const [clearOpen, setClearOpen] = useState(false);
     const { post, processing, setData } = useForm({ items: [] });
+    const maxProductPrice = useMemo(
+        () => Math.max(0, ...products.map((product) => Number(product.price || 0))),
+        [products],
+    );
+    const [priceRange, setPriceRange] = useState([0, maxProductPrice]);
 
     const categories = useMemo(() => {
         const values = products
@@ -27,6 +33,23 @@ export default function OrdersPos({ products }) {
             .filter(Boolean);
         return ['all', ...Array.from(new Set(values))];
     }, [products]);
+
+    useEffect(() => {
+        setPriceRange((prev) => {
+            const nextMin = Math.min(prev[0] ?? 0, maxProductPrice);
+            const nextMax = maxProductPrice;
+
+            if (prev[0] === nextMin && prev[1] === nextMax) {
+                return prev;
+            }
+
+            return [nextMin, nextMax];
+        });
+    }, [maxProductPrice]);
+
+    const handlePriceChange = (value) => {
+        setPriceRange(value);
+    };
 
     const filteredProducts = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -36,13 +59,20 @@ export default function OrdersPos({ products }) {
                 return false;
             }
 
+            if (
+                product.price < priceRange[0] ||
+                product.price > priceRange[1]
+            ) {
+                return false;
+            }
+
             if (!query) {
                 return true;
             }
 
             return product.name.toLowerCase().includes(query);
         });
-    }, [products, search, selectedCategory]);
+    }, [products, search, selectedCategory, priceRange]);
 
     const addToCart = (product) => {
         if (!product.is_active) {
@@ -160,6 +190,24 @@ export default function OrdersPos({ products }) {
                                     </option>
                                 ))}
                             </select>
+                        </div>
+
+                        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+                                <span>Filtre prix</span>
+                                <span>
+                                    {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
+                                </span>
+                            </div>
+                            <div className="mt-3">
+                                <Slider
+                                    min={0}
+                                    max={maxProductPrice}
+                                    step={50}
+                                    value={priceRange}
+                                    onValueChange={handlePriceChange}
+                                />
+                            </div>
                         </div>
                     </div>
 
