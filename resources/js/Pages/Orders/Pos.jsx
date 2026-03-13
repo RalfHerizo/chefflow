@@ -1,8 +1,9 @@
-import { Badge } from '@/Components/ui/badge';
+﻿import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { ScrollArea } from '@/Components/ui/scroll-area';
 import { Slider } from '@/Components/ui/slider';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useCart } from '@/Contexts/CartContext';
 import { Head, useForm } from '@inertiajs/react';
 import { Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -18,9 +19,9 @@ const PRODUCT_PLACEHOLDER =
 export default function OrdersPos({ products }) {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [cart, setCart] = useState([]);
     const [clearOpen, setClearOpen] = useState(false);
     const { post, processing, setData } = useForm({ items: [] });
+    const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useCart();
     const maxProductPrice = useMemo(
         () => Math.max(0, ...products.map((product) => Number(product.price || 0))),
         [products],
@@ -74,46 +75,26 @@ export default function OrdersPos({ products }) {
         });
     }, [products, search, selectedCategory, priceRange]);
 
-    const addToCart = (product) => {
+    const handleAddToCart = (product) => {
         if (!product.is_active) {
             toast.error('Produit indisponible');
             return;
         }
 
-        setCart((prev) => {
-            const existing = prev.find((item) => item.id === product.id);
-            if (existing) {
-                return prev.map((item) =>
-                    item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
-                );
-            }
-
-            return [...prev, { ...product, qty: 1 }];
-        });
-
-        toast.success(`${product.name} ajouté`);
+        addToCart(product);
+        toast.success(`${product.name} ajoute`);
     };
 
-    const incrementQty = (productId) => {
-        setCart((prev) =>
-            prev.map((item) =>
-                item.id === productId ? { ...item, qty: item.qty + 1 } : item,
-            ),
-        );
+    const incrementQty = (productId, currentQty) => {
+        updateQuantity(productId, currentQty + 1);
     };
 
-    const decrementQty = (productId) => {
-        setCart((prev) =>
-            prev
-                .map((item) =>
-                    item.id === productId ? { ...item, qty: item.qty - 1 } : item,
-                )
-                .filter((item) => item.qty > 0),
-        );
+    const decrementQty = (productId, currentQty) => {
+        updateQuantity(productId, currentQty - 1);
     };
 
     const removeLine = (productId) => {
-        setCart((prev) => prev.filter((item) => item.id !== productId));
+        removeFromCart(productId);
     };
 
     const totals = useMemo(() => {
@@ -139,8 +120,8 @@ export default function OrdersPos({ products }) {
 
         post(route('products.sell'), {
             onSuccess: () => {
-                toast.success('Commande validée');
-                setCart([]);
+                toast.success('Commande validÃ©e');
+                clearCart();
             },
             onError: (formErrors) => {
                 toast.error(formErrors.error || 'Stock insuffisant');
@@ -148,8 +129,8 @@ export default function OrdersPos({ products }) {
         });
     };
 
-    const clearCart = () => {
-        setCart([]);
+    const handleClearCart = () => {
+        clearCart();
         setClearOpen(false);
     };
 
@@ -216,7 +197,7 @@ export default function OrdersPos({ products }) {
                             <button
                                 key={product.id}
                                 type="button"
-                                onClick={() => addToCart(product)}
+                                onClick={() => handleAddToCart(product)}
                                 disabled={!product.is_active}
                                 className="group rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7E47]/60 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
                             >
@@ -269,7 +250,7 @@ export default function OrdersPos({ products }) {
                                         </h3>
                                     </div>
                                     <p className="text-sm text-slate-500 mt-2">
-                                        Résumé des produits selectionnés.
+                                        RÃ©sumÃ© des produits selectionnÃ©s.
                                     </p>
                                 </div>
                             </div>
@@ -314,7 +295,7 @@ export default function OrdersPos({ products }) {
                                                     type="button"
                                                     variant="outline"
                                                     size="icon"
-                                                    onClick={() => decrementQty(item.id)}
+                                                    onClick={() => decrementQty(item.id, item.qty)}
                                                 >
                                                     {item.qty === 1 ? <Trash2 /> : <Minus />}
                                                 </Button>
@@ -325,7 +306,7 @@ export default function OrdersPos({ products }) {
                                                     type="button"
                                                     variant="outline"
                                                     size="icon"
-                                                    onClick={() => incrementQty(item.id)}
+                                                    onClick={() => incrementQty(item.id, item.qty)}
                                                 >
                                                     <Plus />
                                                 </Button>
@@ -388,8 +369,12 @@ export default function OrdersPos({ products }) {
                 confirmLabel="Vider"
                 cancelLabel="Annuler"
                 destructive
-                onConfirm={clearCart}
+                onConfirm={handleClearCart}
             />
         </AuthenticatedLayout>
     );
 }
+
+
+
+
