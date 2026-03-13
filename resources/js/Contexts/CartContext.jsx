@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const CartContext = createContext(null);
 
@@ -18,6 +18,18 @@ function getInitialCart() {
 
 export function CartProvider({ children }) {
     const [cart, setCart] = useState(getInitialCart);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        try {
+            localStorage.setItem('chefflow_cart', JSON.stringify(cart));
+        } catch {
+            // Ignore write errors (private mode or storage full).
+        }
+    }, [cart]);
 
     const addToCart = (product) => {
         setCart((prev) => {
