@@ -47,7 +47,7 @@ function resolveHeaderContent(component, userName) {
     };
 }
 
-export default function TopHeader({ user }) {
+function TopHeader({ user }) {
     const { component } = usePage();
     const headerContent = resolveHeaderContent(component, user?.name);
     const { cart } = useCart();
@@ -128,3 +128,5 @@ export default function TopHeader({ user }) {
         </header>
     );
 }
+
+export default TopHeader;
