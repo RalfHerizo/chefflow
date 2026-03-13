@@ -82,7 +82,7 @@ export default function OrdersPos({ products }) {
         }
 
         addToCart(product);
-        toast.success(`${product.name} ajoute`);
+        toast.success(`${product.name} ajouté`);
     };
 
     const incrementQty = (productId, currentQty) => {
@@ -132,6 +132,7 @@ export default function OrdersPos({ products }) {
     const handleClearCart = () => {
         clearCart();
         setClearOpen(false);
+        toast.success('Panier vide');
     };
 
     const hasItems = cart.length > 0;
