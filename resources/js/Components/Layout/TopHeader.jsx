@@ -1,5 +1,7 @@
-import { Search } from 'lucide-react';
+import { Search, ShoppingCart } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
+import { useCart } from '@/Contexts/CartContext';
+import { useEffect, useRef, useState } from 'react';
 
 const PAGE_CONTENT = {
     Dashboard: {
@@ -48,6 +50,26 @@ function resolveHeaderContent(component, userName) {
 export default function TopHeader({ user }) {
     const { component } = usePage();
     const headerContent = resolveHeaderContent(component, user?.name);
+    const { cart } = useCart();
+    const totalItems = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    const previousTotal = useRef(totalItems);
+    const [pulse, setPulse] = useState(false);
+
+    useEffect(() => {
+        let timer;
+        if (totalItems > previousTotal.current) {
+            setPulse(true);
+            timer = setTimeout(() => setPulse(false), 400);
+        }
+
+        previousTotal.current = totalItems;
+
+        return () => {
+            if (timer) {
+                clearTimeout(timer);
+            }
+        };
+    }, [totalItems]);
 
     return (
         <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-[#F8F4F1] px-8 py-4 backdrop-blur-sm">
@@ -70,17 +92,30 @@ export default function TopHeader({ user }) {
                     />
                 </div>
 
-                <div className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2 shadow-sm">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-sm font-semibold text-[#FF7E47]">
-                        {user?.name?.slice(0, 2).toUpperCase() ?? 'US'}
+                <div className="flex items-center gap-4">
+                    <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-sm">
+                        {pulse && totalItems > 0 ? (
+                            <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-[#FF7E47]/40 animate-ping" />
+                        ) : null}
+                        {totalItems > 0 ? (
+                            <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FF7E47] px-1 text-[10px] font-semibold text-white">
+                                {totalItems}
+                            </span>
+                        ) : null}
+                        <ShoppingCart className="h-5 w-5 text-slate-500" />
                     </div>
-                    <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-800">
-                            {user?.name ?? 'Utilisateur'}
-                        </p>
-                        <p className="truncate text-xs text-slate-500">
-                            {user?.email ?? 'user@email.com'}
-                        </p>
+                    <div className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2 shadow-sm">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-sm font-semibold text-[#FF7E47]">
+                            {user?.name?.slice(0, 2).toUpperCase() ?? 'US'}
+                        </div>
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-slate-800">
+                                {user?.name ?? 'Utilisateur'}
+                            </p>
+                            <p className="truncate text-xs text-slate-500">
+                                {user?.email ?? 'user@email.com'}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
