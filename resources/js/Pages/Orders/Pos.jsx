@@ -99,7 +99,7 @@ export default function OrdersPos({ products }) {
 
     const totals = useMemo(() => {
         const totalHtCents = cart.reduce(
-            (sum, item) => sum + Number(item.price || 0) * item.qty,
+            (sum, item) => sum + Number(item.price || 0) * item.quantity,
             0,
         );
         const vatRate = 0.2;
@@ -115,7 +115,7 @@ export default function OrdersPos({ products }) {
         }).format(Number(cents || 0) / 100);
 
     const submitOrder = () => {
-        const items = cart.map((item) => ({ id: item.id, qty: item.qty }));
+        const items = cart.map((item) => ({ id: item.id, qty: item.quantity }));
         setData('items', items);
 
         post(route('products.sell'), {
@@ -280,7 +280,7 @@ export default function OrdersPos({ products }) {
                                                 <p className="text-xs text-slate-500">
                                                     {formatPrice(item.price)}
                                                 </p>
-                                                {item.qty >= 2 ? (
+                                                {item.quantity >= 2 ? (
                                                     <button
                                                         type="button"
                                                         onClick={() => removeLine(item.id)}
@@ -295,18 +295,18 @@ export default function OrdersPos({ products }) {
                                                     type="button"
                                                     variant="outline"
                                                     size="icon"
-                                                    onClick={() => decrementQty(item.id, item.qty)}
+                                                    onClick={() => decrementQty(item.id, item.quantity)}
                                                 >
-                                                    {item.qty === 1 ? <Trash2 /> : <Minus />}
+                                                    {item.quantity === 1 ? <Trash2 /> : <Minus />}
                                                 </Button>
                                                 <span className="min-w-[24px] text-center text-sm font-semibold text-slate-700">
-                                                    {item.qty}
+                                                    {item.quantity}
                                                 </span>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
                                                     size="icon"
-                                                    onClick={() => incrementQty(item.id, item.qty)}
+                                                    onClick={() => incrementQty(item.id, item.quantity)}
                                                 >
                                                     <Plus />
                                                 </Button>
