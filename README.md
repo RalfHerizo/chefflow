@@ -60,6 +60,11 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
   - Convert entered quantities to backend base units before submit.
   - Upload product photo.
 - POS / Sales:
+  - Visual product grid with search, category filter, and price range slider.
+  - Cart with quantity controls, totals HT/TVA/TTC, and clear confirmation.
+  - Product detail modal with ingredient badges.
+  - Header cart badge with live updates.
+- POS / Sales:
   - Visual product grid with filters and price range slider.
   - Cart with quantity controls, totals HT/TVA/TTC, clear confirmation.
   - Product details modal with ingredient badges.
