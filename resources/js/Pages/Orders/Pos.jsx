@@ -235,8 +235,8 @@ export default function OrdersPos({ products }) {
                     </div>
                 </section>
 
-                <aside className="w-full max-w-xl space-y-4 lg:w-[380px]">
-                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
+                <aside className="w-full max-w-xl space-y-4 lg:w-[380px] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:self-start">
+                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm lg:h-full lg:flex lg:flex-col">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 
@@ -261,7 +261,7 @@ export default function OrdersPos({ products }) {
                             ) : null}
                         </div>
 
-                        <ScrollArea className="mt-4 h-64">
+                        <ScrollArea className="mt-4 flex-1">
                             {cart.length === 0 ? (
                                 <div className="flex h-full items-center justify-center text-sm text-slate-400">
                                     Aucun produit dans le panier.
