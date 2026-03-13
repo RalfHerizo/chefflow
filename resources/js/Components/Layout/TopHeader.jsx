@@ -98,7 +98,7 @@ export default function TopHeader({ user }) {
                 <div className="flex items-center gap-4">
                     <Link
                         href={route('orders.pos')}
-                        className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-sm transition-transform duration-200 hover:bg-gray-100 hover:scale-110 active:scale-95 cursor-pointer"
+                        className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-sm transition-transform duration-200 hover:bg-orange-50 active:scale-95 cursor-pointer"
                     >
                         {pulse && totalItems > 0 && (
                             <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-[#FF7E47]/40 animate-ping" />
