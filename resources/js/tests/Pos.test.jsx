@@ -15,19 +15,18 @@ vi.mock('@/Layouts/AuthenticatedLayout', () => ({
     default: ({ children }) => <div>{children}</div>,
 }));
 
-const toastMock = {
-    success: vi.fn(),
-    error: vi.fn(),
-};
-
 vi.mock('react-hot-toast', () => ({
-    default: toastMock,
+    default: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
 }));
 
 describe('POS', () => {
-    beforeEach(() => {
-        toastMock.success.mockClear();
-        toastMock.error.mockClear();
+    beforeEach(async () => {
+        const toast = (await import('react-hot-toast')).default;
+        toast.success.mockClear();
+        toast.error.mockClear();
         localStorage.clear();
     });
 
@@ -66,6 +65,7 @@ describe('POS', () => {
 
         fireEvent.click(screen.getByRole('button', { name: /Ajouter au panier/i }));
 
-        expect(toastMock.success).toHaveBeenCalled();
+        const toast = (await import('react-hot-toast')).default;
+        expect(toast.success).toHaveBeenCalled();
     });
 });
