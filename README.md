@@ -26,6 +26,13 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] Human-readable amount preview (`0.004 kg` shown as `4 g`).
 - [x] Product image upload support in create/edit forms.
 - [x] Feature tests for recent product and ingredient workflows.
+- [x] Cart system (order_items) with multi-product orders and stock deduction per recipe.
+- [x] POS page for visual ordering with search, categories, price range slider, and cart.
+- [x] Cart persistence via React Context + LocalStorage.
+- [x] Header cart badge with live count and ping feedback.
+- [x] Toast redesign (top-center banner with status icons).
+- [x] POS product detail modal with ingredient badges + quick add button.
+- [x] Multi-product order tests (cart stock + total price).
 
 ### In Progress / Next
 - [ ] Replace image URL input with drag and drop upload.
@@ -52,6 +59,11 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
   - Build and edit recipe lines with per-ingredient quantity.
   - Convert entered quantities to backend base units before submit.
   - Upload product photo.
+- POS / Sales:
+  - Visual product grid with filters and price range slider.
+  - Cart with quantity controls, totals HT/TVA/TTC, clear confirmation.
+  - Product details modal with ingredient badges.
+  - Cart badge in header with live updates.
 
 ## Tech Stack
 
@@ -78,6 +90,7 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - `PATCH /products/{product}` -> update product
 - `PATCH /products/{product}/toggle-status` -> toggle status
 - `DELETE /products/{product}` -> delete product
+- `GET /orders/pos` -> POS ordering page
 
 ## Setup
 
@@ -111,6 +124,9 @@ Targeted suites added for latest features:
 ```bash
 php artisan test tests/Feature/ProductManagementTest.php
 php artisan test tests/Feature/IngredientManagementTest.php
+php artisan test tests/Feature/StockActionTest.php
+php artisan test tests/Feature/OrderHistoryTest.php
+php artisan test tests/Feature/OrderIntegrationTest.php
 ```
 
 ## Notes
@@ -119,3 +135,4 @@ php artisan test tests/Feature/IngredientManagementTest.php
 - Ingredient stock uses decimal precision.
 - Current UX uses confirmation dialogs for destructive actions.
 - Form Request extraction is in progress to reinforce clean architecture boundaries.
+- Orders now use an order_items cart model to support multiple products per sale.
