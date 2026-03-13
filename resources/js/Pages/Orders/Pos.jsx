@@ -1,6 +1,14 @@
 ﻿import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { ScrollArea } from '@/Components/ui/scroll-area';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/Components/ui/dialog';
 import { Slider } from '@/Components/ui/slider';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useCart } from '@/Contexts/CartContext';
@@ -12,15 +20,16 @@ import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 
 const PRODUCT_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="140"><rect width="100%" height="100%" fill="%23E2E8F0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="12">IMG</text></svg>';
-
 /**
- * @param {{ products: Array<{id: number|string, name: string, price: number, image_url?: string|null, category?: string|null, is_active: boolean}> }} props
+ * @param {{ products: Array<{id: number|string, name: string, price: number, image_url?: string|null, category?: string|null, is_active: boolean, ingredients?: Array<{id: number|string, name: string}>}> }} props
  */
 export default function OrdersPos({ products }) {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [clearOpen, setClearOpen] = useState(false);
     const { post, processing, setData } = useForm({ items: [] });
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [detailsOpen, setDetailsOpen] = useState(false);
     const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useCart();
     const maxProductPrice = useMemo(
         () => Math.max(0, ...products.map((product) => Number(product.price || 0))),
@@ -83,6 +92,30 @@ export default function OrdersPos({ products }) {
 
         addToCart(product);
         toast.success(`${product.name} ajouté`);
+    };
+
+    const openDetails = (product) => {
+        if (!product.is_active) {
+            toast.error('Produit indisponible');
+            return;
+        }
+
+        setSelectedProduct(product);
+        setDetailsOpen(true);
+    };
+
+    const closeDetails = () => {
+        setDetailsOpen(false);
+        setSelectedProduct(null);
+    };
+
+    const handleModalAdd = () => {
+        if (!selectedProduct) {
+            return;
+        }
+
+        handleAddToCart(selectedProduct);
+        closeDetails();
     };
 
     const incrementQty = (productId, currentQty) => {
@@ -195,12 +228,22 @@ export default function OrdersPos({ products }) {
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         {filteredProducts.map((product) => (
-                            <button
+                            <div
                                 key={product.id}
-                                type="button"
-                                onClick={() => handleAddToCart(product)}
-                                disabled={!product.is_active}
-                                className="group rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7E47]/60 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => openDetails(product)}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        openDetails(product);
+                                    }
+                                }}
+                                className={`group relative rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7E47]/60 hover:shadow-md ${
+                                    product.is_active
+                                        ? 'cursor-pointer'
+                                        : 'cursor-not-allowed opacity-60'
+                                }`}
                             >
                                 <div className="relative h-36 w-full overflow-hidden rounded-xl bg-slate-100">
                                     <img
@@ -231,7 +274,20 @@ export default function OrdersPos({ products }) {
                                         {formatPrice(product.price)}
                                     </span>
                                 </div>
-                            </button>
+                                {product.is_active ? (
+                                    <button
+                                        type="button"
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            handleAddToCart(product);
+                                        }}
+                                        className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#FF7E47] hover:text-[#FF7E47]"
+                                        aria-label={`Ajouter ${product.name} au panier`}
+                                    >
+                                        <Plus className="h-4 w-4" />
+                                    </button>
+                                ) : null}
+                            </div>
                         ))}
                     </div>
                 </section>
@@ -372,9 +428,80 @@ export default function OrdersPos({ products }) {
                 destructive
                 onConfirm={handleClearCart}
             />
+
+            <Dialog
+                open={detailsOpen}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        closeDetails();
+                    } else {
+                        setDetailsOpen(true);
+                    }
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{selectedProduct?.name ?? 'Produit'}</DialogTitle>
+                        <DialogDescription>
+                            Details du produit et ingredients.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {selectedProduct ? (
+                        <div className="space-y-4">
+                            <div className="overflow-hidden rounded-xl border border-slate-200">
+                                <img
+                                    src={selectedProduct.image_url || PRODUCT_PLACEHOLDER}
+                                    alt={selectedProduct.name}
+                                    className="h-48 w-full object-cover"
+                                />
+                            </div>
+
+                            <div>
+                                <p className="text-sm font-semibold text-slate-700">
+                                    Ingredients
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {selectedProduct.ingredients?.length ? (
+                                        selectedProduct.ingredients.map((ingredient) => (
+                                            <Badge
+                                                key={ingredient.id}
+                                                variant="outline"
+                                                className="border-slate-200 text-slate-600"
+                                            >
+                                                {ingredient.name}
+                                            </Badge>
+                                        ))
+                                    ) : (
+                                        <span className="text-sm text-slate-400">
+                                            Aucun ingredient liste.
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    <DialogFooter className="mt-6">
+                        <Button type="button" variant="outline" onClick={closeDetails}>
+                            Annuler
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={handleModalAdd}
+                            className="bg-[#FF7E47] text-white hover:bg-[#e86f3d]"
+                        >
+                            Ajouter au panier
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AuthenticatedLayout>
     );
 }
+
+
+
 
 
 
