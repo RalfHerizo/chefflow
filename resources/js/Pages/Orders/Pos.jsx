@@ -6,6 +6,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 
 const PRODUCT_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="140"><rect width="100%" height="100%" fill="%23E2E8F0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="12">IMG</text></svg>';
@@ -17,6 +18,7 @@ export default function OrdersPos({ products }) {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [cart, setCart] = useState([]);
+    const [clearOpen, setClearOpen] = useState(false);
     const { post, processing, setData } = useForm({ items: [] });
 
     const categories = useMemo(() => {
@@ -114,6 +116,11 @@ export default function OrdersPos({ products }) {
                 toast.error(formErrors.error || 'Stock insuffisant');
             },
         });
+    };
+
+    const clearCart = () => {
+        setCart([]);
+        setClearOpen(false);
     };
 
     const hasItems = cart.length > 0;
@@ -214,7 +221,7 @@ export default function OrdersPos({ products }) {
                                         </h3>
                                     </div>
                                     <p className="text-sm text-slate-500 mt-2">
-                                        Résumé des produits selectionnes.
+                                        Résumé des produits selectionnés.
                                     </p>
                                 </div>
                             </div>
@@ -302,17 +309,39 @@ export default function OrdersPos({ products }) {
                             </div>
                         </div>
 
-                        <Button
-                            type="button"
-                            disabled={!hasItems || processing}
-                            onClick={submitOrder}
-                            className="mt-4 h-12 w-full rounded-xl bg-[#FF7E47] text-white hover:bg-[#e86f3d]"
-                        >
-                            {processing ? 'Validation...' : 'Valider la commande'}
-                        </Button>
+                        <div className="mt-4 flex flex-col justify-center gap-3 sm:flex-row">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                disabled={!hasItems}
+                                onClick={() => setClearOpen(true)}
+                                className="h-12 w-full disabled:cursor-not-allowed"
+                            >
+                                Vider le panier
+                            </Button>
+                            <Button
+                                type="button"
+                                disabled={!hasItems || processing}
+                                onClick={submitOrder}
+                                className="h-12 w-full rounded-xl bg-[#FF7E47] text-white hover:bg-[#e86f3d] disabled:cursor-not-allowed"
+                            >
+                                {processing ? 'Validation...' : 'Valider la commande'}
+                            </Button>
+                        </div>
                     </div>
                 </aside>
             </div>
+
+            <ConfirmationDialog
+                open={clearOpen}
+                onOpenChange={setClearOpen}
+                title="Vider le panier"
+                description="Etes-vous sur de vouloir vider le panier actuel ?"
+                confirmLabel="Vider"
+                cancelLabel="Annuler"
+                destructive
+                onConfirm={clearCart}
+            />
         </AuthenticatedLayout>
     );
 }
