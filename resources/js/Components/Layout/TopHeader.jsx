@@ -52,7 +52,7 @@ export default function TopHeader({ user }) {
     const headerContent = resolveHeaderContent(component, user?.name);
     const { cart } = useCart();
     const totalItems = cart.reduce(
-        (sum, item) => sum + Number(item.qty ?? item.quantity ?? 0),
+        (sum, item) => sum + Number(item.quantity || 0),
         0,
     );
     const previousTotal = useRef(totalItems);
@@ -98,16 +98,16 @@ export default function TopHeader({ user }) {
                 <div className="flex items-center gap-4">
                     <Link
                         href={route('orders.pos')}
-                        className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-sm transition-all duration-200 hover:bg-gray-100 hover:text-[#FF7E47] hover:scale-110 active:scale-95 cursor-pointer"
+                        className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-sm transition-transform duration-200 hover:bg-gray-100 hover:scale-110 active:scale-95 cursor-pointer"
                     >
-                        {pulse && totalItems > 0 ? (
+                        {pulse && totalItems > 0 && (
                             <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-[#FF7E47]/40 animate-ping" />
-                        ) : null}
-                        {totalItems > 0 ? (
+                        )}
+                        {totalItems > 0 && (
                             <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FF7E47] px-1 text-[10px] font-semibold text-white shadow-sm">
                                 {totalItems}
                             </span>
-                        ) : null}
+                        )}
                         <ShoppingCart className="h-5 w-5 text-slate-500" />
                     </Link>
                     <div className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2 shadow-sm">
