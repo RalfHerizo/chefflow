@@ -109,6 +109,16 @@ export default function OrdersPos({ products }) {
         setSelectedProduct(null);
     };
 
+    const productDetails = useMemo(() => {
+        if (!selectedProduct) {
+            return null;
+        }
+        return (
+            products.find((product) => product.id === selectedProduct.id) ||
+            selectedProduct
+        );
+    }, [products, selectedProduct]);
+
     const handleModalAdd = () => {
         if (!selectedProduct) {
             return;
@@ -261,18 +271,16 @@ export default function OrdersPos({ products }) {
                                         {product.is_active ? 'Disponible' : 'Indisponible'}
                                     </Badge>
                                 </div>
-                                <div className="mt-3 flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-semibold text-slate-800">
-                                            {product.name}
-                                        </p>
-                                        <p className="text-xs text-slate-500">
-                                            {product.category || 'Sans categorie'}
-                                        </p>
-                                    </div>
-                                    <span className="text-sm font-semibold text-slate-800">
+                                <div className="mt-3">
+                                    <p className="text-sm font-semibold text-slate-800">
+                                        {product.name}
+                                    </p>
+                                    <p className="text-xs text-slate-500">
+                                        {product.category || 'Sans categorie'}
+                                    </p>
+                                    <p className="mt-1 text-sm font-semibold text-slate-800">
                                         {formatPrice(product.price)}
-                                    </span>
+                                    </p>
                                 </div>
                                 {product.is_active ? (
                                     <button
@@ -281,10 +289,11 @@ export default function OrdersPos({ products }) {
                                             event.stopPropagation();
                                             handleAddToCart(product);
                                         }}
-                                        className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#FF7E47] hover:text-[#FF7E47]"
+                                        className="absolute bottom-3 right-3 flex h-8 w-10 items-center justify-center gap-1 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#FF7E47] hover:text-[#FF7E47]"
                                         aria-label={`Ajouter ${product.name} au panier`}
                                     >
-                                        <Plus className="h-4 w-4" />
+                                        <Plus className="h-3.5 w-3.5" />
+                                        <ShoppingCart className="h-3.5 w-3.5" />
                                     </button>
                                 ) : null}
                             </div>
@@ -447,12 +456,12 @@ export default function OrdersPos({ products }) {
                         </DialogDescription>
                     </DialogHeader>
 
-                    {selectedProduct ? (
+                    {productDetails ? (
                         <div className="space-y-4">
                             <div className="overflow-hidden rounded-xl border border-slate-200">
                                 <img
-                                    src={selectedProduct.image_url || PRODUCT_PLACEHOLDER}
-                                    alt={selectedProduct.name}
+                                    src={productDetails.image_url || PRODUCT_PLACEHOLDER}
+                                    alt={productDetails.name}
                                     className="h-48 w-full object-cover"
                                 />
                             </div>
@@ -462,8 +471,8 @@ export default function OrdersPos({ products }) {
                                     Ingredients
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-2">
-                                    {selectedProduct.ingredients?.length ? (
-                                        selectedProduct.ingredients.map((ingredient) => (
+                                    {productDetails.ingredients?.length ? (
+                                        productDetails.ingredients.map((ingredient) => (
                                             <Badge
                                                 key={ingredient.id}
                                                 variant="outline"
