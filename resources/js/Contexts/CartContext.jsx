@@ -25,7 +25,15 @@ function getInitialCart() {
 }
 
 export function CartProvider({ children }) {
-    const [cart, setCart] = useState(getInitialCart);
+    const [cart, setCart] = useState([]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        setCart(getInitialCart());
+    }, []);
 
     useEffect(() => {
         if (typeof window === 'undefined') {
@@ -72,15 +80,21 @@ export function CartProvider({ children }) {
         );
     };
 
+    const totalItems = cart.reduce(
+        (sum, item) => sum + (item.quantity || 1),
+        0,
+    );
+
     const value = useMemo(
         () => ({
             cart,
             addToCart,
+            totalItems,
             removeFromCart,
             clearCart,
             updateQuantity,
         }),
-        [cart],
+        [cart, totalItems],
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
