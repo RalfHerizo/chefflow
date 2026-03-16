@@ -17,7 +17,7 @@ it('permet de vendre un produit via une requête HTTP', function(){
     $product = Product::create(['name'=>'Jus de Fruit', 'price'=> 500]);
     $product->ingredients()->attach($ingredient->id, ['amount' => 50]);
 
-    $response = $this->post('/sell',[
+    $response = $this->post('/orders',[
         'items' => [
             ['id' => $product->id, 'qty' => 2],
         ],

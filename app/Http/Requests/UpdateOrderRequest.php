@@ -7,17 +7,17 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * Validation Gate — enforces input contracts before reaching the controller.
  */
-class StoreOrderRequest extends FormRequest
+class UpdateOrderRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Centralizes auth policy checks for order creation.
+        // Keeps authorization centralized for updates before business logic runs.
         return false;
     }
 
     public function rules(): array
     {
-        // Placeholder for the order payload contract; kept empty until finalized.
+        // Placeholder for update rules; intentionally empty at this stage.
         return [];
     }
 }

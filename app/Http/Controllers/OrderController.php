@@ -50,7 +50,7 @@ class OrderController extends Controller
         try {
             $sellProductAction->execute($validated['items']);
 
-            return back()->with('message', 'vente rÃ©ussie! Stock mis Ã  jour');
+            return back()->with('message', 'Vente réussie! Stock mis à jour');
         } catch (Exception $error) {
             return back()->withErrors(['error' => $error->getMessage()]);
         }
@@ -60,6 +60,6 @@ class OrderController extends Controller
     {
         $cancelAction->execute($order);
 
-        return back()->with('message', 'Commande annulÃ©e et stocks restaurÃ©s.');
+        return back()->with('message', 'Commande annulée et stocks restaurés.');
     }
 }

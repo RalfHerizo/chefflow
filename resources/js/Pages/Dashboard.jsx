@@ -24,7 +24,7 @@ export default function Dashboard({
     const submit = (e) => {
         e.preventDefault();
 
-        post(route('products.sell'), {
+        post(route('orders.store'), {
             onSuccess: () => {
                 toast.success('Vente enregistree');
                 reset();

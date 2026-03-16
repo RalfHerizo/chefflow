@@ -44,7 +44,7 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 ## Main Features
 
 - Dashboard:
-  - Register sales (`products.sell`).
+  - Register sales (`orders.store`).
   - Show recent orders.
   - Cancel order and restore stock.
   - Show weekly revenue chart.
