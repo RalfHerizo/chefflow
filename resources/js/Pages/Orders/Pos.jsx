@@ -161,7 +161,7 @@ export default function OrdersPos({ products }) {
         const items = cart.map((item) => ({ id: item.id, qty: item.quantity }));
         setData('items', items);
 
-        post(route('products.sell'), {
+        post(route('orders.store'), {
             onSuccess: () => {
                 toast.success('Commande validée');
                 clearCart();
