@@ -18,7 +18,7 @@ export default function Dashboard({
     const [orderToCancel, setOrderToCancel] = useState(null);
 
     const { data, setData, post, processing, reset } = useForm({
-        items: [{ id: '', qty: 1 }],
+        items: [{ id: '', quantity: 1 }],
     });
 
     const submit = (e) => {
@@ -30,7 +30,7 @@ export default function Dashboard({
                 reset();
             },
             onError: (formErrors) => {
-                toast.error(formErrors.error || 'Stock insuffisant');
+                toast.error(formErrors.items || 'Stock insuffisant');
             },
         });
     };
@@ -93,10 +93,10 @@ export default function Dashboard({
                             <input
                                 type="number"
                                 min="1"
-                                value={data.items[0]?.qty || 1}
+                                value={data.items[0]?.quantity || 1}
                                 onChange={(e) =>
                                     setData('items', [
-                                        { ...data.items[0], qty: Number(e.target.value) },
+                                        { ...data.items[0], quantity: Number(e.target.value) },
                                     ])
                                 }
                                 className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm shadow-sm outline-none focus:border-[#FF7E47]"

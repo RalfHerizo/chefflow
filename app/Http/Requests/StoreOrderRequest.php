@@ -4,20 +4,34 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-/**
- * Validation Gate — enforces input contracts before reaching the controller.
- */
 class StoreOrderRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Centralizes auth policy checks for order creation.
-        return false;
+        // Auth is enforced by middleware; this request focuses on validation only.
+        return true;
     }
 
     public function rules(): array
     {
-        // Placeholder for the order payload contract; kept empty until finalized.
-        return [];
+        return [
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.id' => ['required', 'exists:products,id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'items.required' => 'Le panier ne peut pas être vide.',
+            'items.array' => 'Le format du panier est invalide.',
+            'items.min' => 'Le panier doit contenir au moins un article.',
+            'items.*.id.required' => 'Chaque article doit avoir un identifiant.',
+            'items.*.id.exists' => 'Le produit sélectionné n\'existe plus en catalogue.',
+            'items.*.quantity.required' => 'La quantité est obligatoire.',
+            'items.*.quantity.integer' => 'La quantité doit être un entier.',
+            'items.*.quantity.min' => 'La quantité minimum est de 1 article.',
+        ];
     }
 }

@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Actions\CancelOrderAction;
 use App\Actions\SellProductAction;
+use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
 use App\Models\Product;
 use Exception;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -39,20 +39,16 @@ class OrderController extends Controller
         ]);
     }
 
-    public function store(Request $request, SellProductAction $sellProductAction)
+    public function store(StoreOrderRequest $request, SellProductAction $sellProductAction)
     {
-        $validated = $request->validate([
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.id' => ['required', 'exists:products,id'],
-            'items.*.qty' => ['required', 'integer', 'min:1'],
-        ]);
+        $validated = $request->validated();
 
         try {
             $sellProductAction->execute($validated['items']);
 
             return back()->with('message', 'Vente réussie! Stock mis à jour');
         } catch (Exception $error) {
-            return back()->withErrors(['error' => $error->getMessage()]);
+            return back()->withErrors(['items' => $error->getMessage()]);
         }
     }
 

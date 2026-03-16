@@ -27,7 +27,7 @@ export default function OrdersPos({ products }) {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [clearOpen, setClearOpen] = useState(false);
-    const { post, processing, setData } = useForm({ items: [] });
+    const { post, processing, setData, errors } = useForm({ items: [] });
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
     const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -158,7 +158,7 @@ export default function OrdersPos({ products }) {
         }).format(Number(cents || 0) / 100);
 
     const submitOrder = () => {
-        const items = cart.map((item) => ({ id: item.id, qty: item.quantity }));
+        const items = cart.map((item) => ({ id: item.id, quantity: item.quantity }));
         setData('items', items);
 
         post(route('orders.store'), {
@@ -167,7 +167,7 @@ export default function OrdersPos({ products }) {
                 clearCart();
             },
             onError: (formErrors) => {
-                toast.error(formErrors.error || 'Stock insuffisant');
+                toast.error(formErrors.items || 'Stock insuffisant');
             },
         });
     };
@@ -421,6 +421,9 @@ export default function OrdersPos({ products }) {
                             >
                                 {processing ? 'Validation...' : 'Valider la commande'}
                             </Button>
+                            {errors.items ? (
+                                <span className="text-red-500">{errors.items}</span>
+                            ) : null}
                         </div>
                     </div>
                 </aside>
@@ -507,7 +510,6 @@ export default function OrdersPos({ products }) {
         </AuthenticatedLayout>
     );
 }
-
 
 
 

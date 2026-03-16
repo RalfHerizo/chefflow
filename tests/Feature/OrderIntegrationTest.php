@@ -19,7 +19,7 @@ it('permet de vendre un produit via une requête HTTP', function(){
 
     $response = $this->post('/orders',[
         'items' => [
-            ['id' => $product->id, 'qty' => 2],
+            ['id' => $product->id, 'quantity' => 2],
         ],
     ]);
 
