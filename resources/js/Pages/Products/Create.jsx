@@ -17,8 +17,8 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { ArrowLeft, Plus, Trash2, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const CATEGORY_OPTIONS = ['Entree', 'Plat', 'Dessert', 'Boisson'];
@@ -29,14 +29,14 @@ const EMPTY_LINE = { id: '', amount: '', input_amount: '', input_unit: '' };
  * @param {{ ingredients: Array<{id: number|string, name: string, unit: string}> }} props
  */
 export default function CreateProduct({ ingredients }) {
-    const [photoPreview, setPhotoPreview] = useState(null);
+    const [selectedImages, setSelectedImages] = useState([]);
     const [clientErrors, setClientErrors] = useState({});
 
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         price: '',
+        images: [],
         category: '',
-        photo: null,
         ingredients: [{ ...EMPTY_LINE }],
     });
 
@@ -117,17 +117,37 @@ export default function CreateProduct({ ingredients }) {
         );
     };
 
-    const onPhotoChange = (event) => {
-        const file = event.target.files?.[0] || null;
-        setData('photo', file);
-
-        if (!file) {
-            setPhotoPreview(null);
+    const handleImagesChange = (event) => {
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) {
             return;
         }
 
-        setPhotoPreview(URL.createObjectURL(file));
+        const next = [...selectedImages, ...files].slice(0, 4);
+        setSelectedImages(next);
+        setData('images', next);
     };
+
+    const removeImage = (index) => {
+        const next = selectedImages.filter((_, i) => i !== index);
+        setSelectedImages(next);
+        setData('images', next);
+    };
+
+    const imagePreviews = useMemo(
+        () =>
+            selectedImages.map((file) => ({
+                file,
+                url: URL.createObjectURL(file),
+            })),
+        [selectedImages],
+    );
+
+    useEffect(() => {
+        return () => {
+            imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+        };
+    }, [imagePreviews]);
 
     const validateClientSide = () => {
         const nextErrors = {};
@@ -231,25 +251,42 @@ export default function CreateProduct({ ingredients }) {
 
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-medium text-slate-700">
-                                        Ajouter une photo
+                                        Ajouter des photos (max 4)
                                     </label>
                                     <input
                                         type="file"
                                         accept="image/*"
-                                        onChange={onPhotoChange}
+                                        multiple
+                                        onChange={handleImagesChange}
                                         className="block h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-orange-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-[#FF7E47]"
                                     />
-                                    <InputError message={errors.photo} />
+                                    <InputError message={errors.images} />
                                 </div>
                             </div>
 
-                            {photoPreview ? (
+                            {imagePreviews.length ? (
                                 <div className="pt-2">
-                                    <img
-                                        src={photoPreview}
-                                        alt="Preview"
-                                        className="h-28 w-28 rounded-lg object-cover"
-                                    />
+                                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                                        {imagePreviews.map((preview, index) => (
+                                            <div
+                                                key={preview.url}
+                                                className="relative overflow-hidden rounded-lg border border-slate-200"
+                                            >
+                                                <img
+                                                    src={preview.url}
+                                                    alt={`Preview ${index + 1}`}
+                                                    className="h-24 w-full object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(index)}
+                                                    className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-sm transition hover:text-[#FF7E47]"
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             ) : null}
                         </CardContent>
