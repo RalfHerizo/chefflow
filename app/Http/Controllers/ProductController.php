@@ -89,6 +89,8 @@ class ProductController extends Controller
             'price' => ['required', 'numeric', 'gt:0'],
             'category' => ['nullable', 'string', 'max:80'],
             'photo' => ['nullable', 'image', 'max:3072'],
+            'images' => ['nullable', 'array', 'max:4'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.id' => ['required', 'exists:ingredients,id'],
             'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
@@ -109,6 +111,17 @@ class ProductController extends Controller
                 'price' => (int) round(((float) $validated['price']) * 100),
                 'is_active' => true,
             ]);
+
+            if ($request->hasFile('images')) {
+                $mainImageUrl = $this->storeProductImages(
+                    $product,
+                    $request->file('images'),
+                );
+
+                if ($mainImageUrl) {
+                    $product->update(['image_url' => $mainImageUrl]);
+                }
+            }
 
             $pivotPayload = collect($validated['ingredients'])
                 ->mapWithKeys(function (array $line) {
@@ -183,5 +196,26 @@ class ProductController extends Controller
         ]);
 
         return back();
+    }
+
+    private function storeProductImages(Product $product, array $images): ?string
+    {
+        $mainImageUrl = null;
+
+        foreach (array_values($images) as $index => $image) {
+            $path = $image->store('products', 'public');
+            $url = Storage::url($path);
+
+            $product->images()->create([
+                'url' => $url,
+                'is_main' => $index === 0,
+            ]);
+
+            if ($index === 0) {
+                $mainImageUrl = $url;
+            }
+        }
+
+        return $mainImageUrl;
     }
 }
