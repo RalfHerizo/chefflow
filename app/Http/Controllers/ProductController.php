@@ -17,7 +17,7 @@ class ProductController extends Controller
     {
         return Inertia::render('Products/Index', [
             'products' => Product::query()
-                ->with(['ingredients:id,name,unit'])
+                ->with(['ingredients:id,name,unit', 'images:id,product_id,url,is_main'])
                 ->withCount('ingredients')
                 ->orderBy('name')
                 ->get(['id', 'name', 'category', 'image_url', 'price', 'is_active'])
@@ -27,6 +27,13 @@ class ProductController extends Controller
                         'name' => $product->name,
                         'category' => $product->category,
                         'image_url' => $product->image_url,
+                        'images' => $product->images
+                            ->map(fn ($image) => [
+                                'id' => $image->id,
+                                'url' => $image->url,
+                                'is_main' => (bool) $image->is_main,
+                            ])
+                            ->values(),
                         'price' => $product->price,
                         'is_active' => $product->is_active,
                         'ingredients_count' => $product->ingredients_count,
@@ -57,6 +64,7 @@ class ProductController extends Controller
     {
         $product->load([
             'ingredients:id,name,unit',
+            'images:id,product_id,url,is_main',
         ]);
 
         return Inertia::render('Products/Edit', [
@@ -66,6 +74,13 @@ class ProductController extends Controller
                 'price' => ($product->price ?? 0) / 100,
                 'category' => $product->category,
                 'image_url' => $product->image_url,
+                'images' => $product->images
+                    ->map(fn ($image) => [
+                        'id' => $image->id,
+                        'url' => $image->url,
+                        'is_main' => (bool) $image->is_main,
+                    ])
+                    ->values(),
                 'is_active' => $product->is_active,
                 'ingredients' => $product->ingredients
                     ->map(fn ($ingredient) => [

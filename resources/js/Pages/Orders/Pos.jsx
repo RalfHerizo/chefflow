@@ -30,6 +30,7 @@ export default function OrdersPos({ products }) {
     const { post, processing, setData, errors } = useForm({ items: [] });
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useCart();
     const maxProductPrice = useMemo(
         () => Math.max(0, ...products.map((product) => Number(product.price || 0))),
@@ -101,12 +102,14 @@ export default function OrdersPos({ products }) {
         }
 
         setSelectedProduct(product);
+        setCurrentPhotoIndex(0);
         setDetailsOpen(true);
     };
 
     const closeDetails = () => {
         setDetailsOpen(false);
         setSelectedProduct(null);
+        setCurrentPhotoIndex(0);
     };
 
     const productDetails = useMemo(() => {
@@ -118,6 +121,12 @@ export default function OrdersPos({ products }) {
             selectedProduct
         );
     }, [products, selectedProduct]);
+
+    const previewImages = productDetails?.images?.length ? productDetails.images : [];
+    const mainPreviewImage =
+        previewImages[currentPhotoIndex]?.url ||
+        productDetails?.image_url ||
+        PRODUCT_PLACEHOLDER;
 
     const handleModalAdd = () => {
         if (!selectedProduct) {
@@ -189,7 +198,7 @@ export default function OrdersPos({ products }) {
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
                         <h2 className="text-xl font-semibold text-slate-800">Menu produits</h2>
                         <p className="text-sm text-slate-500">
-                            Selectionne des produits pour composer le panier.
+                            Sélectionne des produits pour composer le panier.
                         </p>
 
                         <div className="mt-4 grid grid-cols-7 items-center gap-3">
@@ -454,18 +463,42 @@ export default function OrdersPos({ products }) {
                     <DialogHeader>
                         <DialogTitle>{selectedProduct?.name ?? 'Produit'}</DialogTitle>
                         <DialogDescription>
-                            Details du produit et ingredients.
+                            Détails du produit et ingredients.
                         </DialogDescription>
                     </DialogHeader>
 
                     {productDetails ? (
-                        <div className="space-y-4">
-                            <div className="overflow-hidden rounded-xl border border-slate-200">
-                                <img
-                                    src={productDetails.image_url || PRODUCT_PLACEHOLDER}
-                                    alt={productDetails.name}
-                                    className="h-48 w-full object-cover"
-                                />
+                        <div className="space-y-4 mt-3">
+                            <div className="space-y-3">
+                                <div className="overflow-hidden rounded-xl border border-slate-200">
+                                    <img
+                                        src={mainPreviewImage}
+                                        alt={productDetails.name}
+                                        className="h-48 w-full object-cover"
+                                    />
+                                </div>
+                                {previewImages.length ? (
+                                    <div className="flex justify-between gap-2">
+                                        {previewImages.map((image, index) => (
+                                            <button
+                                                type="button"
+                                                key={image.id ?? image.url}
+                                                onClick={() => setCurrentPhotoIndex(index)}
+                                                className={`h-lg w-lg overflow-hidden rounded-md border transition ${
+                                                    index === currentPhotoIndex
+                                                        ? 'border-[#FF7E47]'
+                                                        : 'border-slate-200 hover:border-slate-300'
+                                                }`}
+                                            >
+                                                <img
+                                                    src={image.url}
+                                                    alt={`Miniature ${index + 1}`}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : null}
                             </div>
 
                             <div>
@@ -510,7 +543,6 @@ export default function OrdersPos({ products }) {
         </AuthenticatedLayout>
     );
 }
-
 
 
 

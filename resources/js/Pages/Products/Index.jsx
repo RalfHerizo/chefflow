@@ -25,7 +25,7 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import { Head, Link, router } from '@inertiajs/react';
-import { Eye, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import {MoreHorizontal, Plus} from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -45,6 +45,7 @@ function formatPrice(cents) {
  */
 export default function ProductsIndex({ products }) {
     const [previewProduct, setPreviewProduct] = useState(null);
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [productToDelete, setProductToDelete] = useState(null);
     const [statusLoadingId, setStatusLoadingId] = useState(null);
 
@@ -66,6 +67,24 @@ export default function ProductsIndex({ products }) {
             onFinish: () => setStatusLoadingId(null),
         });
     };
+
+    const openPreview = (product) => {
+        setPreviewProduct(product);
+        setCurrentPhotoIndex(0);
+    };
+
+    const closePreview = () => {
+        setPreviewProduct(null);
+    };
+
+    const previewImages = previewProduct?.images?.length
+        ? previewProduct.images
+        : [];
+
+    const mainPreviewImage =
+        previewImages[currentPhotoIndex]?.url ||
+        previewProduct?.image_url ||
+        PRODUCT_THUMBNAIL_PLACEHOLDER;
 
     return (
         <AuthenticatedLayout>
@@ -162,7 +181,7 @@ export default function ProductsIndex({ products }) {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuItem
-                                                            onClick={() => setPreviewProduct(product)}
+                                                            onClick={() => openPreview(product)}
                                                         >
                                                             Voir
                                                         </DropdownMenuItem>
@@ -191,7 +210,7 @@ export default function ProductsIndex({ products }) {
                 </section>
             </div>
 
-            <Dialog open={Boolean(previewProduct)} onOpenChange={(open) => !open && setPreviewProduct(null)}>
+            <Dialog open={Boolean(previewProduct)} onOpenChange={(open) => !open && closePreview()}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{previewProduct?.name || 'Apercu produit'}</DialogTitle>
@@ -204,12 +223,9 @@ export default function ProductsIndex({ products }) {
                         <div className="space-y-4 mt-5">
                             <div className="flex items-center gap-4">
                                 <img
-                                    src={
-                                        previewProduct.image_url ||
-                                        PRODUCT_THUMBNAIL_PLACEHOLDER
-                                    }
+                                    src={mainPreviewImage}
                                     alt={previewProduct.name}
-                                    className="h-20 w-20 rounded-md object-cover"
+                                    className="h-24 w-24 rounded-md object-cover"
                                 />
                                 <div className="space-y-1">
                                     <p className="text-sm text-slate-500">
@@ -223,6 +239,29 @@ export default function ProductsIndex({ products }) {
                                     </p>
                                 </div>
                             </div>
+
+                            {previewImages.length ? (
+                                <div className="flex justify-between gap-2">
+                                    {previewImages.map((image, index) => (
+                                        <button
+                                            type="button"
+                                            key={image.id ?? image.url}
+                                            onClick={() => setCurrentPhotoIndex(index)}
+                                            className={`h-lg w-lg overflow-hidden rounded-md border transition ${
+                                                index === currentPhotoIndex
+                                                    ? 'border-[#FF7E47]'
+                                                    : 'border-slate-200 hover:border-slate-300'
+                                            }`}
+                                        >
+                                            <img
+                                                src={image.url}
+                                                alt={`Miniature ${index + 1}`}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : null}
 
                             <div className="rounded-xl border border-slate-200 p-3">
                                 <p className="mb-2 text-sm font-medium text-slate-700">Recette</p>
