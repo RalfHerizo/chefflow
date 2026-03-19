@@ -106,6 +106,8 @@ class ProductController extends Controller
             'photo' => ['nullable', 'image', 'max:3072'],
             'images' => ['nullable', 'array', 'max:4'],
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'remove_images' => ['nullable', 'array'],
+            'remove_images.*' => ['integer', 'exists:product_images,id'],
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.id' => ['required', 'exists:ingredients,id'],
             'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
@@ -161,6 +163,8 @@ class ProductController extends Controller
             'price' => ['required', 'numeric', 'gt:0'],
             'category' => ['nullable', 'string', 'max:80'],
             'photo' => ['nullable', 'image', 'max:3072'],
+            'images' => ['nullable', 'array', 'max:4'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.id' => ['required', 'exists:ingredients,id'],
             'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
@@ -172,6 +176,34 @@ class ProductController extends Controller
             if ($request->hasFile('photo')) {
                 $path = $request->file('photo')->store('products', 'public');
                 $imageUrl = Storage::url($path);
+            }
+
+            if ($request->hasFile('images')) {
+                $this->deleteProductImages($product);
+
+                $mainImageUrl = $this->storeProductImages(
+                    $product,
+                    $request->file('images'),
+                );
+
+                if ($mainImageUrl) {
+                    $imageUrl = $mainImageUrl;
+                }
+            }
+
+            if (!$request->hasFile('images') && !empty($validated['remove_images'])) {
+                $this->deleteProductImagesByIds($product, $validated['remove_images']);
+
+                $remainingImages = $product->images()->orderBy('id')->get();
+                if ($remainingImages->isEmpty()) {
+                    $imageUrl = null;
+                } else {
+                    // Keep a single main image to avoid ambiguous display in the UI.
+                    $remainingImages->each(function ($image, int $index) {
+                        $image->update(['is_main' => $index === 0]);
+                    });
+                    $imageUrl = $remainingImages->first()->url;
+                }
             }
 
             $product->update([
@@ -232,5 +264,29 @@ class ProductController extends Controller
         }
 
         return $mainImageUrl;
+    }
+
+    private function deleteProductImages(Product $product): void
+    {
+        $images = $product->images()->get(['url']);
+
+        foreach ($images as $image) {
+            $path = str_replace('/storage/', '', (string) $image->url);
+            Storage::disk('public')->delete($path);
+        }
+
+        $product->images()->delete();
+    }
+
+    private function deleteProductImagesByIds(Product $product, array $imageIds): void
+    {
+        $images = $product->images()->whereIn('id', $imageIds)->get(['id', 'url']);
+
+        foreach ($images as $image) {
+            $path = str_replace('/storage/', '', (string) $image->url);
+            Storage::disk('public')->delete($path);
+        }
+
+        $product->images()->whereIn('id', $imageIds)->delete();
     }
 }

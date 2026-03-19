@@ -26,12 +26,14 @@ const EMPTY_LINE = { id: '', amount: '', input_amount: '', input_unit: '' };
 
 /**
  * @param {{
- * product: {id: number|string, name: string, price: number|string, category?: string|null, image_url?: string|null, ingredients?: Array<{id: number|string, amount: number|string}>},
+ * product: {id: number|string, name: string, price: number|string, category?: string|null, image_url?: string|null, images?: Array<{id: number|string, url: string, is_main: boolean}>, ingredients?: Array<{id: number|string, amount: number|string}>},
  * ingredients: Array<{id: number|string, name: string, unit: string}>
  * }} props
  */
 export default function EditProduct({ product, ingredients }) {
+    const [existingImages, setExistingImages] = useState(product.images ?? []);
     const [selectedImages, setSelectedImages] = useState([]);
+    const [removedImageIds, setRemovedImageIds] = useState([]);
     const [clientErrors, setClientErrors] = useState({});
 
     const { data, setData, post, processing, errors } = useForm({
@@ -40,6 +42,7 @@ export default function EditProduct({ product, ingredients }) {
         price: product.price ?? '',
         category: product.category ?? '',
         images: [],
+        remove_images: [],
         ingredients:
             product.ingredients?.length > 0
                 ? product.ingredients.map((line) => {
@@ -149,6 +152,17 @@ export default function EditProduct({ product, ingredients }) {
         const next = selectedImages.filter((_, i) => i !== index);
         setSelectedImages(next);
         setData('images', next);
+    };
+
+    const removeExistingImage = (imageId) => {
+        const nextExisting = existingImages.filter((image) => image.id !== imageId);
+        const nextRemoved = removedImageIds.includes(imageId)
+            ? removedImageIds
+            : [...removedImageIds, imageId];
+
+        setExistingImages(nextExisting);
+        setRemovedImageIds(nextRemoved);
+        setData('remove_images', nextRemoved);
     };
 
     const imagePreviews = useMemo(
@@ -297,6 +311,35 @@ export default function EditProduct({ product, ingredients }) {
                                                 <button
                                                     type="button"
                                                     onClick={() => removeImage(index)}
+                                                    className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-sm transition hover:text-[#FF7E47]"
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : null}
+
+                            {existingImages.length ? (
+                                <div className="pt-2">
+                                    <p className="mb-2 text-sm font-medium text-slate-700">
+                                        Images actuelles
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                                        {existingImages.map((image) => (
+                                            <div
+                                                key={image.id}
+                                                className="relative overflow-hidden rounded-lg border border-slate-200"
+                                            >
+                                                <img
+                                                    src={image.url}
+                                                    alt="Image existante"
+                                                    className="h-24 w-full object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeExistingImage(image.id)}
                                                     className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-sm transition hover:text-[#FF7E47]"
                                                 >
                                                     <X className="h-4 w-4" />
