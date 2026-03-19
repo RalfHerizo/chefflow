@@ -167,10 +167,15 @@ export default function OrdersPos({ products }) {
         }).format(Number(cents || 0) / 100);
 
     const submitOrder = () => {
+        if (cart.length === 0) {
+            toast.error('Le panier est vide.');
+            return;
+        }
+
         const items = cart.map((item) => ({ id: item.id, quantity: item.quantity }));
-        setData('items', items);
 
         post(route('orders.store'), {
+            data: { items },
             onSuccess: () => {
                 toast.success('Commande validée');
                 clearCart();
@@ -543,7 +548,6 @@ export default function OrdersPos({ products }) {
         </AuthenticatedLayout>
     );
 }
-
 
 
 
