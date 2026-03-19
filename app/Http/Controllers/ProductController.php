@@ -233,6 +233,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
+        $this->deleteProductImages($product);
         $product->delete();
 
         return to_route('products.index')->with('message', 'Produit supprime avec succes.');
