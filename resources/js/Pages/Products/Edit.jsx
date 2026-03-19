@@ -143,7 +143,8 @@ export default function EditProduct({ product, ingredients }) {
             return;
         }
 
-        const next = [...selectedImages, ...files].slice(0, 4);
+        const remainingSlots = Math.max(0, 4 - existingImages.length);
+        const next = [...selectedImages, ...files].slice(0, remainingSlots);
         setSelectedImages(next);
         setData('images', next);
     };
