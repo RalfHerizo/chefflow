@@ -172,6 +172,20 @@ class ProductController extends Controller
             'remove_images.*' => ['integer', 'exists:product_images,id'],
         ]);
 
+        $removeIds = $validated['remove_images'] ?? [];
+        if ($request->hasFile('images')) {
+            $existingCount = $product->images()
+                ->whereNotIn('id', $removeIds)
+                ->count();
+            $newCount = count($request->file('images'));
+
+            if ($existingCount + $newCount > 4) {
+                return back()
+                    ->withErrors(['images' => 'Maximum 4 images par produit.'])
+                    ->withInput();
+            }
+        }
+
         DB::transaction(function () use ($request, $validated, $product) {
             $imageUrl = $product->image_url;
 
@@ -180,32 +194,34 @@ class ProductController extends Controller
                 $imageUrl = Storage::url($path);
             }
 
-            if ($request->hasFile('images')) {
-                $this->deleteProductImages($product);
+            if (!empty($validated['remove_images'])) {
+                $this->deleteProductImagesByIds($product, $validated['remove_images']);
+            }
 
-                $mainImageUrl = $this->storeProductImages(
+            $remainingImages = $product->images()->orderBy('id')->get();
+            $hasMainImage = $remainingImages->contains('is_main', true);
+
+            if (!$hasMainImage && $remainingImages->isNotEmpty()) {
+                // Ensure the gallery always has a single main image for display consistency.
+                $remainingImages->each(function ($image, int $index) {
+                    $image->update(['is_main' => $index === 0]);
+                });
+                $imageUrl = $remainingImages->first()->url;
+                $hasMainImage = true;
+            }
+
+            if ($request->hasFile('images')) {
+                $mainImageUrl = $this->appendProductImages(
                     $product,
                     $request->file('images'),
+                    !$hasMainImage
                 );
 
                 if ($mainImageUrl) {
                     $imageUrl = $mainImageUrl;
                 }
-            }
-
-            if (!$request->hasFile('images') && !empty($validated['remove_images'])) {
-                $this->deleteProductImagesByIds($product, $validated['remove_images']);
-
-                $remainingImages = $product->images()->orderBy('id')->get();
-                if ($remainingImages->isEmpty()) {
-                    $imageUrl = null;
-                } else {
-                    // Keep a single main image to avoid ambiguous display in the UI.
-                    $remainingImages->each(function ($image, int $index) {
-                        $image->update(['is_main' => $index === 0]);
-                    });
-                    $imageUrl = $remainingImages->first()->url;
-                }
+            } elseif ($remainingImages->isEmpty()) {
+                $imageUrl = null;
             }
 
             $product->update([
@@ -262,6 +278,31 @@ class ProductController extends Controller
             ]);
 
             if ($index === 0) {
+                $mainImageUrl = $url;
+            }
+        }
+
+        return $mainImageUrl;
+    }
+
+    private function appendProductImages(
+        Product $product,
+        array $images,
+        bool $setFirstAsMain
+    ): ?string {
+        $mainImageUrl = null;
+
+        foreach (array_values($images) as $index => $image) {
+            $path = $image->store('products', 'public');
+            $url = Storage::url($path);
+            $isMain = $setFirstAsMain && $index === 0;
+
+            $product->images()->create([
+                'url' => $url,
+                'is_main' => $isMain,
+            ]);
+
+            if ($isMain) {
                 $mainImageUrl = $url;
             }
         }
