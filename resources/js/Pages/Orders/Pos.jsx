@@ -27,7 +27,7 @@ export default function OrdersPos({ products }) {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [clearOpen, setClearOpen] = useState(false);
-    const { post, processing, setData, errors } = useForm({ items: [] });
+    const form = useForm({ items: [] });
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -37,6 +37,13 @@ export default function OrdersPos({ products }) {
         [products],
     );
     const [priceRange, setPriceRange] = useState([0, maxProductPrice]);
+
+    useEffect(() => {
+        form.setData(
+            'items',
+            cart.map((item) => ({ id: item.id, quantity: item.quantity })),
+        );
+    }, [cart]);
 
     const categories = useMemo(() => {
         const values = products
@@ -172,10 +179,7 @@ export default function OrdersPos({ products }) {
             return;
         }
 
-        const items = cart.map((item) => ({ id: item.id, quantity: item.quantity }));
-
-        post(route('orders.store'), {
-            data: { items },
+        form.post(route('orders.store'), {
             onSuccess: () => {
                 toast.success('Commande validée');
                 clearCart();
@@ -429,14 +433,17 @@ export default function OrdersPos({ products }) {
                             </Button>
                             <Button
                                 type="button"
-                                disabled={!hasItems || processing}
+                                disabled={!hasItems || form.processing}
                                 onClick={submitOrder}
                                 className="h-12 w-full rounded-xl bg-[#FF7E47] text-white hover:bg-[#e86f3d] disabled:cursor-not-allowed"
                             >
-                                {processing ? 'Validation...' : 'Valider la commande'}
+                                {form.processing ? 'Validation...' : 'Valider la commande'}
                             </Button>
-                            {errors.items ? (
-                                <span className="text-red-500">{errors.items}</span>
+                            
+                        </div>
+                        <div className='flex justify-center my-2' >
+                        {form.errors.items ? (
+                                <span className="text-red-500 text-sm">{form.errors.items}</span>
                             ) : null}
                         </div>
                     </div>
@@ -548,7 +555,5 @@ export default function OrdersPos({ products }) {
         </AuthenticatedLayout>
     );
 }
-
-
 
 
