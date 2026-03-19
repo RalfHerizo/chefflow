@@ -25,6 +25,8 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] Smart input units in recipe builder (`kg/g`, `L/ml`, `pcs`) with conversion to backend base unit.
 - [x] Human-readable amount preview (`0.004 kg` shown as `4 g`).
 - [x] Product image upload support in create/edit forms.
+- [x] Multi-image product gallery (up to 4 images) with previews and main image selection.
+- [x] Product gallery previews in products list and POS modal.
 - [x] Feature tests for recent product and ingredient workflows.
 - [x] Cart system (order_items) with multi-product orders and stock deduction per recipe.
 - [x] POS page for visual ordering with search, categories, price range slider, and cart.
@@ -58,16 +60,11 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
   - Toggle product active status directly from table.
   - Build and edit recipe lines with per-ingredient quantity.
   - Convert entered quantities to backend base units before submit.
-  - Upload product photo.
+  - Upload product gallery (up to 4 images) with previews and main image.
 - POS / Sales:
   - Visual product grid with search, category filter, and price range slider.
   - Cart with quantity controls, totals HT/TVA/TTC, and clear confirmation.
-  - Product detail modal with ingredient badges.
-  - Header cart badge with live updates.
-- POS / Sales:
-  - Visual product grid with filters and price range slider.
-  - Cart with quantity controls, totals HT/TVA/TTC, clear confirmation.
-  - Product details modal with ingredient badges.
+  - Product detail modal with ingredient badges and gallery previews.
   - Cart badge in header with live updates.
 
 ## Tech Stack
@@ -82,7 +79,7 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 ## Key Routes
 
 - `GET /dashboard` -> dashboard page
-- `POST /sell` -> register sale
+- `POST /orders` -> register sale
 - `DELETE /orders/{order}` -> cancel order
 - `GET /ingredients` -> ingredient index
 - `POST /ingredients` -> create ingredient
