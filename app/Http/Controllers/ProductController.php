@@ -168,6 +168,8 @@ class ProductController extends Controller
             'ingredients' => ['required', 'array', 'min:1'],
             'ingredients.*.id' => ['required', 'exists:ingredients,id'],
             'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
+            'remove_images' => ['nullable', 'array'],
+            'remove_images.*' => ['integer', 'exists:product_images,id'],
         ]);
 
         DB::transaction(function () use ($request, $validated, $product) {
