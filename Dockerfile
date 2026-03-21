@@ -23,6 +23,7 @@ RUN apt-get update \
         supervisor \
         git \
         unzip \
+        gettext-base \
         libzip-dev \
         libonig-dev \
         libpng-dev \
