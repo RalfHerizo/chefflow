@@ -1,5 +1,11 @@
-#!/usr/bin/env sh
+﻿#!/usr/bin/env sh
 set -eu
+
+# Default to 8080 if PORT is not provided
+: "${PORT:=8080}"
+
+# Render nginx config with the runtime PORT
+envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
 
 # Run migrations on container start (retry if DB not ready yet)
 max_retries=10
