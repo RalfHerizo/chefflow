@@ -3,7 +3,7 @@
 FROM composer:2.7 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --no-scripts
 
 FROM node:20-bookworm AS frontend
 WORKDIR /app
@@ -42,6 +42,8 @@ RUN apt-get update \
 COPY . ./
 COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
+
+RUN php artisan package:discover --ansi --no-interaction
 
 RUN rm -f /etc/nginx/sites-enabled/default \
     && printf '%s\n' \
