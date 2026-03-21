@@ -44,6 +44,7 @@ RUN apt-get update \
 COPY . ./
 COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 
 RUN php artisan package:discover --ansi --no-interaction
 
@@ -85,6 +86,7 @@ RUN rm -f /etc/nginx/sites-enabled/default \
         'stdout_logfile=/dev/stdout' \
         'stderr_logfile=/dev/stderr' \
         > /etc/supervisor/supervisord.conf \
+    && chmod +x /usr/local/bin/entrypoint \
     && chown -R www-data:www-data storage bootstrap/cache
 
 ENV APP_ENV=production \
@@ -93,4 +95,5 @@ ENV APP_ENV=production \
 
 EXPOSE 8080
 
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
