@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env sh
+#!/usr/bin/env sh
 set -eu
 
 # Run migrations on container start (retry if DB not ready yet)
