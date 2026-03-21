@@ -45,29 +45,11 @@ COPY . ./
 COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
+COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 
 RUN php artisan package:discover --ansi --no-interaction
 
 RUN rm -f /etc/nginx/sites-enabled/default \
-    && printf '%s\n' \
-        'server {' \
-        '    listen 9000;' \
-        '    server_name _;' \
-        '    root /var/www/html/public;' \
-        '    index index.php index.html;' \
-        '    location / {' \
-        '        try_files \$uri \$uri/ /index.php?\$query_string;' \
-        '    }' \
-        '    location ~ \\.php$ {' \
-        '        include fastcgi_params;' \
-        '        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;' \
-        '        fastcgi_pass 127.0.0.1:9000;' \
-        '    }' \
-        '    location ~ /\\.(?!well-known).* {' \
-        '        deny all;' \
-        '    }' \
-        '}' \
-        > /etc/nginx/conf.d/default.conf \
     && printf '%s\n' \
         '[supervisord]' \
         'nodaemon=true' \
@@ -78,6 +60,8 @@ RUN rm -f /etc/nginx/sites-enabled/default \
         'autorestart=true' \
         'stdout_logfile=/dev/stdout' \
         'stderr_logfile=/dev/stderr' \
+        'stdout_logfile_maxbytes=0' \
+        'stderr_logfile_maxbytes=0' \
         '' \
         '[program:nginx]' \
         'command=/usr/sbin/nginx -g "daemon off;"' \
@@ -85,6 +69,8 @@ RUN rm -f /etc/nginx/sites-enabled/default \
         'autorestart=true' \
         'stdout_logfile=/dev/stdout' \
         'stderr_logfile=/dev/stderr' \
+        'stdout_logfile_maxbytes=0' \
+        'stderr_logfile_maxbytes=0' \
         > /etc/supervisor/supervisord.conf \
     && chmod +x /usr/local/bin/entrypoint \
     && chown -R www-data:www-data storage bootstrap/cache
