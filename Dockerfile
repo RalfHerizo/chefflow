@@ -51,7 +51,7 @@ RUN php artisan package:discover --ansi --no-interaction
 RUN rm -f /etc/nginx/sites-enabled/default \
     && printf '%s\n' \
         'server {' \
-        '    listen 8080;' \
+        '    listen 9000;' \
         '    server_name _;' \
         '    root /var/www/html/public;' \
         '    index index.php index.html;' \
