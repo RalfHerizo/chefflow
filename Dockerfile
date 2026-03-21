@@ -24,6 +24,7 @@ RUN apt-get update \
         git \
         unzip \
         libzip-dev \
+        libonig-dev \
         libpng-dev \
         libjpeg-dev \
         libfreetype6-dev \
