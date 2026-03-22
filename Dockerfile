@@ -77,8 +77,10 @@ RUN rm -f /etc/nginx/sites-enabled/default \
     && chmod +x /usr/local/bin/entrypoint \
     && chown -R www-data:www-data storage bootstrap/cache
 
-ENV APP_ENV=production \
+    ENV APP_ENV=production \
     APP_DEBUG=false \
+    APP_URL=https://chefflow-production.up.railway.app \
+    ASSET_URL=https://chefflow-production.up.railway.app \
     PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
 
 EXPOSE 8080
