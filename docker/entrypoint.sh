@@ -4,6 +4,10 @@ set -eu
 # Default to 8080 if PORT is not provided
 : "${PORT:=8080}"
 
+# Ensure Laravel runtime directories exist and are writable
+mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
+chown -R www-data:www-data storage bootstrap/cache
+
 # Render nginx config with the runtime PORT
 envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
 
