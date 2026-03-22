@@ -12,6 +12,7 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] Laravel + Inertia + React foundation with auth pages.
 - [x] Modern app shell: fixed sidebar + top header + content area.
 - [x] Dynamic top header title/subtitle by current Inertia page.
+- [x] Railway deployment via Dockerfile + entrypoint.sh.
 - [x] Dashboard sales form to register product sales.
 - [x] Recent orders table with action to cancel an order.
 - [x] Confirmation modal for order cancellation (no browser alert).
@@ -29,7 +30,8 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] Smart input units in recipe builder (`kg/g`, `L/ml`, `pcs`) with conversion to backend base unit.
 - [x] Human-readable amount preview (`0.004 kg` shown as `4 g`).
 - [x] Product image upload support in create/edit forms.
-- [x] Multi-image product gallery (up to 4 images) with previews and main image selection.
+- [x] Multi-image product gallery (up to 4 images) with previews; first image is the main image.
+- [x] Edit product gallery: remove existing images and append new ones without wiping.
 - [x] Product gallery previews in products list and POS modal.
 - [x] Feature tests for recent product and ingredient workflows.
 - [x] Cart system (order_items) with multi-product orders and stock deduction per recipe.
@@ -37,12 +39,14 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] Cart persistence via React Context + LocalStorage.
 - [x] Header cart badge with live count and ping feedback.
 - [x] Toast redesign (top-center banner with status icons).
-- [x] POS product detail modal with ingredient badges + quick add button.
+- [x] POS product detail modal with ingredient badges, gallery previews, and quick add button.
 - [x] Multi-product order tests (cart stock + total price).
+- [x] StoreOrderRequest validation layer for cart payload.
+- [x] Frontend tests (Vitest + RTL) for cart and POS flows.
 
 ### In Progress / Next
 - [ ] Replace image URL input with drag and drop upload.
-- [ ] Move more controller validation logic to dedicated Form Requests for cleaner architecture.
+- [ ] Extend Form Request usage beyond orders for cleaner controller logic.
 - [ ] Orders list page with filtering and pagination.
 - [ ] Better analytics and reporting blocks.
 - [ ] Notifications workflow (stock alerts).
@@ -54,6 +58,7 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
   - Show recent orders.
   - Cancel order and restore stock.
   - Show weekly revenue chart.
+  - Inventory status grid (ingredients).
 - Inventory (Ingredients):
   - List all ingredients.
   - Create, update, delete ingredients.
@@ -65,11 +70,13 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
   - Build and edit recipe lines with per-ingredient quantity.
   - Convert entered quantities to backend base units before submit.
   - Upload product gallery (up to 4 images) with previews and main image.
+  - Remove/replace product images without losing existing ones.
 - POS / Sales:
   - Visual product grid with search, category filter, and price range slider.
-  - Cart with quantity controls, totals HT/TVA/TTC, and clear confirmation.
   - Product detail modal with ingredient badges and gallery previews.
+  - Cart with quantity controls, totals HT/TVA/TTC, and clear confirmation.
   - Cart badge in header with live updates.
+  - Toast feedback for add/remove/submit actions.
 
 ## Tech Stack
 
@@ -78,7 +85,7 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - UI: Tailwind CSS + Shadcn UI (Radix primitives)
 - Charts: Recharts
 - Icons: Lucide React
-- Tests: Pest
+- Tests: Pest + Vitest (React Testing Library)
 
 ## Key Routes
 
@@ -122,6 +129,7 @@ composer run dev
 
 ```bash
 npm run build
+npm test
 php artisan test
 ```
 
