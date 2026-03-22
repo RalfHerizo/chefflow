@@ -2,6 +2,10 @@
 
 ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking, and quick dashboard insights.
 
+## Live Demo
+
+- Railway deployment (Dockerfile + entrypoint.sh): https://chefflow-production.up.railway.app/
+
 ## Product Status (Current Progress)
 
 ### Done
