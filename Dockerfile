@@ -47,6 +47,7 @@ COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zz-railway.conf
 
 RUN php artisan package:discover --ansi --no-interaction
 
