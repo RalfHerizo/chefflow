@@ -42,11 +42,11 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] POS product detail modal with ingredient badges, gallery previews, and quick add button.
 - [x] Multi-product order tests (cart stock + total price).
 - [x] StoreOrderRequest validation layer for cart payload.
+- [x] Form Requests extended to ingredients and products for controller validation.
 - [x] Frontend tests (Vitest + RTL) for cart and POS flows.
 
 ### In Progress / Next
 - [ ] Replace image URL input with drag and drop upload.
-- [ ] Extend Form Request usage beyond orders for cleaner controller logic.
 - [ ] Orders list page with filtering and pagination.
 - [ ] Better analytics and reporting blocks.
 - [ ] Notifications workflow (stock alerts).
@@ -148,5 +148,5 @@ php artisan test tests/Feature/OrderIntegrationTest.php
 - Prices are stored as integers (cents) to avoid floating-point issues.
 - Ingredient stock uses decimal precision.
 - Current UX uses confirmation dialogs for destructive actions.
-- Form Request extraction is in progress to reinforce clean architecture boundaries.
+- Form Requests now cover orders, ingredients, and products; remaining controllers are future work.
 - Orders now use an order_items cart model to support multiple products per sale.
