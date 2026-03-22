@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
 use App\Models\Product;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -97,21 +98,9 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProductRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:140'],
-            'price' => ['required', 'numeric', 'gt:0'],
-            'category' => ['nullable', 'string', 'max:80'],
-            'photo' => ['nullable', 'image', 'max:3072'],
-            'images' => ['nullable', 'array', 'max:4'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'remove_images' => ['nullable', 'array'],
-            'remove_images.*' => ['integer', 'exists:product_images,id'],
-            'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.id' => ['required', 'exists:ingredients,id'],
-            'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($request, $validated) {
             $imageUrl = null;
@@ -156,21 +145,9 @@ class ProductController extends Controller
         return to_route('products.index')->with('message', 'Produit cree avec recette.');
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:140'],
-            'price' => ['required', 'numeric', 'gt:0'],
-            'category' => ['nullable', 'string', 'max:80'],
-            'photo' => ['nullable', 'image', 'max:3072'],
-            'images' => ['nullable', 'array', 'max:4'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.id' => ['required', 'exists:ingredients,id'],
-            'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
-            'remove_images' => ['nullable', 'array'],
-            'remove_images.*' => ['integer', 'exists:product_images,id'],
-        ]);
+        $validated = $request->validated();
 
         $removeIds = $validated['remove_images'] ?? [];
         if ($request->hasFile('images')) {

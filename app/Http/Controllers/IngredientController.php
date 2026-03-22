@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
+use App\Http\Requests\StoreIngredientRequest;
+use App\Http\Requests\UpdateIngredientRequest;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,30 +18,18 @@ class IngredientController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreIngredientRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'image_url' => ['nullable', 'url', 'max:2048'],
-            'unit' => ['required', 'string', 'max:20'],
-            'stock_quantity' => ['required', 'numeric', 'min:0'],
-            'alert_threshold' => ['required', 'numeric', 'min:0'],
-        ]);
+        $validated = $request->validated();
 
         Ingredient::create($validated);
 
         return to_route('ingredients.index')->with('message', 'Ingredient created successfully.');
     }
 
-    public function update(Request $request, Ingredient $ingredient): RedirectResponse
+    public function update(UpdateIngredientRequest $request, Ingredient $ingredient): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'image_url' => ['nullable', 'url', 'max:2048'],
-            'unit' => ['required', 'string', 'max:20'],
-            'stock_quantity' => ['required', 'numeric', 'min:0'],
-            'alert_threshold' => ['required', 'numeric', 'min:0'],
-        ]);
+        $validated = $request->validated();
 
         $ingredient->update($validated);
 
