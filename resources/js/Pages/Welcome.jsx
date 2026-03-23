@@ -54,6 +54,12 @@ const features = [
     },
 ];
 
+const whoWeAreStats = [
+    { value: '100%', label: 'Contrôle quotidien' },
+    { value: '24/7', label: 'Commandes de cuisine' },
+    { value: '95%', label: "Coordination de l'équipe" },
+];
+
 const faqs = [
     {
         q: 'Combien de temps pour installer ChefFlow ?',
@@ -86,6 +92,79 @@ function BrowserMockup() {
                 />
             </div>
         </div>
+    );
+}
+
+function WhoWeAreSection() {
+    return (
+        <section className="bg-[#faf8f5] px-6 py-24 lg:px-16">
+            <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
+                <motion.div
+                    initial={{ opacity: 0, x: -40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative"
+                >
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="h-80 w-80 rounded-full bg-orange-200/30 blur-3xl" />
+                    </div>
+
+                    <div className="relative overflow-hidden rounded-[32px] border border-white/40 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-10 shadow-[0_20px_80px_rgba(0,0,0,0.08)] backdrop-blur-sm">
+                        <motion.img
+                            animate={{ y: [0, -8, 0] }}
+                            transition={{ repeat: Infinity, duration: 4 }}
+                            src="https://i.ibb.co/67MN450T/modal-card.jpg"
+                            alt="App Preview"
+                            className="mx-auto w-[80em] rounded-[16px] drop-shadow-2xl"
+                        />
+                    </div>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, x: 40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <span className="text-sm font-medium uppercase tracking-wide text-orange-500">
+                        A propos de nous
+                    </span>
+
+                    <h2 className="mt-4 text-4xl font-extrabold leading-tight text-gray-900">
+                        Quand les opérations en cuisine deviennent{' '}
+                        <span className="text-[#FF7E47]">claires</span>,{' '}
+                        <span className="text-[#FF7E47]">rapides</span> et{' '}
+                        <span className="text-[#FF7E47]">fiables</span>
+                    </h2>
+
+                    <p className="mt-6 text-lg leading-relaxed text-gray-600">
+                        Conçu pour les equipes de restauration qui ont besoin
+                        d'une organisation claire, d'une responsabilisation et
+                        d'un déroulement sans heurts à chaque service.
+                    </p>
+
+                    <Link
+                        href={route('login')}
+                        className="group mt-6 inline-flex items-center gap-2 rounded-lg bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d]"
+                    >
+                        Découvrez comment ça marche
+                        <span className="inline-flex items-center opacity-0 translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0">
+                            <ArrowRight className="h-4 w-4" />
+                        </span>
+                    </Link>
+
+                    <div className="mt-14 grid grid-cols-3 gap-8">
+                        {whoWeAreStats.map((stat) => (
+                            <div key={stat.label}>
+                                <h3 className="text-3xl font-extrabold">
+                                    {stat.value}
+                                </h3>
+                                <p className="text-gray-500">{stat.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
+        </section>
     );
 }
 
@@ -202,10 +281,10 @@ export default function Welcome() {
                 <div className="pointer-events-none absolute -right-24 top-10 hidden h-64 w-64 rounded-full bg-[#FF7E47]/10 blur-3xl lg:block" />
             </section>
 
-            <section className="px-6 pb-16">
-                <div className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white px-6 py-4 text-center text-sm text-slate-500 shadow-sm">
-                    Déja adopte par +500 restaurateurs et pizzerias.
-                </div>
+            <section className="pb-16">
+                {/* DEBUT SECTION WHO WE ARE */}
+                <WhoWeAreSection />
+                {/* FIN SECTION WHO WE ARE */}
             </section>
 
             <section id="features" className="px-6 pb-20">
@@ -371,4 +450,3 @@ export default function Welcome() {
         </MarketingLayout>
     );
 }
-
