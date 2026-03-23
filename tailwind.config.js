@@ -12,13 +12,17 @@ export default {
     ],
 
     theme: {
-    	extend: {
-    		fontFamily: {
+    		extend: {
+    			fontFamily: {
     			sans: [
     				'Figtree',
                     ...defaultTheme.fontFamily.sans
+                ],
+                serif: [
+                    'Playfair Display',
+                    ...defaultTheme.fontFamily.serif
                 ]
-    		},
+    			},
     		borderRadius: {
     			lg: 'var(--radius)',
     			md: 'calc(var(--radius) - 2px)',
