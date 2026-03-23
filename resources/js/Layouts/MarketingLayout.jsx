@@ -26,9 +26,17 @@ export default function MarketingLayout({ children }) {
             >
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
                     <Link href={route('welcome')} className="flex items-center gap-2">
-                        <span className="text-lg font-semibold text-slate-900">
-                            ChefFlow
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF7E47] text-sm font-semibold text-white">
+                            CH
                         </span>
+                        <div className="leading-tight">
+                            <p className="text-sm font-medium uppercase tracking-[0.16em] text-slate-400">
+                                Chefflow
+                            </p>
+                            <p className="text-base font-semibold text-slate-800">
+                                Restaurant OS
+                            </p>
+                        </div>
                     </Link>
 
                     <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">

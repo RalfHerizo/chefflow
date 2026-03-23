@@ -79,7 +79,7 @@ function BrowserMockup() {
             </div>
             <div className="bg-slate-50 p-4">
                 <img
-                    src="https://i.ibb.co/G3c3GrtR/caisse-chefflow.png"
+                    src="https://i.ibb.co/d4D7rBqD/caisse-chefflow.jpg"
                     alt="Interface POS ChefFlow"
                     className="w-full rounded-2xl border border-slate-200 object-cover shadow-xl"
                 />
@@ -146,11 +146,17 @@ export default function Welcome() {
             <section className="relative overflow-hidden px-6 pb-20 pt-20 md:pt-28">
                 <div className="mx-auto   max-w-7xl items-center gap-12 ">
                     <FadeInSection>
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#FF7E47] text-center">
-                            ChefFlow POS
-                        </p>
-                        <h1 className="mt-4 text-4xl font-black leading-tight text-slate-900 md:text-5xl text-center">
-                        Gérez votre restaurant comme un pro !
+                        <div className="flex justify-center">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-100 px-4 py-2 text-xs font-semibold  text-slate-500 shadow-sm">
+                                <span className="relative flex h-2.5 w-2.5">
+                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF7E47]/40" />
+                                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#FF7E47]" />
+                                </span>
+                                Maintenant disponible en accès libre
+                            </div>
+                        </div>
+                        <h1 className="mt-10 text-4xl font-extrabold leading-tight text-slate-900 md:text-5xl text-center">
+                            Gérez votre restaurant <span className='text-[#FF7E47]' >comme un pro !</span>
                         </h1>
                         <p className="mt-4 text-base text-slate-600 md:text-lg text-center">
                         ChefFlow centralise vos ventes, vos stocks et vos recettes en un seul endroit. Simple, rapide, fait pour les restaurateurs.
@@ -160,7 +166,7 @@ export default function Welcome() {
                                 href={route('register')}
                                 className="rounded-full bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d] text-center"
                             >
-                                Démarrer l essai gratuit
+                                Démarrer l'essai gratuit
                             </Link>
                             <Link
                                 href={route('login')}
@@ -176,7 +182,7 @@ export default function Welcome() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 className="h-4 w-4 text-[#FF7E47]" />
-                                Mise en place rapide
+                                Zéro installation
                             </div>
                         </div>
                     </FadeInSection>
@@ -358,3 +364,4 @@ export default function Welcome() {
         </MarketingLayout>
     );
 }
+
