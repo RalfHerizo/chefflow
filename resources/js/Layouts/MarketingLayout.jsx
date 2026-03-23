@@ -56,13 +56,13 @@ export default function MarketingLayout({ children }) {
                             href={route('login')}
                             className="text-sm font-medium text-slate-600 hover:text-slate-900"
                         >
-                            Login
+                            Se connecter
                         </Link>
                         <Link
                             href={route('register')}
-                            className="rounded-full bg-[#FF7E47] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d]"
+                            className="rounded-lg bg-[#FF7E47] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d]"
                         >
-                            Démarrer l'essai
+                            Commencer gratuitement 
                         </Link>
                     </div>
                 </div>

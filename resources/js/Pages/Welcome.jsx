@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import {
+    ArrowRight,
     CheckCircle2,
     LineChart,
     Pizza,
@@ -147,7 +148,7 @@ export default function Welcome() {
                 <div className="mx-auto   max-w-7xl items-center gap-12 ">
                     <FadeInSection>
                         <div className="flex justify-center">
-                            <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-100 px-4 py-2 text-xs font-semibold  text-slate-500 shadow-sm">
+                            <div className="inline-flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-100 px-4 py-2 text-xs font-semibold  text-slate-500 shadow-sm">
                                 <span className="relative flex h-2.5 w-2.5">
                                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF7E47]/40" />
                                     <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#FF7E47]" />
@@ -155,26 +156,32 @@ export default function Welcome() {
                                 Maintenant disponible en accès libre
                             </div>
                         </div>
-                        <h1 className="mt-10 text-4xl font-extrabold leading-tight text-slate-900 md:text-5xl text-center">
-                            Gérez votre restaurant <span className='text-[#FF7E47]' >comme un pro !</span>
-                        </h1>
-                        <p className="mt-4 text-base text-slate-600 md:text-lg text-center">
-                        ChefFlow centralise vos ventes, vos stocks et vos recettes en un seul endroit. Simple, rapide, fait pour les restaurateurs.
-                        </p>
+                        <div>
+                            <h1 className="mt-10 text-4xl font-extrabold leading-tight text-slate-900 md:text-5xl text-center">
+                                Gérez votre restaurant <span className='text-[#FF7E47]' >comme un pro !</span>
+                            </h1>
+                            <p className="mt-4 text-base text-slate-600 md:text-lg text-center">
+                                ChefFlow centralise vos ventes, vos stocks et vos recettes en un seul endroit. Simple, rapide, fait pour les restaurateurs.
+                            </p>
+                        </div>
                         <div className="mt-6 flex flex-wrap justify-center items-center gap-4">
                             <Link
                                 href={route('register')}
-                                className="rounded-full bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d] text-center"
+                                className="group inline-flex items-center gap-2 rounded-lg bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d] text-center"
                             >
-                                Démarrer l'essai gratuit
+                                Créer mon compte gratuitement
+                                <span className="  items-center opacity-0 hidden translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-hover:inline-flex">
+                                    <ArrowRight className="h-4 w-4" />
+                                </span>
                             </Link>
                             <Link
                                 href={route('login')}
-                                className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+                                className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50"
                             >
-                                Voir la démo
+                                Se connecter
+                                
                             </Link>
-                        </div>
+                        </div> 
                         <div className="my-8 flex items-center  gap-6 text-sm text-slate-500">
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 className="h-4 w-4 text-[#FF7E47]" />
