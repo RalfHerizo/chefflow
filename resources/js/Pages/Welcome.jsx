@@ -70,71 +70,19 @@ const faqs = [
 
 function BrowserMockup() {
     return (
-        <div className="relative rounded-[28px] border border-slate-200 bg-white shadow-2xl">
+        <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl">
             <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-slate-200" />
                 <span className="h-2.5 w-2.5 rounded-full bg-slate-200" />
                 <span className="h-2.5 w-2.5 rounded-full bg-slate-200" />
                 <span className="ml-3 text-xs text-slate-400">chefflow.app</span>
             </div>
-            <div className="grid gap-4 p-6 md:grid-cols-[1.1fr_0.9fr]">
-                <div className="space-y-4">
-                    <div className="rounded-2xl bg-slate-100 p-4">
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm font-semibold text-slate-700">
-                                Caisse
-                            </div>
-                            <div className="relative">
-                                <ShoppingBag className="h-4 w-4 text-slate-500" />
-                                <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FF7E47] px-1 text-[10px] font-semibold text-white">
-                                    2
-                                </span>
-                            </div>
-                        </div>
-                        <div className="mt-4 grid grid-cols-2 gap-3">
-                            {mockScreens.map((card) => (
-                                <div
-                                    key={card.id}
-                                    className="rounded-xl border border-slate-200 bg-white p-3"
-                                >
-                                    <div className="h-16 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200" />
-                                    <p className="mt-2 text-xs font-semibold text-slate-700">
-                                        {card.title}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-4">
-                        <div className="flex items-center justify-between text-xs text-slate-500">
-                            <span>Alertes stock</span>
-                            <span className="rounded-full bg-rose-50 px-2 py-0.5 text-rose-600">
-                                Critique
-                            </span>
-                        </div>
-                        <div className="mt-3 space-y-2">
-                            <div className="h-2 w-full rounded-full bg-slate-100" />
-                            <div className="h-2 w-2/3 rounded-full bg-slate-100" />
-                        </div>
-                    </div>
-                </div>
-                <div className="space-y-4">
-                    <div className="rounded-2xl bg-slate-900 px-5 py-4 text-white">
-                        <p className="text-xs text-slate-200">Recettes</p>
-                        <p className="mt-2 text-sm font-semibold">Pizza Margherita</p>
-                        <p className="text-xs text-slate-300">Tomate, Mozzarella</p>
-                        <div className="mt-4 grid grid-cols-3 gap-2">
-                            <div className="h-14 rounded-lg bg-white/10" />
-                            <div className="h-14 rounded-lg bg-white/10" />
-                            <div className="h-14 rounded-lg bg-white/10" />
-                        </div>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                        <p className="text-xs text-slate-500">Marge live</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-800">+12.4%</p>
-                        <div className="mt-3 h-20 rounded-xl bg-gradient-to-br from-[#FF7E47]/30 via-[#FF7E47]/10 to-transparent" />
-                    </div>
-                </div>
+            <div className="bg-slate-50 p-4">
+                <img
+                    src="https://i.ibb.co/G3c3GrtR/caisse-chefflow.png"
+                    alt="Interface POS ChefFlow"
+                    className="w-full rounded-2xl border border-slate-200 object-cover shadow-xl"
+                />
             </div>
         </div>
     );
@@ -174,7 +122,7 @@ export default function Welcome() {
             activeTab === 'cuisine'
                 ? {
                       title: 'Cote Cuisine',
-                      text: 'Centralisez vos fiches techniques, allergenes et couts de revient.',
+                      text: 'Centralisez vos fiches techniques, allergènes et couts de revient.',
                       icon: Utensils,
                   }
                 : {
@@ -196,32 +144,32 @@ export default function Welcome() {
             </Head>
 
             <section className="relative overflow-hidden px-6 pb-20 pt-20 md:pt-28">
-                <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="mx-auto   max-w-7xl items-center gap-12 ">
                     <FadeInSection>
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#FF7E47]">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#FF7E47] text-center">
                             ChefFlow POS
                         </p>
-                        <h1 className="mt-4 font-serif text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
-                            Prenez le controle total de votre restaurant, de la cuisine a la caisse.
+                        <h1 className="mt-4 text-4xl font-black leading-tight text-slate-900 md:text-5xl text-center">
+                        Gérez votre restaurant comme un pro !
                         </h1>
-                        <p className="mt-4 text-base text-slate-600 md:text-lg">
-                            Gereez vos ventes, suivez vos stocks en temps reel et protegez vos marges avec ChefFlow. Le POS concu pour ceux qui aiment cuisiner.
+                        <p className="mt-4 text-base text-slate-600 md:text-lg text-center">
+                        ChefFlow centralise vos ventes, vos stocks et vos recettes en un seul endroit. Simple, rapide, fait pour les restaurateurs.
                         </p>
-                        <div className="mt-6 flex flex-wrap items-center gap-4">
+                        <div className="mt-6 flex flex-wrap justify-center items-center gap-4">
                             <Link
                                 href={route('register')}
-                                className="rounded-full bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d]"
+                                className="rounded-full bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d] text-center"
                             >
-                                Demarrer l essai gratuit
+                                Démarrer l essai gratuit
                             </Link>
                             <Link
                                 href={route('login')}
                                 className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                             >
-                                Voir la demo
+                                Voir la démo
                             </Link>
                         </div>
-                        <div className="mt-8 flex items-center gap-6 text-sm text-slate-500">
+                        <div className="my-8 flex items-center  gap-6 text-sm text-slate-500">
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 className="h-4 w-4 text-[#FF7E47]" />
                                 Sans engagement
@@ -243,7 +191,7 @@ export default function Welcome() {
 
             <section className="px-6 pb-16">
                 <div className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white px-6 py-4 text-center text-sm text-slate-500 shadow-sm">
-                    Deja adopte par +500 restaurateurs et pizzerias.
+                    Déja adopte par +500 restaurateurs et pizzerias.
                 </div>
             </section>
 
@@ -350,7 +298,7 @@ export default function Welcome() {
                 <div className="mx-auto max-w-6xl">
                     <FadeInSection>
                         <h2 className="text-3xl font-semibold text-slate-900">
-                            Questions frequentes
+                            Questions fréquentes
                         </h2>
                     </FadeInSection>
                     <div className="mt-8 grid gap-6 md:grid-cols-3">
@@ -380,10 +328,10 @@ export default function Welcome() {
                         <div className="space-y-2">
                             <p className="font-semibold text-slate-700">Produit</p>
                             <a href="#features" className="block hover:text-slate-900">
-                                Fonctionnalites
+                                Fonctionnalités
                             </a>
                             <a href="#experience" className="block hover:text-slate-900">
-                                Experience
+                                Expérience
                             </a>
                         </div>
                         <div className="space-y-2">
