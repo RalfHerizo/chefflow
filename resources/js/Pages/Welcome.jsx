@@ -1,13 +1,16 @@
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import {
+    Activity,
     ArrowRight,
     CheckCircle2,
-    LineChart,
-    Pizza,
-    Receipt,
+    ClipboardList,
+    LockKeyhole,
+    PackageCheck,
     ShieldCheck,
-    ShoppingBag,
+    Receipt,
+    Sparkles,
+    TriangleAlert,
     Utensils,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -17,42 +20,6 @@ const fadeUp = {
     hidden: { opacity: 0, y: 24 },
     visible: { opacity: 1, y: 0 },
 };
-
-const mockScreens = [
-    {
-        id: 'pos',
-        title: 'POS ChefFlow',
-    },
-    {
-        id: 'gallery',
-        title: 'Galerie Produits',
-    },
-    {
-        id: 'stock',
-        title: 'Alertes Stock',
-    },
-];
-
-const features = [
-    {
-        title: 'Caisse POS Visuelle',
-        description:
-            'Des visuels clairs, un panier toujours visible, et une prise de commande ultra rapide.',
-        icon: ShoppingBag,
-    },
-    {
-        title: 'Gestion des Stocks Predictive',
-        description:
-            'Alertes de seuil, fiches ingredients et deduction automatique par recette.',
-        icon: ShieldCheck,
-    },
-    {
-        title: 'Tableau de bord Analytique',
-        description:
-            'Suivez la marge, les ventes live et les produits stars sans effort.',
-        icon: LineChart,
-    },
-];
 
 const whoWeAreStats = [
     { value: '100%', label: 'Contrôle quotidien' },
@@ -168,15 +135,371 @@ function WhoWeAreSection() {
     );
 }
 
-function FeatureCard({ icon: Icon, title, description }) {
+function PremiumFeatureCard({
+    icon: Icon,
+    title,
+    description,
+    className = '',
+    children,
+}) {
     return (
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FF7E47]/10 text-[#FF7E47]">
-                <Icon className="h-6 w-6" />
+        <motion.article
+            whileHover={{ y: -6 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(246,242,238,0.86))] p-7 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl ${className}`}
+        >
+            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-black/5 bg-white/80 text-[#7c5a47] shadow-sm">
+                <Icon className="h-5 w-5" />
             </div>
-            <h3 className="mt-4 text-lg font-semibold text-slate-800">{title}</h3>
-            <p className="mt-2 text-sm text-slate-500">{description}</p>
-        </div>
+            <div className="mt-6 max-w-sm">
+                <h3 className="text-xl font-semibold tracking-[-0.02em] text-slate-900">
+                    {title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                    {description}
+                </p>
+            </div>
+            <div className="mt-8">{children}</div>
+        </motion.article>
+    );
+}
+
+function PremiumFeaturesSection() {
+    const premiumFeatures = [
+        {
+            icon: Receipt,
+            title: 'Fast POS for real service environments',
+            description:
+                'Take orders quickly with a clean interface designed for fast-moving service.',
+            className: 'md:col-span-2 md:min-h-[320px]',
+            visual: (
+                <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                    <div className="rounded-[28px] border border-black/5 bg-white/85 p-4 shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <div>
+                                <p className="text-xs uppercase tracking-[0.25em] text-slate-400">
+                                    Service mode
+                                </p>
+                                <p className="mt-1 text-sm font-semibold text-slate-900">
+                                    Main counter
+                                </p>
+                            </div>
+                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                                Ready to close
+                            </span>
+                        </div>
+                        <div className="mt-4 space-y-3">
+                            {[
+                                ['Smash Burger', '$18.40'],
+                                ['Truffle Fries', '$7.80'],
+                                ['House Lemonade', '$4.20'],
+                            ].map(([label, value]) => (
+                                <div
+                                    key={label}
+                                    className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3"
+                                >
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-900">
+                                            {label}
+                                        </p>
+                                        <p className="mt-1 text-xs text-slate-400">
+                                            Quick-add preset
+                                        </p>
+                                    </div>
+                                    <p className="text-sm font-semibold text-slate-700">
+                                        {value}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex flex-col justify-between rounded-[28px] border border-black/5 bg-[#1f1a17] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)]">
+                        <div>
+                            <p className="text-xs uppercase tracking-[0.3em] text-white/45">
+                                Current ticket
+                            </p>
+                            <p className="mt-3 text-4xl font-semibold tracking-[-0.03em]">
+                                $30.40
+                            </p>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between text-sm text-white/70">
+                                <span>3 items</span>
+                                <span>Card</span>
+                            </div>
+                            <button
+                                type="button"
+                                className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10"
+                            >
+                                Checkout instantly
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            icon: TriangleAlert,
+            title: 'Real-time stock alerts',
+            description:
+                'Know exactly when ingredients are running low before service is impacted.',
+            className: 'md:row-span-1 md:min-h-[320px]',
+            visual: (
+                <div className="space-y-3">
+                    {[
+                        {
+                            label: 'Tomatoes low',
+                            tone: 'border-amber-200 bg-amber-50 text-amber-800',
+                        },
+                        {
+                            label: 'Cheese critical',
+                            tone: 'border-rose-200 bg-rose-50 text-rose-800',
+                        },
+                    ].map((alert) => (
+                        <div
+                            key={alert.label}
+                            className="rounded-[24px] border border-black/5 bg-white/85 p-4 shadow-sm"
+                        >
+                            <div
+                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${alert.tone}`}
+                            >
+                                {alert.label}
+                            </div>
+                            <div className="mt-4 h-2 rounded-full bg-slate-100">
+                                <div
+                                    className={`h-2 rounded-full ${
+                                        alert.label.includes('critical')
+                                            ? 'w-1/4 bg-rose-300'
+                                            : 'w-2/5 bg-amber-300'
+                                    }`}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ),
+        },
+        {
+            icon: ClipboardList,
+            title: 'Technical sheets built for kitchen precision',
+            description:
+                'Standardize recipes, quantities, and preparation across your team.',
+            className: 'md:min-h-[320px]',
+            visual: (
+                <div className="rounded-[28px] border border-black/5 bg-white/85 p-5 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-xs uppercase tracking-[0.25em] text-slate-400">
+                                Recipe sheet
+                            </p>
+                            <h4 className="mt-2 text-base font-semibold text-slate-900">
+                                Signature burger
+                            </h4>
+                        </div>
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                            4 steps
+                        </span>
+                    </div>
+                    <div className="mt-5 space-y-3">
+                        {[
+                            'Brioche bun · 1 unit',
+                            'Aged cheddar · 2 slices',
+                            'House sauce · 18 g',
+                        ].map((item) => (
+                            <div
+                                key={item}
+                                className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"
+                            >
+                                <span className="h-2 w-2 rounded-full bg-[#c39274]" />
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ),
+        },
+        {
+            icon: Activity,
+            title: 'Operational insights in one dashboard',
+            description:
+                'Track performance, monitor sales, and improve daily decisions.',
+            className: 'md:col-span-2 md:min-h-[320px]',
+            visual: (
+                <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        {[
+                            ['Net sales', '$12.4k'],
+                            ['Orders today', '184'],
+                        ].map(([label, value]) => (
+                            <div
+                                key={label}
+                                className="rounded-[24px] border border-black/5 bg-white/85 p-5 shadow-sm"
+                            >
+                                <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+                                    {label}
+                                </p>
+                                <p className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-slate-900">
+                                    {value}
+                                </p>
+                                <p className="mt-2 text-xs text-emerald-600">
+                                    +12% vs yesterday
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="rounded-[28px] border border-black/5 bg-[#f8f6f3] p-5 shadow-sm">
+                        <div className="flex items-end gap-3">
+                            {[48, 66, 58, 84, 74, 96, 88].map((height, index) => (
+                                <div key={height} className="flex-1">
+                                    <div
+                                        className="rounded-t-[18px] bg-gradient-to-b from-[#d9c5b7] to-[#9a765f]"
+                                        style={{ height: `${height}px` }}
+                                    />
+                                    <p className="mt-2 text-center text-[10px] uppercase tracking-[0.2em] text-slate-400">
+                                        {`D${index + 1}`}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                            {[
+                                'Peak lunch +18%',
+                                'Food cost stable',
+                                'Conversion 7.2%',
+                            ].map((item) => (
+                                <div
+                                    key={item}
+                                    className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3 text-sm text-slate-600"
+                                >
+                                    {item}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            icon: LockKeyhole,
+            title: 'Secure by design',
+            description:
+                'Permissions and access built for team environments.',
+            className: 'md:min-h-[280px]',
+            visual: (
+                <div className="rounded-[28px] border border-black/5 bg-white/85 p-5 shadow-sm">
+                    <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3">
+                        <ShieldCheck className="h-5 w-5 text-[#8d6a57]" />
+                        <div>
+                            <p className="text-sm font-semibold text-slate-900">
+                                Role-based access
+                            </p>
+                            <p className="text-xs text-slate-500">
+                                Manager · Cashier · Kitchen
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                        {['Reports', 'Pricing rules', 'Refund actions'].map((item) => (
+                            <div
+                                key={item}
+                                className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"
+                            >
+                                <span>{item}</span>
+                                <span className="rounded-full bg-white px-2.5 py-1 text-xs text-slate-500">
+                                    Restricted
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ),
+        },
+        {
+            icon: PackageCheck,
+            title: 'Quick onboarding',
+            description:
+                'Start using Chefflow without operational friction.',
+            className: 'md:min-h-[280px]',
+            visual: (
+                <div className="rounded-[28px] border border-black/5 bg-white/85 p-5 shadow-sm">
+                    <div className="space-y-3">
+                        {[
+                            'Import your menu',
+                            'Set user roles',
+                            'Start your first service',
+                        ].map((step, index) => (
+                            <div
+                                key={step}
+                                className="flex items-center gap-4 rounded-2xl bg-slate-50 px-4 py-3"
+                            >
+                                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f3ebe5] text-sm font-semibold text-[#8d6a57]">
+                                    {index + 1}
+                                </span>
+                                <span className="text-sm font-medium text-slate-700">
+                                    {step}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ),
+        },
+    ];
+
+    return (
+        <section id="features" className="px-6 pb-24">
+            <div className="mx-auto max-w-7xl">
+                <FadeInSection>
+                    <div className="mx-auto max-w-3xl text-center">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#8d6a57] shadow-sm backdrop-blur">
+                            <Sparkles className="h-3.5 w-3.5" />
+                            Core Product Features
+                        </div>
+                        <h2 className="mt-6 text-4xl font-semibold tracking-[-0.04em] text-slate-900 md:text-5xl">
+                            Everything your restaurant needs to operate smoothly.
+                        </h2>
+                        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
+                            From order management to inventory control,
+                            Chefflow helps food businesses run faster, smarter,
+                            and with full operational visibility.
+                        </p>
+                    </div>
+                </FadeInSection>
+
+                <motion.div
+                    variants={{
+                        hidden: {},
+                        visible: {
+                            transition: {
+                                staggerChildren: 0.08,
+                            },
+                        },
+                    }}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.15 }}
+                    className="mt-14 grid gap-6 md:grid-cols-3"
+                >
+                    {premiumFeatures.map((feature) => (
+                        <motion.div
+                            key={feature.title}
+                            variants={fadeUp}
+                            transition={{ duration: 0.55, ease: 'easeOut' }}
+                        >
+                            <PremiumFeatureCard
+                                icon={feature.icon}
+                                title={feature.title}
+                                description={feature.description}
+                                className={feature.className}
+                            >
+                                {feature.visual}
+                            </PremiumFeatureCard>
+                        </motion.div>
+                    ))}
+                </motion.div>
+            </div>
+        </section>
     );
 }
 
@@ -287,30 +610,7 @@ export default function Welcome() {
                 {/* FIN SECTION WHO WE ARE */}
             </section>
 
-            <section id="features" className="px-6 pb-20">
-                <div className="mx-auto max-w-7xl">
-                    <FadeInSection>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-semibold text-[#FF7E47]">
-                                    Les 3 forces ChefFlow
-                                </p>
-                                <h2 className="mt-2 text-3xl font-semibold text-slate-900">
-                                    Tout votre restaurant dans un seul cockpit
-                                </h2>
-                            </div>
-                            <Pizza className="hidden h-10 w-10 text-slate-300 md:block" />
-                        </div>
-                    </FadeInSection>
-                    <div className="mt-10 grid gap-6 md:grid-cols-3">
-                        {features.map((feature, idx) => (
-                            <FadeInSection key={feature.title} delay={idx * 0.1}>
-                                <FeatureCard {...feature} />
-                            </FadeInSection>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <PremiumFeaturesSection />
 
             <section id="experience" className="px-6 pb-20">
                 <div className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
