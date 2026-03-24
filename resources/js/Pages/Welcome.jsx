@@ -11,11 +11,12 @@ import {
     Receipt,
     Sparkles,
     TriangleAlert,
-    Utensils,
+    Linkedin,
+    Github,
+    Globe,
     Users,
     FileDown,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
 import MarketingLayout from '@/Layouts/MarketingLayout';
 
 const fadeUp = {
@@ -645,9 +646,6 @@ function FadeInSection({ children, delay = 0 }) {
 }
 
 export default function Welcome() {
-    const [activeTab, setActiveTab] = useState('cuisine');
-
-
     return (
         <MarketingLayout>
             <Head>
@@ -732,41 +730,55 @@ export default function Welcome() {
                 <FinalCTASection />
             </section>
 
-            <footer className="border-t border-slate-200 bg-white/70 px-6 py-10">
-                <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 md:flex-row">
-                    <div>
-                        <p className="text-sm font-semibold text-slate-900">ChefFlow</p>
-                        <p className="mt-2 text-sm text-slate-500">
-                            Ventes, stocks et recettes en un seul endroit.
-                        </p>
-                    </div>
-                    <div className="grid gap-4 text-sm text-slate-500 md:grid-cols-3">
-                        <div className="space-y-2">
-                            <p className="font-semibold text-slate-700">Produit</p>
-                            <a href="#features" className="block hover:text-slate-900">
-                                Fonctionnalités
-                            </a>
-                            <a href="#experience" className="block hover:text-slate-900">
-                                Expérience
-                            </a>
-                        </div>
-                        <div className="space-y-2">
-                            <p className="font-semibold text-slate-700">Ressources</p>
-                            <a href="#faq" className="block hover:text-slate-900">
-                                FAQ
-                            </a>
-                            <Link href={route('login')} className="block hover:text-slate-900">
-                                Connexion
+            <footer className="border-t border-slate-200 bg-white px-6 py-12">
+                <div className="mx-auto max-w-7xl">
+                    <div className="flex flex-col items-start justify-between gap-10 md:flex-row">
+                        <div className="space-y-4">
+                            <Link href="/" className="flex items-center gap-2">
+                                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#1f1a17] text-xs font-bold text-white shadow-lg shadow-black/10">
+                                    CH
+                                </span>
+                                <span className="text-sm font-bold uppercase tracking-widest text-slate-900">
+                                    ChefFlow
+                                </span>
                             </Link>
+                            <p className="max-w-xs text-sm leading-relaxed text-slate-500">
+                                Une solution moderne conçue pour simplifier la gestion opérationnelle des restaurants. 
+                                <span className="block mt-2 font-medium text-slate-400 italic">
+                                    By Ralf Lionel - Fullstack Developer
+                                </span>
+                            </p>
+                            
+                            <div className="flex items-center gap-5 pt-2">
+                                <a href="https://www.ralf-lionel.com/" target="_blank" title="Mon Portfolio" className="text-slate-400 hover:text-[#FF7E47] transition-all hover:scale-110">
+                                    <Globe className="h-5 w-5" />
+                                </a>
+                                <a href="https://github.com/RalfHerizo" target="_blank" title="GitHub" className="text-slate-400 hover:text-slate-900 transition-all hover:scale-110">
+                                    <Github className="h-5 w-5" />
+                                </a>
+                                <a href="https://www.linkedin.com/in/ralf-lionel-066b20227/" target="_blank" title="LinkedIn" className="text-slate-400 hover:text-[#0077b5] transition-all hover:scale-110">
+                                    <Linkedin className="h-5 w-5" />
+                                </a>
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <p className="font-semibold text-slate-700">Social</p>
-                            <a href="https://www.linkedin.com" className="block hover:text-slate-900">
-                                LinkedIn
-                            </a>
-                            <a href="https://www.instagram.com" className="block hover:text-slate-900">
-                                Instagram
-                            </a>
+
+                        <div className="grid grid-cols-2 gap-12 sm:gap-24">
+                            <div className="space-y-4">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Navigation</p>
+                                <nav className="flex flex-col gap-3 text-sm font-medium text-slate-500">
+                                    <a href="#features" className="transition hover:text-[#FF7E47]">Fonctionnalités</a>
+                                    <a href="#about" className="transition hover:text-[#FF7E47]">À propos</a>
+                                    <a href="#roadmap" className="transition hover:text-[#FF7E47]">Roadmap</a>
+                                </nav>
+                            </div>
+
+                            <div className="space-y-4">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Contact</p>
+                                <nav className="flex flex-col gap-3 text-sm font-medium text-slate-500">
+                                    <a href="mailto:ralflionel120@gmail.cpm" className="transition hover:text-[#FF7E47]">Me contacter</a>
+                                    <span className="text-slate-300">© {new Date().getFullYear()}</span>
+                                </nav>
+                            </div>
                         </div>
                     </div>
                 </div>
