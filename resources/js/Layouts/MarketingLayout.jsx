@@ -41,11 +41,11 @@ export default function MarketingLayout({ children }) {
                     </Link>
 
                     <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-                        <a href="#features" className="hover:text-slate-900">
-                            Features
+                        <a href="#about" className="hover:text-slate-900">
+                            À propos
                         </a>
-                        <a href="#experience" className="hover:text-slate-900">
-                            Experience
+                        <a href="#features" className="hover:text-slate-900">
+                            Fonctionnalités
                         </a>
                         <a href="#faq" className="hover:text-slate-900">
                             FAQ

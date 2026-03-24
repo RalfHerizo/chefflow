@@ -64,7 +64,7 @@ function BrowserMockup() {
 
 function WhoWeAreSection() {
     return (
-        <section className="bg-[#faf8f5] px-6 py-24 lg:px-16">
+        <section id='about' className="bg-[#faf8f5] px-6 py-24 lg:px-16">
             <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
                 <motion.div
                     initial={{ opacity: 0, x: -40 }}
@@ -175,7 +175,6 @@ function PremiumFeaturesSection() {
             className: 'md:col-span-2 md:min-h-[320px]',
             visual: (
                 <div className="grid gap-4"> 
-                {/* //lg:grid-cols-[1.2fr_0.8fr] */}
                     <div className="rounded-[28px] border border-black/5 bg-white/85 p-4 shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <div>
@@ -438,14 +437,13 @@ function PremiumFeaturesSection() {
                     </div>
                 </FadeInSection>
 
-                {/* Masonry Layout avec espacement cohérent */}
                 <div className="columns-1 gap-8 space-y-8 md:columns-2 lg:columns-3">
                     {premiumFeatures.map((feature, idx) => (
                         <motion.div
                             key={feature.title}
                             initial="hidden"
                             whileInView="visible"
-                            viewport={{ once: true, amount: 0.3 }}
+                            viewport={{ once: false, amount: 0.3 }}
                             variants={{
                                 hidden: { opacity: 0, y: 30 },
                                 visible: { 
