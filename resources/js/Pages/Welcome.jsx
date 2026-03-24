@@ -595,6 +595,56 @@ function RoadmapSection() {
     );
 }
 
+function FinalCTASection() {
+    return (
+        <section className="px-6 py-24">
+            <div className="mx-auto max-w-5xl">
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: false }}
+                    transition={{ duration: 0.6 }}
+                    className="relative overflow-hidden rounded-[40px] bg-[#1f1a17] px-8 py-16 text-center shadow-2xl md:px-16 md:py-20"
+                >
+                    {/* Décoration lumineuse interne */}
+                    <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#FF7E47] opacity-20 blur-[80px]" />
+                    <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-[#8d6a57] opacity-20 blur-[80px]" />
+
+                    <div className="relative z-10">
+                        <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
+                            Prêt à piloter votre restaurant <span className="text-[#FF7E47]">autrement ?</span>
+                        </h2>
+                        <p className="mx-auto mt-6 max-w-xl text-lg text-white/70">
+                            Créez votre compte en 30 secondes. Aucune carte bancaire requise. Testez la puissance de ChefFlow dès aujourd'hui.
+                        </p>
+                        
+                        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                            <Link
+                                href={route('register')}
+                                className="group inline-flex items-center gap-2 rounded-2xl bg-[#FF7E47] px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-[#e86f3d] active:scale-95"
+                            >
+                                Commencer gratuitement
+                                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                            </Link>
+                        </div>
+
+                        <div className="mt-8 flex items-center justify-center gap-6 text-sm text-white/40">
+                            <div className="flex items-center gap-2 text-white/90">
+                                <CheckCircle2 className="h-4 w-4 text-[#FF7E47]" />
+                                Installation 0€
+                            </div>
+                            <div className="flex items-center gap-2 text-white/90">
+                                <CheckCircle2 className="h-4 w-4 text-[#FF7E47]" />
+                                Support 7j/7
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
 function FadeInSection({ children, delay = 0 }) {
     return (
         <motion.div
@@ -706,6 +756,10 @@ export default function Welcome() {
 
             <section className="pb-16">
                 <RoadmapSection />
+            </section>
+
+            <section className="pb-16">
+                <FinalCTASection />
             </section>
 
             <section id="experience" className="px-6 pb-20">
