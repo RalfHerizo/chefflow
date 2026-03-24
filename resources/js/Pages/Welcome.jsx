@@ -146,7 +146,7 @@ function PremiumFeatureCard({
         <motion.article
             whileHover={{ y: -6 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className={`group relative h-full overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(246,242,238,0.86))] p-7 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl ${className}`}
+            className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(246,242,238,0.86))] p-7 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl ${className}`}
         >
             <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-black/5 bg-white/80 text-[#7c5a47] shadow-sm">
@@ -172,7 +172,7 @@ function PremiumFeaturesSection() {
             title: 'Fast POS for real service environments',
             description:
                 'Take orders quickly with a clean interface designed for fast-moving service.',
-            className: 'lg:col-span-4 lg:row-span-2',
+            className: 'md:col-span-2 md:min-h-[320px]',
             visual: (
                 <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
                     <div className="rounded-[28px] border border-black/5 bg-white/85 p-4 shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
@@ -244,7 +244,7 @@ function PremiumFeaturesSection() {
             title: 'Real-time stock alerts',
             description:
                 'Know exactly when ingredients are running low before service is impacted.',
-            className: 'lg:col-span-2 lg:row-span-2',
+            className: 'md:row-span-1 md:min-h-[320px]',
             visual: (
                 <div className="space-y-3">
                     {[
@@ -285,7 +285,7 @@ function PremiumFeaturesSection() {
             title: 'Technical sheets built for kitchen precision',
             description:
                 'Standardize recipes, quantities, and preparation across your team.',
-            className: 'lg:col-span-2 lg:row-span-2',
+            className: 'md:min-h-[320px]',
             visual: (
                 <div className="rounded-[28px] border border-black/5 bg-white/85 p-5 shadow-sm">
                     <div className="flex items-center justify-between">
@@ -324,7 +324,7 @@ function PremiumFeaturesSection() {
             title: 'Operational insights in one dashboard',
             description:
                 'Track performance, monitor sales, and improve daily decisions.',
-            className: 'lg:col-span-4 lg:row-span-2',
+            className: 'md:col-span-2 md:min-h-[320px]',
             visual: (
                 <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
                     <div className="grid gap-4 sm:grid-cols-2">
@@ -385,7 +385,7 @@ function PremiumFeaturesSection() {
             title: 'Secure by design',
             description:
                 'Permissions and access built for team environments.',
-            className: 'lg:col-span-2 lg:col-start-3 lg:row-span-1',
+            className: 'md:min-h-[280px]',
             visual: (
                 <div className="rounded-[28px] border border-black/5 bg-white/85 p-5 shadow-sm">
                     <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3">
@@ -420,7 +420,7 @@ function PremiumFeaturesSection() {
             title: 'Quick onboarding',
             description:
                 'Start using Chefflow without operational friction.',
-            className: 'lg:col-span-2 lg:col-start-5 lg:row-span-1',
+            className: 'md:min-h-[280px]',
             visual: (
                 <div className="rounded-[28px] border border-black/5 bg-white/85 p-5 shadow-sm">
                     <div className="space-y-3">
@@ -479,7 +479,7 @@ function PremiumFeaturesSection() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.15 }}
-                    className="mt-14 grid gap-6 lg:auto-rows-[182px] lg:grid-cols-6"
+                    className="mt-14 grid gap-6 md:grid-cols-3"
                 >
                     {premiumFeatures.map((feature) => (
                         <motion.div
