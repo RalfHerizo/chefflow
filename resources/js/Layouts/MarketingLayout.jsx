@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import { Github } from 'lucide-react';
 
 export default function MarketingLayout({ children }) {
     const [scrolled, setScrolled] = useState(false);
@@ -52,6 +53,15 @@ export default function MarketingLayout({ children }) {
                     </nav>
 
                     <div className="flex items-center gap-3">
+                        <a
+                            href="https://github.com/RalfHerizo/chefflow"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-lg p-2 text-slate-600 transition hover:bg-orange-100 hover:text-slate-900"
+                            aria-label="GitHub"
+                        >
+                            <Github className="h-5 w-5" />
+                        </a>
                         <Link
                             href={route('login')}
                             className="text-sm font-medium text-slate-600 hover:text-slate-900"
