@@ -50,9 +50,6 @@ export default function MarketingLayout({ children }) {
                         <a href="#roadmap" className="hover:text-slate-900">
                             Roadmap
                         </a>
-                        <a href="#faq" className="hover:text-slate-900">
-                            FAQ
-                        </a>
                     </nav>
 
                     <div className="flex items-center gap-3">

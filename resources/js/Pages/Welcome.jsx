@@ -29,21 +29,6 @@ const whoWeAreStats = [
     { value: '95%', label: "Coordination de l'équipe" },
 ];
 
-const faqs = [
-    {
-        q: 'Combien de temps pour installer ChefFlow ?',
-        a: 'Moins d une heure. Vous pouvez importer vos produits et commencer a vendre.',
-    },
-    {
-        q: 'ChefFlow fonctionne-t-il pour les pizzerias ?',
-        a: 'Oui. Le mode recette est ideal pour les pates, garnitures et variantes.',
-    },
-    {
-        q: 'Support disponible ?',
-        a: 'Support humain via chat et email, avec un suivi rapide des demandes.',
-    },
-];
-
 function BrowserMockup() {
     return (
         <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl">
@@ -745,28 +730,6 @@ export default function Welcome() {
 
             <section className="pb-16">
                 <FinalCTASection />
-            </section>
-
-            <section id="faq" className="px-6 pb-20">
-                <div className="mx-auto max-w-6xl">
-                    <FadeInSection>
-                        <h2 className="text-3xl font-semibold text-slate-900">
-                            Questions fréquentes
-                        </h2>
-                    </FadeInSection>
-                    <div className="mt-8 grid gap-6 md:grid-cols-3">
-                        {faqs.map((item, idx) => (
-                            <FadeInSection key={item.q} delay={idx * 0.05}>
-                                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                                    <h3 className="text-base font-semibold text-slate-900">
-                                        {item.q}
-                                    </h3>
-                                    <p className="mt-3 text-sm text-slate-500">{item.a}</p>
-                                </div>
-                            </FadeInSection>
-                        ))}
-                    </div>
-                </div>
             </section>
 
             <footer className="border-t border-slate-200 bg-white/70 px-6 py-10">
