@@ -84,14 +84,14 @@ function WhoWeAreSection() {
                         A propos de nous
                     </span>
 
-                    <h2 className="mt-4 text-4xl font-extrabold leading-tight text-gray-900">
+                    <h2 className="mt-4 text-2xl lg:text-4xl font-extrabold leading-tight text-gray-900">
                         Quand les opérations en cuisine deviennent{' '}
                         <span className="text-[#FF7E47]">claires</span>,{' '}
                         <span className="text-[#FF7E47]">rapides</span> et{' '}
                         <span className="text-[#FF7E47]">fiables</span>
                     </h2>
 
-                    <p className="mt-6 text-lg leading-relaxed text-gray-600">
+                    <p className="mt-6 text-sm lg:text-lg leading-relaxed text-gray-600">
                         Conçu pour les equipes de restauration qui ont besoin
                         d'une organisation claire, d'une responsabilisation et
                         d'un déroulement sans heurts à chaque service.
@@ -110,7 +110,7 @@ function WhoWeAreSection() {
                     <div className="mt-14 grid grid-cols-3 gap-8">
                         {whoWeAreStats.map((stat) => (
                             <div key={stat.label}>
-                                <h3 className="text-3xl font-extrabold">
+                                <h3 className=" text-xl lg:text-3xl font-extrabold">
                                     {stat.value}
                                 </h3>
                                 <p className="text-gray-500">{stat.label}</p>
@@ -207,7 +207,7 @@ function PremiumFeaturesSection() {
                             <p className="text-xs uppercase tracking-[0.3em] text-[#FF7E47]">
                                 Current ticket
                             </p>
-                            <p className="mt-3 text-4xl font-semibold tracking-[-0.03em]">
+                            <p className="mt-3 text-2xl lg:text-4xl font-semibold tracking-[-0.03em]">
                                 30.40&euro;
                             </p>
                         </div>
@@ -419,7 +419,7 @@ function PremiumFeaturesSection() {
                         <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/50 bg-orange-50 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#8d6a57] mb-4">
                             Produit & Fonctionnalités
                         </div>
-                        <h2 className="mt-6 text-4xl font-extrabold tracking-[-0.04em] text-slate-900 md:text-5xl">
+                        <h2 className="mt-6 text-2xl lg:text-4xl font-extrabold tracking-[-0.04em] text-slate-900 md:text-5xl">
                             Tout pour gérer votre <span className='text-[#FF7E47]' >restaurant sereinement</span>.
                         </h2>
                     </div>
@@ -519,19 +519,20 @@ function RoadmapSection() {
                         <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/50 bg-orange-50 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#8d6a57] mb-4">
                             Prochainement
                         </div>
-                        <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">
+                        <h2 className="text-2xl lg:text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl">
                             Notre vision pour le futur
                         </h2>
-                        <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+                        <p className="mt-4 text-sm lg:text-lg text-slate-600 max-w-2xl mx-auto">
                             Nous construisons l'outil que vous méritez. Voici les prochaines étapes de l'aventure ChefFlow.
                         </p>
                     </div>
                 </FadeInSection>
 
-                <div className="relative mt-20">
-                    <div className="absolute left-1/2 hidden h-full w-px -translate-x-1/2 bg-gradient-to-b from-orange-200 via-slate-200 to-transparent lg:block" />
+                <div className="relative mt-20 px-4 lg:px-0">
+                    {/* Ligne verticale : décalée à gauche sur mobile, centrée sur Desktop */}
+                    <div className="absolute left-4 lg:left-1/2 h-full w-px -translate-x-1/2 bg-gradient-to-b from-orange-200 via-slate-200 to-transparent z-0" />
 
-                    <div className="space-y-20">
+                    <div className="space-y-12 lg:space-y-24">
                         {roadmapItems.map((item, idx) => (
                             <motion.div
                                 key={item.title}
@@ -539,15 +540,21 @@ function RoadmapSection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: false, amount: 0.3 }}
                                 transition={{ duration: 0.7, delay: idx * 0.1 }}
-                                className={`relative flex flex-col items-center lg:flex-row ${
+                                className={`relative flex flex-col lg:flex-row items-center ${
                                     idx % 2 === 0 ? 'lg:flex-row-reverse' : ''
                                 }`}
                             >
-                                {/* Point lumineux sur la timeline */}
-                                <div className="absolute left-1/2 hidden h-5 w-5 -translate-x-1/2 rounded-full border-4 border-[#faf8f5] bg-[#FF7E47] shadow-[0_0_15px_rgba(255,126,71,0.5)] lg:block z-10" />
+                                {/* Point lumineux : suit la ligne */}
+                                <div className="absolute left-4 lg:left-1/2 h-5 w-5 -translate-x-1/2 rounded-full border-4 border-[#faf8f5] bg-[#FF7E47] shadow-[0_0_15px_rgba(255,126,71,0.5)] z-20" />
 
-                                <div className="w-full lg:w-1/2 lg:px-16">
-                                    <div className="group relative rounded-[32px] border border-white bg-white/60 p-8 shadow-sm backdrop-blur-sm transition-all hover:shadow-xl hover:bg-white/80">
+                                {/* Conteneur de la carte avec espacement correct */}
+                                <div className={`w-full lg:w-1/2 z-10 
+                                    ${idx % 2 === 0 
+                                        ? 'pl-12 lg:pl-8 lg:pr-16' // Si à gauche : padding droit sur desktop
+                                        : 'pl-12 lg:pr-8'         // Si à droite : padding gauche partout
+                                    }`}
+                                >
+                                    <div className="group relative rounded-[32px] border border-white bg-white/60 p-6 sm:p-8 shadow-sm backdrop-blur-sm transition-all hover:shadow-xl hover:bg-white/80">
                                         <div className="flex items-center justify-between mb-6">
                                             <span className="text-xs font-black text-[#8d6a57] uppercase tracking-tighter opacity-60">
                                                 {item.quarter}
@@ -560,17 +567,23 @@ function RoadmapSection() {
                                                 {item.status}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-5">
-                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF7E47] text-white shadow-lg shadow-orange-200 transition-transform group-hover:scale-110">
-                                                <item.icon className="h-6 w-6" />
+                                        
+                                        <div className="flex items-center gap-4 sm:gap-5">
+                                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF7E47] text-white shadow-lg shadow-orange-200 transition-transform group-hover:scale-110">
+                                                <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                                             </div>
-                                            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{item.title}</h3>
+                                            <h3 className="text-lg sm:text-lg lg:text-2xl font-bold text-slate-900 tracking-tight">
+                                                {item.title}
+                                            </h3>
                                         </div>
-                                        <p className="mt-5 text-[15px] leading-relaxed text-slate-500 font-medium">
+                                        
+                                        <p className="mt-5 text-sm sm:text-[15px] leading-relaxed text-slate-500 font-medium">
                                             {item.description}
                                         </p>
                                     </div>
                                 </div>
+                                
+                                {/* Espace vide pour maintenir l'équilibre desktop */}
                                 <div className="hidden lg:block lg:w-1/2" />
                             </motion.div>
                         ))}
@@ -583,38 +596,41 @@ function RoadmapSection() {
 
 function FinalCTASection() {
     return (
-        <section className="px-6 py-24">
+        <section className="px-4 py-16 sm:px-6 lg:py-24">
             <div className="mx-auto max-w-5xl">
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: false }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="relative overflow-hidden rounded-[40px] bg-[#1f1a17] px-8 py-16 text-center shadow-2xl md:px-16 md:py-20"
+                    className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] bg-[#1f1a17] px-6 py-12 text-center shadow-2xl md:px-16 md:py-20"
                 >
-                    {/* Décoration lumineuse interne */}
-                    <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#FF7E47] opacity-20 blur-[80px]" />
-                    <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-[#8d6a57] opacity-20 blur-[80px]" />
+                    {/* Décorations lumineuses ajustées pour mobile */}
+                    <div className="absolute -right-20 -top-20 h-48 w-48 sm:h-64 sm:w-64 rounded-full bg-[#FF7E47] opacity-20 blur-[60px] sm:blur-[80px]" />
+                    <div className="absolute -left-20 -bottom-20 h-48 w-48 sm:h-64 sm:w-64 rounded-full bg-[#8d6a57] opacity-20 blur-[60px] sm:blur-[80px]" />
 
                     <div className="relative z-10">
-                        <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
-                            Prêt à piloter votre restaurant <span className="text-[#FF7E47]">autrement ?</span>
+                        <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-5xl">
+                            Prêt à piloter votre restaurant <br className="hidden sm:block" />
+                            <span className="text-[#FF7E47]">autrement ?</span>
                         </h2>
-                        <p className="mx-auto mt-6 max-w-xl text-lg text-white/70">
+                        
+                        <p className="mx-auto mt-6 max-w-xl text-base text-white/70 md:text-lg">
                             Créez votre compte en 30 secondes. Aucune carte bancaire requise. Testez la puissance de ChefFlow dès aujourd'hui.
                         </p>
                         
-                        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                        <div className="mt-10 flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
                             <Link
                                 href={route('register')}
-                                className="group inline-flex items-center gap-2 rounded-2xl bg-[#FF7E47] px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-[#e86f3d] active:scale-95"
+                                className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FF7E47] px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-[#e86f3d] active:scale-95 shadow-lg shadow-orange-900/20"
                             >
                                 Commencer gratuitement
                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                             </Link>
                         </div>
 
-                        <div className="mt-8 flex items-center justify-center gap-6 text-sm text-white/40">
+                        {/* Badges de réassurance : stack vertical sur très petits écrans */}
+                        <div className="mt-10 flex flex-wrap items-center justify-center gap-y-4 gap-x-8 text-sm text-white/40">
                             <div className="flex items-center gap-2 text-white/90">
                                 <CheckCircle2 className="h-4 w-4 text-[#FF7E47]" />
                                 Installation 0€
@@ -669,30 +685,30 @@ export default function Welcome() {
                             </div>
                         </div>
                         <div>
-                            <h1 className="mt-10 text-4xl font-extrabold leading-tight text-slate-900 md:text-5xl text-center">
+                            <h1 className="mt-10 text-2xl lg:text-4xl font-extrabold leading-tight text-slate-900  text-center">
                                 Gérez votre restaurant <span className='text-[#FF7E47]' >comme un pro !</span>
                             </h1>
-                            <p className="mt-4 text-base text-slate-600 md:text-lg text-center">
+                            <p className="mt-4 text-md text-slate-600  md:text-lg sm:text-sm text-center">
                                 ChefFlow centralise vos ventes, vos stocks et vos recettes en un seul endroit. Simple, rapide, fait pour les restaurateurs.
                             </p>
                         </div>
                         <div className="mt-6 flex flex-wrap justify-center items-center gap-4">
-                            <Link
-                                href={route('register')}
-                                className="group inline-flex items-center gap-2 rounded-lg bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d] text-center"
-                            >
-                                Créer mon compte gratuitement
-                                <span className="  items-center opacity-0 hidden translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-hover:inline-flex">
-                                    <ArrowRight className="h-4 w-4" />
-                                </span>
-                            </Link>
-                            <Link
-                                href={route('login')}
-                                className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50"
-                            >
-                                Se connecter
-                                
-                            </Link>
+                            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                                <Link
+                                    href={route('register')}
+                                    className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7E47] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d]"
+                                >
+                                    Créer mon compte gratuitement
+                                    <ArrowRight className="hidden sm:inline-flex h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                </Link>
+                                <Link
+                                    href={route('login')}
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                                >
+                                    Se connecter
+                                </Link>
+                            </div>
+                            
                         </div> 
                         <div className="my-8 flex items-center  gap-6 text-sm text-slate-500">
                             <div className="flex items-center gap-2">
