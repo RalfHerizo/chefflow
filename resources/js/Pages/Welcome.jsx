@@ -662,21 +662,6 @@ function FadeInSection({ children, delay = 0 }) {
 export default function Welcome() {
     const [activeTab, setActiveTab] = useState('cuisine');
 
-    const tabContent = useMemo(
-        () =>
-            activeTab === 'cuisine'
-                ? {
-                      title: 'Cote Cuisine',
-                      text: 'Centralisez vos fiches techniques, allergènes et couts de revient.',
-                      icon: Utensils,
-                  }
-                : {
-                      title: 'Cote Comptoir',
-                      text: 'Prise de commande fluide, tickets clairs, et encaissement rapide.',
-                      icon: Receipt,
-                  },
-        [activeTab],
-    );
 
     return (
         <MarketingLayout>
@@ -760,80 +745,6 @@ export default function Welcome() {
 
             <section className="pb-16">
                 <FinalCTASection />
-            </section>
-
-            <section id="experience" className="px-6 pb-20">
-                <div className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-                    <FadeInSection>
-                        <div className="flex flex-wrap items-center justify-between gap-6">
-                            <div>
-                                <p className="text-sm font-semibold text-[#FF7E47]">
-                                    Backstage vs Spotlight
-                                </p>
-                                <h2 className="mt-2 text-2xl font-semibold text-slate-900">
-                                    Une experience fluide pour chaque equipe
-                                </h2>
-                            </div>
-                            <div className="flex rounded-full bg-slate-100 p-1">
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('cuisine')}
-                                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                                        activeTab === 'cuisine'
-                                            ? 'bg-white text-slate-900 shadow'
-                                            : 'text-slate-500'
-                                    }`}
-                                >
-                                    Cuisine
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('comptoir')}
-                                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                                        activeTab === 'comptoir'
-                                            ? 'bg-white text-slate-900 shadow'
-                                            : 'text-slate-500'
-                                    }`}
-                                >
-                                    Comptoir
-                                </button>
-                            </div>
-                        </div>
-                    </FadeInSection>
-
-                    <FadeInSection delay={0.1}>
-                        <div className="mt-8 grid gap-6 lg:grid-cols-[0.6fr_0.4fr]">
-                            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-                                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                                    {tabContent.title}
-                                </p>
-                                <h3 className="mt-3 text-lg font-semibold text-slate-900">
-                                    {tabContent.text}
-                                </h3>
-                                <div className="mt-6 flex items-center gap-3 text-sm text-slate-500">
-                                    <tabContent.icon className="h-5 w-5 text-[#FF7E47]" />
-                                    Planning recette et cout en temps reel.
-                                </div>
-                            </div>
-                            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                                <div className="flex items-center justify-between text-sm text-slate-500">
-                                    <span>Tickets</span>
-                                    <span className="rounded-full bg-[#FF7E47]/10 px-2 py-0.5 text-xs text-[#FF7E47]">
-                                        Live
-                                    </span>
-                                </div>
-                                <div className="mt-4 space-y-2">
-                                    <div className="h-3 w-full rounded-full bg-slate-100" />
-                                    <div className="h-3 w-5/6 rounded-full bg-slate-100" />
-                                    <div className="h-3 w-2/3 rounded-full bg-slate-100" />
-                                </div>
-                                <p className="mt-6 text-xs text-slate-500">
-                                    Temps moyen par commande : 45s
-                                </p>
-                            </div>
-                        </div>
-                    </FadeInSection>
-                </div>
             </section>
 
             <section id="faq" className="px-6 pb-20">
