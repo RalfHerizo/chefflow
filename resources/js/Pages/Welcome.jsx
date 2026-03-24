@@ -530,11 +530,11 @@ function RoadmapSection() {
                     </div>
                 </FadeInSection>
 
-                <div className="relative mt-20 px-4 lg:px-0">
+                <div className="relative mt-20 px-0 lg:px-0">
                     {/* Ligne verticale : décalée à gauche sur mobile, centrée sur Desktop */}
                     <div className="absolute left-4 lg:left-1/2 h-full w-px -translate-x-1/2 bg-gradient-to-b from-orange-200 via-slate-200 to-transparent z-0" />
 
-                    <div className="space-y-12 lg:space-y-24">
+                    <div className="space-y-12 lg:space-y-20">
                         {roadmapItems.map((item, idx) => (
                             <motion.div
                                 key={item.title}
@@ -552,8 +552,8 @@ function RoadmapSection() {
                                 {/* Conteneur de la carte avec espacement correct */}
                                 <div className={`w-full lg:w-1/2 z-10 
                                     ${idx % 2 === 0 
-                                        ? 'pl-12 lg:pl-8 lg:pr-16' // Si à gauche : padding droit sur desktop
-                                        : 'pl-12 lg:pr-8'         // Si à droite : padding gauche partout
+                                        ? 'pl-10 lg:pl-8 lg:pr-16' // Si à gauche : padding droit sur desktop
+                                        : 'pl-10 lg:pr-8'         // Si à droite : padding gauche partout
                                     }`}
                                 >
                                     <div className="group relative rounded-[32px] border border-white bg-white/60 p-6 sm:p-8 shadow-sm backdrop-blur-sm transition-all hover:shadow-xl hover:bg-white/80">
@@ -570,11 +570,11 @@ function RoadmapSection() {
                                             </span>
                                         </div>
                                         
-                                        <div className="flex items-center gap-4 sm:gap-5">
+                                        <div className="lg:flex items-center gap-4 sm:gap-5">
                                             <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF7E47] text-white shadow-lg shadow-orange-200 transition-transform group-hover:scale-110">
                                                 <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                                             </div>
-                                            <h3 className="text-lg sm:text-lg lg:text-2xl font-bold text-slate-900 tracking-tight">
+                                            <h3 className="text-md mt-3 lg:mt-0 sm:text-lg lg:text-2xl font-bold text-slate-900 tracking-tight">
                                                 {item.title}
                                             </h3>
                                         </div>
