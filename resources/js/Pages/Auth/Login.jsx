@@ -27,7 +27,7 @@ export default function Login({ status, canResetPassword }) {
             <Head title="Connexion" />
 
             <div className="mb-8 text-center">
-                <ApplicationLogo />
+                
                 <h2 className="text-xl font-bold text-slate-900">Heureux de vous revoir</h2>
                 <p className="mt-2 text-sm text-slate-500">Entrez vos accès pour gérer votre service</p>
             </div>
