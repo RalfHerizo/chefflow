@@ -12,6 +12,8 @@ import {
     Sparkles,
     TriangleAlert,
     Utensils,
+    Users,
+    FileDown,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import MarketingLayout from '@/Layouts/MarketingLayout';
@@ -428,7 +430,7 @@ function PremiumFeaturesSection() {
             <div className="mx-auto max-w-7xl">
                 <FadeInSection>
                     <div className="mx-auto max-w-3xl text-center mb-16">
-                        <div className="inline-flex items-center gap-2 rounded-lg border border-[#FF7E47] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#FF7E47] shadow-sm backdrop-blur">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/50 bg-orange-50 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#8d6a57] mb-4">
                             Produit & Fonctionnalités
                         </div>
                         <h2 className="mt-6 text-4xl font-extrabold tracking-[-0.04em] text-slate-900 md:text-5xl">
@@ -467,6 +469,126 @@ function PremiumFeaturesSection() {
                             </PremiumFeatureCard>
                         </motion.div>
                     ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+const roadmapItems = [
+    {
+        quarter: 'Q2 2026',
+        title: 'Historique des commandes',
+        status: 'En cours',
+        description: 'Consultez toutes vos ventes passées, filtrez par date et par statut, et naviguez par pages.',
+        icon: ClipboardList,
+    },
+    {
+        quarter: 'Q2 2026',
+        title: 'Alertes stock automatiques',
+        status: 'En cours',
+        description: 'Notifications en temps réel dès qu\'un ingrédient passe sous son seuil critique.',
+        icon: Activity,
+    },
+    {
+        quarter: 'Q3 2026',
+        title: 'Multi-établissements',
+        status: 'Planifié',
+        description: 'Un seul compte pour gérer plusieurs restaurants. Idéal pour les gérants de chaînes et franchises.',
+        icon: LockKeyhole,
+    },
+    {
+        quarter: 'Q3 2026',
+        title: 'Gestion d\'équipe',
+        status: 'Planifié',
+        description: 'Attribuez des rôles à vos collaborateurs : Admin, Manager, Caissier, Cuisinier.',
+        icon: Users,
+    },
+    {
+        quarter: 'Q4 2026',
+        title: 'Export & intégrations',
+        status: 'Vision',
+        description: 'Export PDF des fiches techniques, CSV des commandes, impression tickets et connexion comptabilité.',
+        icon: FileDown,
+    },
+    {
+        quarter: '2027',
+        title: 'Intelligence prédictive',
+        status: 'Vision',
+        description: 'Prévisions de stocks, suggestions de réapprovisionnement et analyse de rentabilité par plat.',
+        icon: Sparkles,
+    },
+];
+
+function RoadmapSection() {
+    return (
+        <section id="roadmap" className="relative px-6 py-24 overflow-hidden bg-[#faf8f5]">
+            {/* Éléments de décoration en arrière-plan */}
+            <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-orange-100/50 blur-3xl opacity-50" />
+            <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-amber-50/50 blur-3xl opacity-50" />
+
+            <div className="relative mx-auto max-w-7xl">
+                <FadeInSection>
+                    <div className="text-center mb-16">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/50 bg-orange-50 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#8d6a57] mb-4">
+                            Prochainement
+                        </div>
+                        <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">
+                            Notre vision pour le futur
+                        </h2>
+                        <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+                            Nous construisons l'outil que vous méritez. Voici les prochaines étapes de l'aventure ChefFlow.
+                        </p>
+                    </div>
+                </FadeInSection>
+
+                <div className="relative mt-20">
+                    <div className="absolute left-1/2 hidden h-full w-px -translate-x-1/2 bg-gradient-to-b from-orange-200 via-slate-200 to-transparent lg:block" />
+
+                    <div className="space-y-20">
+                        {roadmapItems.map((item, idx) => (
+                            <motion.div
+                                key={item.title}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: false, amount: 0.3 }}
+                                transition={{ duration: 0.7, delay: idx * 0.1 }}
+                                className={`relative flex flex-col items-center lg:flex-row ${
+                                    idx % 2 === 0 ? 'lg:flex-row-reverse' : ''
+                                }`}
+                            >
+                                {/* Point lumineux sur la timeline */}
+                                <div className="absolute left-1/2 hidden h-5 w-5 -translate-x-1/2 rounded-full border-4 border-[#faf8f5] bg-[#FF7E47] shadow-[0_0_15px_rgba(255,126,71,0.5)] lg:block z-10" />
+
+                                <div className="w-full lg:w-1/2 lg:px-16">
+                                    <div className="group relative rounded-[32px] border border-white bg-white/60 p-8 shadow-sm backdrop-blur-sm transition-all hover:shadow-xl hover:bg-white/80">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <span className="text-xs font-black text-[#8d6a57] uppercase tracking-tighter opacity-60">
+                                                {item.quarter}
+                                            </span>
+                                            <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                                                item.status === 'En cours' 
+                                                ? 'bg-orange-50 text-orange-600 border border-orange-100' 
+                                                : 'bg-slate-50 text-slate-400 border border-slate-100'
+                                            }`}>
+                                                {item.status}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-5">
+                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF7E47] text-white shadow-lg shadow-orange-200 transition-transform group-hover:scale-110">
+                                                <item.icon className="h-6 w-6" />
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{item.title}</h3>
+                                        </div>
+                                        <p className="mt-5 text-[15px] leading-relaxed text-slate-500 font-medium">
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="hidden lg:block lg:w-1/2" />
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>
@@ -578,7 +700,13 @@ export default function Welcome() {
                 <WhoWeAreSection />
             </section>
 
-            <PremiumFeaturesSection />
+            <section className="pb-16">
+                <PremiumFeaturesSection />
+            </section>
+
+            <section className="pb-16">
+                <RoadmapSection />
+            </section>
 
             <section id="experience" className="px-6 pb-20">
                 <div className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">

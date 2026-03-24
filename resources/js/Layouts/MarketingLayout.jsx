@@ -47,6 +47,9 @@ export default function MarketingLayout({ children }) {
                         <a href="#features" className="hover:text-slate-900">
                             Fonctionnalités
                         </a>
+                        <a href="#roadmap" className="hover:text-slate-900">
+                            Roadmap
+                        </a>
                         <a href="#faq" className="hover:text-slate-900">
                             FAQ
                         </a>
