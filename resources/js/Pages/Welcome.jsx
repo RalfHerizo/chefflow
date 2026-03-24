@@ -164,18 +164,20 @@ function PremiumFeaturesSection() {
             visual: (
                 <div className="grid gap-4"> 
                     <div className="rounded-[28px] border border-black/5 bg-white/85 p-4 shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="lg:flex items-center justify-between border-b border-slate-100 pb-3">
                             <div>
                                 <p className="text-xs uppercase tracking-[0.25em] text-[#FF7E47]">
-                                    Service mode
+                                Vente Directe
                                 </p>
                                 <p className="mt-1 text-sm font-semibold text-slate-900">
                                     Votre panier
                                 </p>
                             </div>
-                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                                valider la commande
-                            </span>
+                            <div className='mt-3 lg:mt-0' >
+                                <span className=" rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                                    Valider la commande
+                                </span>
+                            </div>
                         </div>
                         <div className="mt-4 space-y-3">
                             {[
@@ -205,7 +207,7 @@ function PremiumFeaturesSection() {
                     <div className="flex flex-col justify-between rounded-[28px] border border-black/5 bg-[#1f1a17] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)]">
                         <div>
                             <p className="text-xs uppercase tracking-[0.3em] text-[#FF7E47]">
-                                Current ticket
+                                Net à payer
                             </p>
                             <p className="mt-3 text-2xl lg:text-4xl font-semibold tracking-[-0.03em]">
                                 30.40&euro;
@@ -412,7 +414,7 @@ function PremiumFeaturesSection() {
     ];
 
     return (
-        <section id="features" className="px-6 pb-24">
+        <section id="features" className="lg:px-6 px-3 pb-24">
             <div className="mx-auto max-w-7xl">
                 <FadeInSection>
                     <div className="mx-auto max-w-3xl text-center mb-16">
@@ -520,7 +522,7 @@ function RoadmapSection() {
                             Prochainement
                         </div>
                         <h2 className="text-2xl lg:text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl">
-                            Notre vision pour le futur
+                            Notre <span className='text-[#FF7E47]' >vision</span>  pour le <span className='text-[#FF7E47]' >futur</span>
                         </h2>
                         <p className="mt-4 text-sm lg:text-lg text-slate-600 max-w-2xl mx-auto">
                             Nous construisons l'outil que vous méritez. Voici les prochaines étapes de l'aventure ChefFlow.
@@ -606,7 +608,7 @@ function FinalCTASection() {
                     className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] bg-[#1f1a17] px-6 py-12 text-center shadow-2xl md:px-16 md:py-20"
                 >
                     {/* Décorations lumineuses ajustées pour mobile */}
-                    <div className="absolute -right-20 -top-20 h-48 w-48 sm:h-64 sm:w-64 rounded-full bg-[#FF7E47] opacity-20 blur-[60px] sm:blur-[80px]" />
+                    <div className="absolute -right-20 -top-20 h-48 w-48 sm:h-64 sm:w-64 rounded-full bg- opacity-20 blur-[60px] sm:blur-[80px]" />
                     <div className="absolute -left-20 -bottom-20 h-48 w-48 sm:h-64 sm:w-64 rounded-full bg-[#8d6a57] opacity-20 blur-[60px] sm:blur-[80px]" />
 
                     <div className="relative z-10">
