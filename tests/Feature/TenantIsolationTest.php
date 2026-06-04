@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\Ingredient;
-use App\Models\Product;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 

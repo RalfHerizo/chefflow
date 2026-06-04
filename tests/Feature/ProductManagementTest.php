@@ -140,4 +140,3 @@ test('an authenticated user can toggle a product status', function () {
     $response->assertRedirect();
     expect($product->fresh()->is_active)->toBeFalse();
 });
-

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToTenant;
-use App\Models\Product;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,8 +22,8 @@ class Ingredient extends Model
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
                 if (
-                    !array_key_exists('stock_quantity', $attributes) ||
-                    !array_key_exists('alert_threshold', $attributes)
+                    ! array_key_exists('stock_quantity', $attributes) ||
+                    ! array_key_exists('alert_threshold', $attributes)
                 ) {
                     return false;
                 }

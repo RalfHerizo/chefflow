@@ -97,4 +97,3 @@ test('ingredient creation validates image url format', function () {
         ->assertRedirect(route('ingredients.index'))
         ->assertSessionHasErrors(['image_url']);
 });
-
