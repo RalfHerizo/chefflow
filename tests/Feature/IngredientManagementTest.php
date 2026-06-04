@@ -29,6 +29,8 @@ test('an authenticated user can create an ingredient with image url', function (
 
 test('an authenticated user can update an ingredient', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $ingredient = Ingredient::create([
         'name' => 'Lait',
         'image_url' => null,
@@ -38,7 +40,6 @@ test('an authenticated user can update an ingredient', function () {
     ]);
 
     $response = $this
-        ->actingAs($user)
         ->patch(route('ingredients.update', $ingredient), [
             'name' => 'Lait entier',
             'image_url' => 'https://images.example.com/lait-entier.png',
@@ -60,6 +61,8 @@ test('an authenticated user can update an ingredient', function () {
 
 test('an authenticated user can delete an ingredient', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $ingredient = Ingredient::create([
         'name' => 'Sel',
         'unit' => 'g',
@@ -68,7 +71,6 @@ test('an authenticated user can delete an ingredient', function () {
     ]);
 
     $response = $this
-        ->actingAs($user)
         ->delete(route('ingredients.destroy', $ingredient));
 
     $response->assertRedirect(route('ingredients.index'));

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Ingredient extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = ['name', 'image_url', 'unit', 'stock_quantity', 'alert_threshold'];
 
     public function products()

@@ -1,13 +1,16 @@
 <?php
 use App\Models\Product;
 use App\Models\Ingredient;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 
 it('permet de vendre un produit via une requête HTTP', function(){
-    
+
+    $this->actingAs(User::factory()->create());
+
     $ingredient = Ingredient::create([
         'name'=>'Sucre',
         'unit'=>'g',

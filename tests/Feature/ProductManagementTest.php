@@ -56,6 +56,8 @@ test('an authenticated user can create a product with recipe lines', function ()
 
 test('an authenticated user can update a product and sync recipe lines', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $tomato = Ingredient::create([
         'name' => 'Tomate Roma',
         'unit' => 'kg',
@@ -87,7 +89,6 @@ test('an authenticated user can update a product and sync recipe lines', functio
     ]);
 
     $response = $this
-        ->actingAs($user)
         ->patch(route('products.update', $product), [
             'name' => 'Double Burger',
             'price' => 14.2,
@@ -125,6 +126,8 @@ test('an authenticated user can update a product and sync recipe lines', functio
 
 test('an authenticated user can toggle a product status', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $product = Product::create([
         'name' => 'Salade Cesar',
         'price' => 750,
@@ -132,7 +135,6 @@ test('an authenticated user can toggle a product status', function () {
     ]);
 
     $response = $this
-        ->actingAs($user)
         ->patch(route('products.toggle-status', $product));
 
     $response->assertRedirect();
