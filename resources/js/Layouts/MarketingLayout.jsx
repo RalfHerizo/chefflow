@@ -1,10 +1,11 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { Github, Menu, X, ArrowRight } from 'lucide-react';
 
 export default function MarketingLayout({ children }) {
     const [scrolled, setScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const user = usePage().props.auth?.user;
 
     useEffect(() => {
         const onScroll = () => {
@@ -70,18 +71,29 @@ export default function MarketingLayout({ children }) {
                         >
                             <Github className="h-5 w-5" />
                         </a>
-                        <Link
-                            href={route('login')}
-                            className="text-sm font-bold text-slate-600 hover:text-slate-900"
-                        >
-                            Se connecter
-                        </Link>
-                        <Link
-                            href={route('register')}
-                            className="rounded-xl bg-[#FF7E47] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d] hover:shadow-orange-300"
-                        >
-                            Essai gratuit
-                        </Link>
+                        {user ? (
+                            <Link
+                                href={route('dashboard')}
+                                className="rounded-xl bg-[#FF7E47] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d] hover:shadow-orange-300"
+                            >
+                                Tableau de bord
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={route('login')}
+                                    className="text-sm font-bold text-slate-600 hover:text-slate-900"
+                                >
+                                    Se connecter
+                                </Link>
+                                <Link
+                                    href={route('register')}
+                                    className="rounded-xl bg-[#FF7E47] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d] hover:shadow-orange-300"
+                                >
+                                    Essai gratuit
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     {/* BOUTON MENU MOBILE */}
@@ -136,21 +148,34 @@ export default function MarketingLayout({ children }) {
                         <div className="h-px w-full bg-slate-200/50" />
 
                         <div className="flex flex-col gap-4">
-                            <Link
-                                href={route('login')}
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-4 font-bold text-slate-900 shadow-sm"
-                            >
-                                Se connecter
-                            </Link>
-                            <Link
-                                href={route('register')}
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-center gap-2 rounded-2xl bg-[#FF7E47] py-4 font-bold text-white shadow-lg shadow-orange-200"
-                            >
-                                Commencer gratuitement
-                                <ArrowRight className="h-5 w-5" />
-                            </Link>
+                            {user ? (
+                                <Link
+                                    href={route('dashboard')}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center justify-center gap-2 rounded-2xl bg-[#FF7E47] py-4 font-bold text-white shadow-lg shadow-orange-200"
+                                >
+                                    Accéder au tableau de bord
+                                    <ArrowRight className="h-5 w-5" />
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link
+                                        href={route('login')}
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-4 font-bold text-slate-900 shadow-sm"
+                                    >
+                                        Se connecter
+                                    </Link>
+                                    <Link
+                                        href={route('register')}
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center justify-center gap-2 rounded-2xl bg-[#FF7E47] py-4 font-bold text-white shadow-lg shadow-orange-200"
+                                    >
+                                        Commencer gratuitement
+                                        <ArrowRight className="h-5 w-5" />
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
