@@ -8,6 +8,7 @@ vi.mock('@inertiajs/react', () => ({
         post: vi.fn(),
         processing: false,
         setData: vi.fn(),
+        errors: {},
     }),
 }));
 
