@@ -6,6 +6,7 @@ services:
   - type: web
     name: chefflow
     runtime: docker
+    branch: feat/demo-mode
     dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /up
