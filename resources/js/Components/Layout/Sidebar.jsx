@@ -62,11 +62,15 @@ function resolveMenuItems() {
     return items;
 }
 
-export default function Sidebar() {
+export default function Sidebar({ offsetForBanner = false }) {
     const menuItems = resolveMenuItems();
 
     return (
-        <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-slate-200/70 bg-white">
+        <aside
+            className={`fixed left-0 z-30 flex w-64 flex-col border-r border-slate-200/70 bg-white ${
+                offsetForBanner ? 'top-10 h-[calc(100vh-2.5rem)]' : 'top-0 h-screen'
+            }`}
+        >
             <div className="px-6 py-7">
                 <Link href="/" className="inline-flex items-center gap-2">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF7E47] text-sm font-semibold text-white">

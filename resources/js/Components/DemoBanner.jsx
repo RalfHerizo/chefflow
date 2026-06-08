@@ -23,10 +23,10 @@ export default function DemoBanner() {
     };
 
     return (
-        <div className="flex items-center justify-between gap-4 bg-[#1f1a17] px-6 py-2 text-sm text-white">
-            <div className="flex items-center gap-2">
+        <div className="fixed inset-x-0 top-0 z-50 flex h-10 items-center justify-between gap-4 bg-[#1f1a17] px-4 text-sm text-white sm:px-6">
+            <div className="flex min-w-0 items-center gap-2">
                 <FlaskConical className="h-4 w-4 shrink-0 text-[#FF7E47]" />
-                <span>
+                <span className="truncate">
                     Mode démo — données d'exemple, réinitialisées régulièrement.
                     Explorez librement&nbsp;!
                 </span>

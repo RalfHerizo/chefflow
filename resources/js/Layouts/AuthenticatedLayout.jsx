@@ -6,7 +6,8 @@ import { Toaster } from 'react-hot-toast';
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
 
 export default function AuthenticatedLayout({ children }) {
-    const user = usePage().props.auth.user;
+    const { auth, isDemo } = usePage().props;
+    const user = auth.user;
 
     return (
         <div className="min-h-screen bg-[#F8F4F1] text-slate-800">
@@ -41,11 +42,17 @@ export default function AuthenticatedLayout({ children }) {
                     );
                 }}
             </Toaster>
-            <Sidebar />
-            <div className="pl-64">
-                <DemoBanner />
+            <DemoBanner />
+            <Sidebar offsetForBanner={isDemo} />
+            <div className={`pl-64 ${isDemo ? 'pt-10' : ''}`}>
                 <TopHeader user={user} />
-                <main className="h-[calc(100vh-5rem)] overflow-y-auto p-8">
+                <main
+                    className={`overflow-y-auto p-8 ${
+                        isDemo
+                            ? 'h-[calc(100vh-5rem-2.5rem)]'
+                            : 'h-[calc(100vh-5rem)]'
+                    }`}
+                >
                     {children}
                 </main>
             </div>
