@@ -25,6 +25,7 @@ describe('MarketingLayout — auth-aware CTAs', () => {
         expect(screen.getAllByText('Se connecter').length).toBeGreaterThan(0);
         expect(screen.getByText('Essai gratuit')).toBeInTheDocument();
         expect(screen.getByText('Commencer gratuitement')).toBeInTheDocument();
+        expect(screen.getAllByText('Démo en direct').length).toBeGreaterThan(0);
         expect(screen.queryByText('Tableau de bord')).not.toBeInTheDocument();
         expect(
             screen.queryByText('Accéder au tableau de bord'),
@@ -47,5 +48,6 @@ describe('MarketingLayout — auth-aware CTAs', () => {
         expect(
             screen.queryByText('Commencer gratuitement'),
         ).not.toBeInTheDocument();
+        expect(screen.queryByText('Démo en direct')).not.toBeInTheDocument();
     });
 });
