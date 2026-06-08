@@ -1,5 +1,6 @@
 import Sidebar from '@/Components/Layout/Sidebar';
 import TopHeader from '@/Components/Layout/TopHeader';
+import DemoBanner from '@/Components/DemoBanner';
 import { usePage } from '@inertiajs/react';
 import { Toaster } from 'react-hot-toast';
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
@@ -42,6 +43,7 @@ export default function AuthenticatedLayout({ children }) {
             </Toaster>
             <Sidebar />
             <div className="pl-64">
+                <DemoBanner />
                 <TopHeader user={user} />
                 <main className="h-[calc(100vh-5rem)] overflow-y-auto p-8">
                     {children}

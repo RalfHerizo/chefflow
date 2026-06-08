@@ -708,6 +708,13 @@ export default function Welcome() {
                                     </Link>
                                 ) : (
                                     <>
+                                        <a
+                                            href="/demo"
+                                            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 rounded-xl bg-[#1f1a17] px-6 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-black"
+                                        >
+                                            Démo en direct
+                                            <ArrowRight className="hidden sm:inline-flex h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                        </a>
                                         <Link
                                             href={route('register')}
                                             className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7E47] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d]"

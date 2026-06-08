@@ -80,6 +80,12 @@ export default function MarketingLayout({ children }) {
                             </Link>
                         ) : (
                             <>
+                                <a
+                                    href="/demo"
+                                    className="rounded-xl bg-[#1f1a17] px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-black"
+                                >
+                                    Démo en direct
+                                </a>
                                 <Link
                                     href={route('login')}
                                     className="text-sm font-bold text-slate-600 hover:text-slate-900"
@@ -159,6 +165,14 @@ export default function MarketingLayout({ children }) {
                                 </Link>
                             ) : (
                                 <>
+                                    <a
+                                        href="/demo"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center justify-center gap-2 rounded-2xl bg-[#1f1a17] py-4 font-bold text-white shadow-lg"
+                                    >
+                                        Démo en direct
+                                        <ArrowRight className="h-5 w-5" />
+                                    </a>
                                     <Link
                                         href={route('login')}
                                         onClick={() => setIsMenuOpen(false)}
