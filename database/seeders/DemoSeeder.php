@@ -79,10 +79,24 @@ class DemoSeeder extends Seeder
             'frites' => ['name' => 'Frites', 'unit' => 'kg', 'stock_quantity' => 40, 'alert_threshold' => 8],
         ];
 
+        // TheMealDB ingredient names → real cut-out photos (transparent PNG).
+        $photos = [
+            'farine' => 'Flour',
+            'tomate' => 'Tomatoes',
+            'mozzarella' => 'Mozzarella',
+            'basilic' => 'Basil',
+            'jambon' => 'Ham',
+            'champignons' => 'Mushrooms',
+            'boeuf' => 'Minced Beef',
+            'pain' => 'Bread',
+            'cheddar' => 'Cheddar Cheese',
+            'frites' => 'Potatoes',
+        ];
+
         $ingredients = [];
         foreach ($rows as $key => $row) {
             $ingredients[$key] = Ingredient::create($row + [
-                'image_url' => 'https://placehold.co/100x100/FF7E47/FFFFFF?text='.rawurlencode($row['name']),
+                'image_url' => 'https://www.themealdb.com/images/ingredients/'.rawurlencode($photos[$key]).'-Small.png',
             ]);
         }
 
