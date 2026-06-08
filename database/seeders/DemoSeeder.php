@@ -112,22 +112,27 @@ class DemoSeeder extends Seeder
         $catalog = [
             'margherita' => [
                 'name' => 'Pizza Margherita', 'price' => 1200, 'category' => 'Pizza',
+                'photo' => 'https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg',
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'basilic' => 5],
             ],
             'reine' => [
                 'name' => 'Pizza Reine', 'price' => 1400, 'category' => 'Pizza',
+                'photo' => 'https://www.themealdb.com/images/media/meals/wf49qs1763075222.jpg',
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'jambon' => 0.08, 'champignons' => 0.05],
             ],
             'burger' => [
                 'name' => 'Burger Classic', 'price' => 1100, 'category' => 'Burger',
+                'photo' => 'https://www.themealdb.com/images/media/meals/44bzep1761848278.jpg',
                 'recipe' => ['pain' => 1, 'boeuf' => 0.15, 'cheddar' => 0.03, 'tomate' => 0.03],
             ],
             'frites' => [
                 'name' => 'Frites Maison', 'price' => 400, 'category' => 'Accompagnement',
+                'photo' => 'https://www.themealdb.com/images/media/meals/uuyrrx1487327597.jpg',
                 'recipe' => ['frites' => 0.2],
             ],
             'menu' => [
                 'name' => 'Menu Burger + Frites', 'price' => 1400, 'category' => 'Menu',
+                'photo' => 'https://www.themealdb.com/images/media/meals/lgmnff1763789847.jpg',
                 'recipe' => ['pain' => 1, 'boeuf' => 0.15, 'cheddar' => 0.03, 'frites' => 0.2],
             ],
         ];
@@ -139,7 +144,7 @@ class DemoSeeder extends Seeder
                 'price' => $row['price'],
                 'category' => $row['category'],
                 'is_active' => true,
-                'image_url' => 'https://placehold.co/600x400/FF7E47/FFFFFF?text='.rawurlencode($row['name']),
+                'image_url' => $row['photo'],
             ]);
 
             $pivot = [];
