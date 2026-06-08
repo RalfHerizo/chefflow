@@ -150,3 +150,41 @@ php artisan test tests/Feature/OrderIntegrationTest.php
 - Current UX uses confirmation dialogs for destructive actions.
 - Form Requests now cover orders, ingredients, and products; remaining controllers are future work.
 - Orders now use an order_items cart model to support multiple products per sale.
+- Data is isolated per account (one account = one restaurant) via the `BelongsToTenant` trait.
+
+## Live Demo (no sign-up)
+
+Recruiters can try the app without creating an account:
+
+- Click **"Démo en direct"** on the landing page, or visit `/demo` directly.
+- This logs into a shared, pre-seeded demo account (ingredients, products,
+  recipes and a week of orders) and lands on the dashboard.
+- A demo banner offers a **"Réinitialiser"** button to restore the sample
+  data at any time. The demo account cannot change its password or be
+  deleted.
+
+The demo dataset lives in `database/seeders/DemoSeeder.php`. The demo
+account email is configurable via `DEMO_EMAIL` (`config/demo.php`).
+
+## Deployment (Render + SQLite, free tier)
+
+The demo runs on Render using the existing `Dockerfile` and **SQLite**, so
+no database service is required.
+
+1. Generate an app key locally: `php artisan key:generate --show`.
+2. On Render: **New + → Blueprint**, pick this repo (`render.yaml` is the
+   blueprint). Set the `APP_KEY` and `APP_URL` env vars in the dashboard.
+3. Deploy. On boot, `docker/entrypoint.sh` runs migrations and re-seeds the
+   demo (`SEED_DEMO=true`), so the SQLite file is always provisioned.
+
+Free-tier caveats (acceptable for a portfolio): the service spins down after
+~15 min idle (first request takes ~1 min), and the SQLite file is ephemeral —
+any data created during a session is reset to the seed on the next restart.
+
+Run locally on SQLite:
+
+```bash
+DB_CONNECTION=sqlite DB_DATABASE=$(pwd)/database/database.sqlite \
+  php artisan migrate:fresh --force
+php artisan db:seed --class=DemoSeeder --force
+```

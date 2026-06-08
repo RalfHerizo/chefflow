@@ -1,0 +1,47 @@
+# Render Blueprint — ChefFlow portfolio demo (Docker + SQLite)
+# Deploy: Render dashboard → New + → Blueprint → pick this repo.
+# Set the secret env vars (APP_KEY, APP_URL) in the dashboard after the
+# first deploy (they are marked sync:false below).
+services:
+  - type: web
+    name: chefflow
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /up
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: Chefflow
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      # Generate once locally with `php artisan key:generate --show`
+      # then paste it here in the Render dashboard.
+      - key: APP_KEY
+        sync: false
+      # Set to your Render URL after the first deploy, e.g.
+      # https://chefflow.onrender.com
+      - key: APP_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      # SQLite on the container's ephemeral disk — re-seeded on every boot.
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /var/www/html/database/database.sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: RUN_MIGRATIONS
+        value: "true"
+      # Seed / refresh the shared demo account on every boot.
+      - key: SEED_DEMO
+        value: "true"
+      - key: DEMO_EMAIL
+        value: demo@chefflow.app
