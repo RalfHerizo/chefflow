@@ -716,13 +716,6 @@ export default function Welcome() {
                                             <ArrowRight className="hidden sm:inline-flex h-4 w-4 transition-transform group-hover:translate-x-1" />
                                         </a>
                                         <Link
-                                            href={route('register')}
-                                            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7E47] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d]"
-                                        >
-                                            Créer mon compte gratuitement
-                                            <ArrowRight className="hidden sm:inline-flex h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                        </Link>
-                                        <Link
                                             href={route('login')}
                                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
                                         >

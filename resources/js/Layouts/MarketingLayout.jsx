@@ -92,12 +92,6 @@ export default function MarketingLayout({ children }) {
                                 >
                                     Se connecter
                                 </Link>
-                                <Link
-                                    href={route('register')}
-                                    className="rounded-xl bg-[#FF7E47] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d] hover:shadow-orange-300"
-                                >
-                                    Essai gratuit
-                                </Link>
                             </>
                         )}
                     </div>
@@ -179,14 +173,6 @@ export default function MarketingLayout({ children }) {
                                         className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-4 font-bold text-slate-900 shadow-sm"
                                     >
                                         Se connecter
-                                    </Link>
-                                    <Link
-                                        href={route('register')}
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="flex items-center justify-center gap-2 rounded-2xl bg-[#FF7E47] py-4 font-bold text-white shadow-lg shadow-orange-200"
-                                    >
-                                        Commencer gratuitement
-                                        <ArrowRight className="h-5 w-5" />
                                     </Link>
                                 </>
                             )}

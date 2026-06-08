@@ -17,15 +17,17 @@ beforeAll(() => {
 });
 
 describe('MarketingLayout — auth-aware CTAs', () => {
-    it('shows Se connecter + Essai gratuit for guests', () => {
+    it('shows Démo en direct + Se connecter for guests', () => {
         mockUsePage.mockReturnValue({ props: { auth: { user: null } } });
 
         render(<MarketingLayout>contenu</MarketingLayout>);
 
-        expect(screen.getAllByText('Se connecter').length).toBeGreaterThan(0);
-        expect(screen.getByText('Essai gratuit')).toBeInTheDocument();
-        expect(screen.getByText('Commencer gratuitement')).toBeInTheDocument();
         expect(screen.getAllByText('Démo en direct').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Se connecter').length).toBeGreaterThan(0);
+        expect(screen.queryByText('Essai gratuit')).not.toBeInTheDocument();
+        expect(
+            screen.queryByText('Commencer gratuitement'),
+        ).not.toBeInTheDocument();
         expect(screen.queryByText('Tableau de bord')).not.toBeInTheDocument();
         expect(
             screen.queryByText('Accéder au tableau de bord'),
