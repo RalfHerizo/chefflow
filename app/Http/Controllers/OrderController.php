@@ -8,10 +8,45 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
 use App\Models\Product;
 use Exception;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    public function index(Request $request)
+    {
+        $sort = $request->query('sort', 'recent');
+        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
+
+        $orders = Order::query()->with('items.product');
+
+        match ($sort) {
+            'total' => $orders->orderBy('total_price', $direction),
+            default => $orders->latest('id'),
+        };
+
+        return Inertia::render('Orders/Index', [
+            'orders' => $orders
+                ->paginate(10)
+                ->withQueryString()
+                ->through(fn (Order $order) => [
+                    'id' => $order->id,
+                    'total_price' => $order->total_price,
+                    'quantity' => $order->quantity,
+                    'items' => $order->items
+                        ->map(fn ($item) => [
+                            'quantity' => $item->quantity,
+                            'product' => $item->product ? [
+                                'name' => $item->product->name,
+                                'image_url' => $item->product->image_url,
+                            ] : null,
+                        ])
+                        ->values(),
+                ]),
+            'filters' => ['sort' => $sort, 'direction' => $direction],
+        ]);
+    }
+
     public function pos()
     {
         return Inertia::render('Orders/Pos', [

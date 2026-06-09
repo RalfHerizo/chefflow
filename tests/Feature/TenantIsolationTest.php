@@ -79,6 +79,26 @@ test('a user cannot cancel another account order', function () {
     $this->assertDatabaseHas('orders', ['id' => $order->id]);
 });
 
+test('a user only sees their own orders in the history', function () {
+    $alice = User::factory()->create();
+    $this->actingAs($alice);
+
+    $ingredient = Ingredient::create(['name' => 'Café Alice', 'unit' => 'g', 'stock_quantity' => 1000]);
+    $product = Product::create(['name' => 'Espresso Alice', 'price' => 200]);
+    $product->ingredients()->attach($ingredient->id, ['amount' => 10]);
+    $this->post(route('orders.store'), [
+        'items' => [['id' => $product->id, 'quantity' => 1]],
+    ]);
+
+    $this->actingAs(User::factory()->create());
+
+    $this->get(route('orders.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Orders/Index')
+            ->has('orders.data', 0)
+        );
+});
+
 test('new records are stamped with the authenticated owner', function () {
     $user = User::factory()->create();
     $this->actingAs($user);

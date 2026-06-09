@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/demo/reset', [DemoController::class, 'reset'])
         ->middleware('throttle:5,1')
         ->name('demo.reset');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/pos', [OrderController::class, 'pos'])->name('orders.pos');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');

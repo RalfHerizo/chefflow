@@ -28,9 +28,13 @@ const PAGE_CONTENT = {
         title: 'Modifier Produit',
         subtitle: 'Mettez a jour les informations et la recette du produit.',
     },
+    'Orders/Index': {
+        title: 'Commandes',
+        subtitle: 'Consultez l’historique de toutes les ventes.',
+    },
     'Orders/Pos': {
         title: 'Caisse',
-        subtitle: 'Prenez une commande rapidement et suivez le panier en temps reel.',
+        subtitle: 'Prenez une commande rapidement et suivez le panier en temps réel.',
     },
 };
 
@@ -83,6 +87,10 @@ function TopHeader({ user }) {
                     </h2>
                     <p className="text-sm text-slate-500">{headerContent.subtitle}</p>
                 </div>
+                {/*
+                    Recherche globale — désactivée pour l'instant (décorative,
+                    sans logique). À réactiver plus tard en feature dédiée
+                    (recherche multi-entités : produits, commandes, ingrédients).
                 <div className="relative w-full max-w-xl">
                     <Search
                         size={18}
@@ -94,6 +102,7 @@ function TopHeader({ user }) {
                         className="h-11 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-[#FF7E47]"
                     />
                 </div>
+                */}
 
                 <div className="flex items-center gap-4">
                     <Link

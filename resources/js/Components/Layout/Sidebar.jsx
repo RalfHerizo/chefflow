@@ -4,6 +4,7 @@ import {
     CookingPot,
     LayoutDashboard,
     LogOut,
+    ReceiptText,
     Settings,
     ShoppingBag,
 } from 'lucide-react';
@@ -29,6 +30,15 @@ function resolveMenuItems() {
             href: route('orders.pos'),
             active: route().current('orders.pos'),
             icon: ClipboardList,
+        });
+    }
+
+    if (hasRoute('orders.index')) {
+        items.push({
+            label: 'Commandes',
+            href: route('orders.index'),
+            active: route().current('orders.index'),
+            icon: ReceiptText,
         });
     }
 
