@@ -14,18 +14,28 @@ function euroTick(value) {
 }
 
 /**
- * @param {{ data?: Array<{date: string, revenue: number}> }} props
+ * @param {{ data?: Array<{date: string, revenue: number}>, total?: number }} props
  */
-export default function RevenueChart({ data = [] }) {
+export default function RevenueChart({ data = [], total = 0 }) {
+    const formattedTotal = new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'EUR',
+    }).format(Number(total || 0) / 100);
+
     return (
-        <Card className="border-slate-200/70 bg-white shadow-sm">
+        <Card className="h-full border-slate-200/70 bg-white shadow-sm">
             <CardContent className="p-6">
-                <div className="mb-5">
-                    <h3 className="text-lg font-semibold text-slate-800">
-                        Revenus hebdomadaires
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                        Somme des ventes sur les 7 derniers jours
+                <div className="mb-5 flex items-start justify-between gap-4">
+                    <div>
+                        <h3 className="text-lg font-semibold text-slate-800">
+                            Revenus · 7 jours
+                        </h3>
+                        <p className="text-sm text-slate-500">
+                            Somme des ventes sur les 7 derniers jours
+                        </p>
+                    </div>
+                    <p className="text-2xl font-bold tracking-tight text-slate-900">
+                        {formattedTotal}
                     </p>
                 </div>
 
