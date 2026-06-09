@@ -43,10 +43,10 @@ class DashboardController extends Controller
             })
             ->values();
 
-        return Inertia::render('Dashboard',[
-            'ingredients' => Ingredient::all(),
+        return Inertia::render('Dashboard', [
+            'ingredients' => Ingredient::query()->latest('id')->take(6)->get(),
             'products' => Product::all(),
-            'orders' => Order::with('items.product')->latest()->take(10)->get(),
+            'orders' => Order::with('items.product')->latest('id')->take(5)->get(),
             'weeklyRevenue' => $weeklyRevenue,
         ]);
     }

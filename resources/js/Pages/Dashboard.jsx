@@ -3,7 +3,8 @@ import RecentOrdersTable from '@/Components/Dashboard/RecentOrdersTable';
 import RevenueChart from '@/Components/Dashboard/RevenueChart';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -118,12 +119,34 @@ export default function Dashboard({
                 </section>
 
                 <section className="space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-800">Commandes récentes</h3>
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-slate-800">
+                            Commandes récentes
+                        </h3>
+                        <Link
+                            href={route('orders.index')}
+                            className="inline-flex items-center gap-1 text-sm font-semibold text-[#FF7E47] hover:underline"
+                        >
+                            Voir tout
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
                     <RecentOrdersTable orders={orders} onCancelOrder={requestCancel} />
                 </section>
 
                 <section className="space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-800">État des stocks</h3>
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-slate-800">
+                            État des stocks
+                        </h3>
+                        <Link
+                            href={route('ingredients.index')}
+                            className="inline-flex items-center gap-1 text-sm font-semibold text-[#FF7E47] hover:underline"
+                        >
+                            Voir tout
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
                     <InventoryGrid ingredients={ingredients} />
                 </section>
             </div>
