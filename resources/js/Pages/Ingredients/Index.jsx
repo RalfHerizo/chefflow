@@ -51,7 +51,7 @@ const INGREDIENT_THUMBNAIL_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">ING</text></svg>';
 
 /**
- * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
+ * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string, status?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
  */
 export default function IngredientsIndex({ ingredients, filters, flash }) {
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -59,6 +59,7 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [ingredientToDelete, setIngredientToDelete] = useState(null);
     const [search, setSearch] = useState(filters?.search ?? '');
+    const [status, setStatus] = useState(filters?.status ?? 'all');
     const [sort, setSort] = useState(filters?.sort ?? 'recent');
     const [direction, setDirection] = useState(filters?.direction ?? 'desc');
     const searchTimeout = useRef();
@@ -67,12 +68,16 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
     const editForm = useForm(DEFAULT_FORM);
 
     const reload = (overrides = {}, { debounce = false } = {}) => {
-        const next = { search, sort, direction, ...overrides };
+        const next = { search, status, sort, direction, ...overrides };
         const visit = () =>
             router.get(
                 route('ingredients.index'),
                 {
                     search: next.search || undefined,
+                    status:
+                        next.status && next.status !== 'all'
+                            ? next.status
+                            : undefined,
                     sort: next.sort !== 'recent' ? next.sort : undefined,
                     direction: next.direction !== 'desc' ? next.direction : undefined,
                 },
@@ -100,6 +105,11 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
     const handleSort = (value) => {
         setSort(value);
         reload({ sort: value });
+    };
+
+    const handleStatus = (value) => {
+        setStatus(value);
+        reload({ status: value });
     };
 
     const toggleDirection = () => {
@@ -222,7 +232,19 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
                             />
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Select value={status} onValueChange={handleStatus}>
+                                <SelectTrigger className="h-10 w-full rounded-xl sm:w-[160px]">
+                                    <SelectValue placeholder="Statut" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">
+                                        Tous les statuts
+                                    </SelectItem>
+                                    <SelectItem value="critique">Critique</SelectItem>
+                                    <SelectItem value="stable">Stable</SelectItem>
+                                </SelectContent>
+                            </Select>
                             <Select value={sort} onValueChange={handleSort}>
                                 <SelectTrigger className="h-10 w-full rounded-xl sm:w-[180px]">
                                     <SelectValue placeholder="Trier par" />
@@ -276,8 +298,8 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
                                             colSpan={6}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
-                                            {search
-                                                ? 'Aucun ingrédient ne correspond à votre recherche.'
+                                            {search || status !== 'all'
+                                                ? 'Aucun ingrédient ne correspond aux filtres.'
                                                 : 'Aucun ingrédient. Ajoutez-en un pour commencer.'}
                                         </TableCell>
                                     </TableRow>
