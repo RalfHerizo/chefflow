@@ -30,7 +30,7 @@ const PAGE_CONTENT = {
     },
     'Orders/Index': {
         title: 'Commandes',
-        subtitle: 'Consultez l’historique de toutes les ventes.',
+        subtitle: 'Consultez l’historique de toutes les commandes.',
     },
     'Orders/Pos': {
         title: 'Caisse',

@@ -79,7 +79,7 @@ export default function Dashboard({
                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7E47] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#e86f3d]"
                     >
                         <Plus className="h-4 w-4" />
-                        Nouvelle vente
+                        Nouvelle commande
                     </Link>
                 </div>
 

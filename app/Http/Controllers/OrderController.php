@@ -15,10 +15,24 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $search = $request->query('search');
+        $period = $request->query('period');
         $sort = $request->query('sort', 'recent');
         $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
 
-        $orders = Order::query()->with('items.product');
+        $orders = Order::query()
+            ->with('items.product')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($inner) use ($search) {
+                    $inner->whereHas('items.product', fn ($product) => $product->where('name', 'like', '%'.$search.'%'));
+                    if (is_numeric($search)) {
+                        $inner->orWhere('id', (int) $search);
+                    }
+                });
+            })
+            ->when($period === 'today', fn ($query) => $query->whereDate('created_at', now()->toDateString()))
+            ->when($period === '7d', fn ($query) => $query->where('created_at', '>=', now()->subDays(6)->startOfDay()))
+            ->when($period === '30d', fn ($query) => $query->where('created_at', '>=', now()->subDays(29)->startOfDay()));
 
         match ($sort) {
             'total' => $orders->orderBy('total_price', $direction),
@@ -33,6 +47,7 @@ class OrderController extends Controller
                     'id' => $order->id,
                     'total_price' => $order->total_price,
                     'quantity' => $order->quantity,
+                    'created_at' => $order->created_at,
                     'items' => $order->items
                         ->map(fn ($item) => [
                             'quantity' => $item->quantity,
@@ -43,7 +58,7 @@ class OrderController extends Controller
                         ])
                         ->values(),
                 ]),
-            'filters' => ['sort' => $sort, 'direction' => $direction],
+            'filters' => ['search' => $search, 'period' => $period, 'sort' => $sort, 'direction' => $direction],
         ]);
     }
 
@@ -88,7 +103,7 @@ class OrderController extends Controller
         try {
             $sellProductAction->execute($validated['items']);
 
-            return back()->with('message', 'Vente réussie! Stock mis à jour');
+            return back()->with('message', 'Commande enregistrée, stock mis à jour.');
         } catch (Exception $error) {
             return back()->withErrors(['items' => $error->getMessage()]);
         }

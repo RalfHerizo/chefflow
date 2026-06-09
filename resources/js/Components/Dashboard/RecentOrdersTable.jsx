@@ -22,6 +22,17 @@ function formatPrice(totalPrice) {
     }).format(value);
 }
 
+function formatDate(value) {
+    if (!value) {
+        return '—';
+    }
+
+    return new Date(value).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: 'short',
+    });
+}
+
 function getOrderStatus(order) {
     if (
         order?.is_cancelled ||
@@ -74,6 +85,7 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                 <TableHeader>
                     <TableRow className="border-slate-200/80 hover:bg-transparent">
                         <TableHead className="px-4">N° commande</TableHead>
+                        <TableHead className="px-4">Date</TableHead>
                         <TableHead className="px-4">Produit</TableHead>
                         <TableHead className="px-4">Quantité</TableHead>
                         <TableHead className="px-4">Total</TableHead>
@@ -97,6 +109,9 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                             <TableRow key={order.id} className="border-slate-100">
                                 <TableCell className="px-4 font-semibold text-slate-700">
                                     #{order.id}
+                                </TableCell>
+                                <TableCell className="px-4 text-slate-600">
+                                    {formatDate(order.created_at)}
                                 </TableCell>
                                 <TableCell className="px-4">
                                     <div className="flex items-center gap-3">
