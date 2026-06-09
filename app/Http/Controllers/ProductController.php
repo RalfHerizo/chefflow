@@ -24,7 +24,7 @@ class ProductController extends Controller
                 ->with(['ingredients:id,name,unit', 'images:id,product_id,url,is_main'])
                 ->withCount('ingredients')
                 ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
-                ->orderBy('name')
+                ->latest('id')
                 ->paginate(8)
                 ->withQueryString()
                 ->through(fn (Product $product) => [

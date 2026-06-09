@@ -19,7 +19,7 @@ class IngredientController extends Controller
         return Inertia::render('Ingredients/Index', [
             'ingredients' => Ingredient::query()
                 ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
-                ->orderBy('name')
+                ->latest('id')
                 ->paginate(8)
                 ->withQueryString(),
             'filters' => ['search' => $search],
