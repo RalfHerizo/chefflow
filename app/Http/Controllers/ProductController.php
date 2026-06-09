@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Ingredient;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -14,41 +15,43 @@ use Inertia\Response;
 
 class ProductController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $search = $request->query('search');
+
         return Inertia::render('Products/Index', [
             'products' => Product::query()
                 ->with(['ingredients:id,name,unit', 'images:id,product_id,url,is_main'])
                 ->withCount('ingredients')
+                ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
                 ->orderBy('name')
-                ->get(['id', 'name', 'category', 'image_url', 'price', 'is_active'])
-                ->map(function (Product $product) {
-                    return [
-                        'id' => $product->id,
-                        'name' => $product->name,
-                        'category' => $product->category,
-                        'image_url' => $product->image_url,
-                        'images' => $product->images
-                            ->map(fn ($image) => [
-                                'id' => $image->id,
-                                'url' => $image->url,
-                                'is_main' => (bool) $image->is_main,
-                            ])
-                            ->values(),
-                        'price' => $product->price,
-                        'is_active' => $product->is_active,
-                        'ingredients_count' => $product->ingredients_count,
-                        'ingredients' => $product->ingredients
-                            ->map(fn ($ingredient) => [
-                                'id' => $ingredient->id,
-                                'name' => $ingredient->name,
-                                'unit' => $ingredient->unit,
-                                'amount' => $ingredient->pivot?->amount,
-                            ])
-                            ->values(),
-                    ];
-                })
-                ->values(),
+                ->paginate(8)
+                ->withQueryString()
+                ->through(fn (Product $product) => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category' => $product->category,
+                    'image_url' => $product->image_url,
+                    'images' => $product->images
+                        ->map(fn ($image) => [
+                            'id' => $image->id,
+                            'url' => $image->url,
+                            'is_main' => (bool) $image->is_main,
+                        ])
+                        ->values(),
+                    'price' => $product->price,
+                    'is_active' => $product->is_active,
+                    'ingredients_count' => $product->ingredients_count,
+                    'ingredients' => $product->ingredients
+                        ->map(fn ($ingredient) => [
+                            'id' => $ingredient->id,
+                            'name' => $ingredient->name,
+                            'unit' => $ingredient->unit,
+                            'amount' => $ingredient->pivot?->amount,
+                        ])
+                        ->values(),
+                ]),
+            'filters' => ['search' => $search],
         ]);
     }
 

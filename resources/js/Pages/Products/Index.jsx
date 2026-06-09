@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
+import Pagination from '@/Components/ui/pagination';
 import { formatIngredientAmountForPreview } from '@/lib/amountConversion';
 import {
     Dialog,
@@ -25,8 +26,8 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import { Head, Link, router } from '@inertiajs/react';
-import {MoreHorizontal, Plus} from 'lucide-react';
-import { useState } from 'react';
+import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const PRODUCT_THUMBNAIL_PLACEHOLDER =
@@ -41,13 +42,32 @@ function formatPrice(cents) {
 }
 
 /**
- * @param {{ products: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}> }} props
+ * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string } }} props
  */
-export default function ProductsIndex({ products }) {
+export default function ProductsIndex({ products, filters }) {
     const [previewProduct, setPreviewProduct] = useState(null);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [productToDelete, setProductToDelete] = useState(null);
     const [statusLoadingId, setStatusLoadingId] = useState(null);
+    const [search, setSearch] = useState(filters?.search ?? '');
+    const searchTimeout = useRef();
+
+    const handleSearch = (value) => {
+        setSearch(value);
+        clearTimeout(searchTimeout.current);
+        searchTimeout.current = setTimeout(() => {
+            router.get(
+                route('products.index'),
+                { search: value || undefined },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                    only: ['products', 'filters'],
+                },
+            );
+        }, 300);
+    };
 
     const handleDeleteProduct = () => {
         if (!productToDelete) {
@@ -55,7 +75,7 @@ export default function ProductsIndex({ products }) {
         }
 
         router.delete(route('products.destroy', productToDelete.id), {
-            onSuccess: () => toast.success('Produit supprime avec succès.'),
+            onSuccess: () => toast.success('Produit supprimé avec succès.'),
             onFinish: () => setProductToDelete(null),
         });
     };
@@ -110,12 +130,23 @@ export default function ProductsIndex({ products }) {
                         </Button>
                     </div>
 
+                    <div className="relative mb-4 max-w-sm">
+                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <input
+                            type="search"
+                            value={search}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            placeholder="Rechercher un produit..."
+                            className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-3 text-sm outline-none focus:border-[#FF7E47]"
+                        />
+                    </div>
+
                     <div className="rounded-xl border border-slate-200">
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="px-4">Produit</TableHead>
-                                    <TableHead className="px-4">Categorie</TableHead>
+                                    <TableHead className="px-4">Catégorie</TableHead>
                                     <TableHead className="px-4">Prix</TableHead>
                                     <TableHead className="px-4">Recette</TableHead>
                                     <TableHead className="px-4">Statut</TableHead>
@@ -123,17 +154,19 @@ export default function ProductsIndex({ products }) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {products.length === 0 ? (
+                                {products.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell
                                             colSpan={6}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
-                                            Aucun produit disponible. Cree ton premier produit.
+                                            {search
+                                                ? 'Aucun produit ne correspond à votre recherche.'
+                                                : 'Aucun produit. Créez votre premier produit.'}
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    products.map((product) => (
+                                    products.data.map((product) => (
                                         <TableRow key={product.id}>
                                             <TableCell className="px-4 font-medium text-slate-700">
                                                 <div className="flex items-center gap-3">
@@ -155,7 +188,7 @@ export default function ProductsIndex({ products }) {
                                                 {formatPrice(product.price)}
                                             </TableCell>
                                             <TableCell className="px-4 text-slate-600">
-                                                {product.ingredients_count} ingredient(s)
+                                                {product.ingredients_count} ingrédient(s)
                                             </TableCell>
                                             <TableCell className="px-4">
                                                 <Button
@@ -207,15 +240,20 @@ export default function ProductsIndex({ products }) {
                             </TableBody>
                         </Table>
                     </div>
+
+                    <Pagination
+                        links={products.links}
+                        className="mt-4 border-t border-slate-100 pt-4"
+                    />
                 </section>
             </div>
 
             <Dialog open={Boolean(previewProduct)} onOpenChange={(open) => !open && closePreview()}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{previewProduct?.name || 'Apercu produit'}</DialogTitle>
+                        <DialogTitle>{previewProduct?.name || 'Aperçu produit'}</DialogTitle>
                         <DialogDescription>
-                            Details du produit et de sa recette.
+                            Détails du produit et de sa recette.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -229,7 +267,7 @@ export default function ProductsIndex({ products }) {
                                 />
                                 <div className="space-y-1">
                                     <p className="text-sm text-slate-500">
-                                        Categorie: {previewProduct.category || '-'}
+                                        Catégorie: {previewProduct.category || '-'}
                                     </p>
                                     <p className="text-sm text-slate-500">
                                         Prix: {formatPrice(previewProduct.price)}
