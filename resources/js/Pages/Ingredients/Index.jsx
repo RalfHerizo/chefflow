@@ -25,6 +25,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/Components/ui/table';
+import { formatAmountDisplay } from '@/lib/amountConversion';
 import { Head, router, useForm } from '@inertiajs/react';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -70,8 +71,14 @@ export default function IngredientsIndex({ ingredients, flash }) {
             name: ingredient.name ?? '',
             image_url: ingredient.image_url ?? '',
             unit: ingredient.unit ?? 'kg',
-            stock_quantity: ingredient.stock_quantity ?? '',
-            alert_threshold: ingredient.alert_threshold ?? '',
+            stock_quantity: formatAmountDisplay(
+                ingredient.stock_quantity,
+                ingredient.unit,
+            ),
+            alert_threshold: formatAmountDisplay(
+                ingredient.alert_threshold,
+                ingredient.unit,
+            ),
         });
         setIsEditOpen(true);
     };
@@ -196,10 +203,16 @@ export default function IngredientsIndex({ ingredients, flash }) {
                                                     {ingredient.unit}
                                                 </TableCell>
                                                 <TableCell className="px-4 text-slate-600">
-                                                    {currentStock}
+                                                    {formatAmountDisplay(
+                                                        ingredient.stock_quantity,
+                                                        ingredient.unit,
+                                                    )}
                                                 </TableCell>
                                                 <TableCell className="px-4 text-slate-600">
-                                                    {threshold}
+                                                    {formatAmountDisplay(
+                                                        ingredient.alert_threshold,
+                                                        ingredient.unit,
+                                                    )}
                                                 </TableCell>
                                                 <TableCell className="px-4">
                                                     <Badge

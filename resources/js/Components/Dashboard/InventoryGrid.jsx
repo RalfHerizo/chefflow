@@ -1,6 +1,7 @@
 import { Badge } from '@/Components/ui/badge';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
+import { formatAmountDisplay } from '@/lib/amountConversion';
 
 const INGREDIENT_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="%23F3F4F6"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="%239CA3AF" font-family="Arial" font-size="16">Ingrédient</text></svg>';
@@ -92,7 +93,10 @@ export default function InventoryGrid({ ingredients }) {
                         </div>
                         <p className="text-sm text-slate-500">Stock disponible</p>
                         <p className="text-2xl font-bold text-slate-800">
-                            {Number(ingredient.stock_quantity)}
+                            {formatAmountDisplay(
+                                ingredient.stock_quantity,
+                                ingredient.unit,
+                            )}
                             <span className="ml-1 text-sm font-medium text-slate-500">
                                 {ingredient.unit || ''}
                             </span>
