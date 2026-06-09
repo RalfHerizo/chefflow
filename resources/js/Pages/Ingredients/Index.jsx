@@ -25,10 +25,11 @@ import {
     TableHeader,
     TableRow,
 } from '@/Components/ui/table';
+import Pagination from '@/Components/ui/pagination';
 import { formatAmountDisplay } from '@/lib/amountConversion';
 import { Head, router, useForm } from '@inertiajs/react';
-import { MoreHorizontal, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const DEFAULT_FORM = {
@@ -43,22 +44,41 @@ const INGREDIENT_THUMBNAIL_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">ING</text></svg>';
 
 /**
- * @param {{ ingredients: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}> , flash?: {message?: string} }} props
+ * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string }, flash?: {message?: string} }} props
  */
-export default function IngredientsIndex({ ingredients, flash }) {
+export default function IngredientsIndex({ ingredients, filters, flash }) {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editingIngredient, setEditingIngredient] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [ingredientToDelete, setIngredientToDelete] = useState(null);
+    const [search, setSearch] = useState(filters?.search ?? '');
+    const searchTimeout = useRef();
 
     const createForm = useForm(DEFAULT_FORM);
     const editForm = useForm(DEFAULT_FORM);
+
+    const handleSearch = (value) => {
+        setSearch(value);
+        clearTimeout(searchTimeout.current);
+        searchTimeout.current = setTimeout(() => {
+            router.get(
+                route('ingredients.index'),
+                { search: value || undefined },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                    only: ['ingredients', 'filters'],
+                },
+            );
+        }, 300);
+    };
 
     const submitCreate = (e) => {
         e.preventDefault();
         createForm.post(route('ingredients.store'), {
             onSuccess: () => {
-                toast.success('Ingredient ajoute');
+                toast.success('Ingrédient ajouté');
                 createForm.reset();
                 setIsAddOpen(false);
             },
@@ -90,7 +110,7 @@ export default function IngredientsIndex({ ingredients, flash }) {
         }
         editForm.patch(route('ingredients.update', editingIngredient.id), {
             onSuccess: () => {
-                toast.success('Ingredient modifie');
+                toast.success('Ingrédient modifié');
                 setIsEditOpen(false);
                 setEditingIngredient(null);
             },
@@ -103,14 +123,14 @@ export default function IngredientsIndex({ ingredients, flash }) {
         }
 
         router.delete(route('ingredients.destroy', ingredientToDelete.id), {
-            onSuccess: () => toast.success('Ingredient supprime'),
+            onSuccess: () => toast.success('Ingrédient supprimé'),
             onFinish: () => setIngredientToDelete(null),
         });
     };
 
     return (
         <AuthenticatedLayout>
-            <Head title="Ingredients" />
+            <Head title="Ingrédients" />
 
             <div className="mx-auto max-w-7xl space-y-6">
                 {flash?.message ? (
@@ -123,7 +143,7 @@ export default function IngredientsIndex({ ingredients, flash }) {
                     <div className="mb-6 flex items-center justify-between gap-4">
                         <div>
                             <h3 className="text-lg font-semibold text-slate-800">
-                                Gestion des ingredients
+                                Gestion des ingrédients
                             </h3>
                             <p className="text-sm text-slate-500">
                                 Suivez vos stocks et seuils d'alerte.
@@ -134,12 +154,12 @@ export default function IngredientsIndex({ ingredients, flash }) {
                             <DialogTrigger asChild>
                                 <Button className="rounded-xl bg-[#FF7E47] text-white hover:bg-[#e86f3d]">
                                     <Plus />
-                                    Ajouter un ingredient
+                                    Ajouter un ingrédient
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>Ajouter un ingredient</DialogTitle>
+                                    <DialogTitle>Ajouter un ingrédient</DialogTitle>
                                     <DialogDescription>
                                         Renseignez les informations de stock initial.
                                     </DialogDescription>
@@ -156,12 +176,23 @@ export default function IngredientsIndex({ ingredients, flash }) {
                         </Dialog>
                     </div>
 
+                    <div className="relative mb-4 max-w-sm">
+                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <input
+                            type="search"
+                            value={search}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            placeholder="Rechercher un ingrédient..."
+                            className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-3 text-sm outline-none focus:border-[#FF7E47]"
+                        />
+                    </div>
+
                     <div className="rounded-xl border border-slate-200">
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="px-4">Nom</TableHead>
-                                    <TableHead className="px-4">Unite</TableHead>
+                                    <TableHead className="px-4">Unité</TableHead>
                                     <TableHead className="px-4">Stock actuel</TableHead>
                                     <TableHead className="px-4">Seuil d'alerte</TableHead>
                                     <TableHead className="px-4">Statut</TableHead>
@@ -169,17 +200,19 @@ export default function IngredientsIndex({ ingredients, flash }) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {ingredients.length === 0 ? (
+                                {ingredients.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell
                                             colSpan={6}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
-                                            Aucun ingredient dispo. Veuillez ajouter un ingredient.
+                                            {search
+                                                ? 'Aucun ingrédient ne correspond à votre recherche.'
+                                                : 'Aucun ingrédient. Ajoutez-en un pour commencer.'}
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    ingredients.map((ingredient) => {
+                                    ingredients.data.map((ingredient) => {
                                         const currentStock = Number(ingredient.stock_quantity);
                                         const threshold = Number(ingredient.alert_threshold);
                                         const isCritical = currentStock <= threshold;
@@ -254,15 +287,20 @@ export default function IngredientsIndex({ ingredients, flash }) {
                             </TableBody>
                         </Table>
                     </div>
+
+                    <Pagination
+                        links={ingredients.links}
+                        className="mt-4 border-t border-slate-100 pt-4"
+                    />
                 </section>
             </div>
 
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Modifier un ingredient</DialogTitle>
+                        <DialogTitle>Modifier un ingrédient</DialogTitle>
                         <DialogDescription>
-                            Mettez a jour le stock et le seuil d'alerte.
+                            Mettez à jour le stock et le seuil d'alerte.
                         </DialogDescription>
                     </DialogHeader>
                     <IngredientForm
@@ -283,10 +321,10 @@ export default function IngredientsIndex({ ingredients, flash }) {
                         setIngredientToDelete(null);
                     }
                 }}
-                title="Supprimer cet ingredient ?"
+                title="Supprimer cet ingrédient ?"
                 description={
                     ingredientToDelete
-                        ? `Cette action est irreversible pour "${ingredientToDelete.name}".`
+                        ? `Cette action est irréversible pour "${ingredientToDelete.name}".`
                         : ''
                 }
                 confirmLabel="Supprimer"

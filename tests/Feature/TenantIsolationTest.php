@@ -21,8 +21,8 @@ test('a user only sees their own ingredients in the index', function () {
     $this->get(route('ingredients.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Ingredients/Index')
-            ->has('ingredients', 1)
-            ->where('ingredients.0.name', 'Tomate Bob')
+            ->has('ingredients.data', 1)
+            ->where('ingredients.data.0.name', 'Tomate Bob')
         );
 });
 

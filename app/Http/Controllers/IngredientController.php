@@ -6,15 +6,23 @@ use App\Http\Requests\StoreIngredientRequest;
 use App\Http\Requests\UpdateIngredientRequest;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class IngredientController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $search = $request->query('search');
+
         return Inertia::render('Ingredients/Index', [
-            'ingredients' => Ingredient::query()->orderBy('name')->get(),
+            'ingredients' => Ingredient::query()
+                ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
+                ->orderBy('name')
+                ->paginate(8)
+                ->withQueryString(),
+            'filters' => ['search' => $search],
         ]);
     }
 
