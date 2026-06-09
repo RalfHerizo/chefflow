@@ -1,0 +1,17 @@
+name: Keep demo warm
+
+# Pings the Render free-tier demo so recruiters rarely hit the ~30s cold start.
+# GitHub cron is in UTC and ignores DST: the 5-22 UTC window covers roughly
+# 07h-23h Paris time in both winter (CET, UTC+1) and summer (CEST, UTC+2).
+# Outside that window the service is allowed to sleep (saves free instance hours).
+on:
+  schedule:
+    - cron: '*/10 5-22 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the Render demo (/up) to prevent spin-down
+        run: curl -fsS --max-time 90 --retry 2 --retry-delay 10 https://chefflow.onrender.com/up
