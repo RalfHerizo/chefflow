@@ -16,7 +16,7 @@ function resolveMenuItems() {
 
     if (hasRoute('dashboard')) {
         items.push({
-            label: 'Dashboard',
+            label: 'Tableau de bord',
             href: route('dashboard'),
             active: route().current('dashboard'),
             icon: LayoutDashboard,
@@ -43,7 +43,7 @@ function resolveMenuItems() {
 
     if (hasRoute('ingredients.index')) {
         items.push({
-            label: 'Ingredients',
+            label: 'Ingrédients',
             href: route('ingredients.index'),
             active: route().current('ingredients.*'),
             icon: CookingPot,
@@ -115,7 +115,7 @@ export default function Sidebar({ offsetForBanner = false }) {
                     className="flex w-full items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-[#FF7E47] hover:text-[#FF7E47]"
                 >
                     <LogOut size={18} />
-                    <span>Logout</span>
+                    <span>Déconnexion</span>
                 </Link>
             </div>
         </aside>

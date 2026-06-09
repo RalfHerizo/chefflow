@@ -25,7 +25,7 @@ export default function IngredientForm({
     setData,
     errors,
     processing,
-    submitLabel = 'Save',
+    submitLabel = 'Enregistrer',
     onSubmit,
 }) {
     return (
@@ -55,10 +55,10 @@ export default function IngredientForm({
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700">Unite</label>
+                <label className="text-sm font-medium text-slate-700">Unité</label>
                 <Select value={data.unit} onValueChange={(value) => setData('unit', value)}>
                     <SelectTrigger>
-                        <SelectValue placeholder="Choisir une unite" />
+                        <SelectValue placeholder="Choisir une unité" />
                     </SelectTrigger>
                     <SelectContent>
                         {UNIT_OPTIONS.map((unit) => (

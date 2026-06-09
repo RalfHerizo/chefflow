@@ -5,16 +5,16 @@ import { useEffect, useRef, useState } from 'react';
 
 const PAGE_CONTENT = {
     Dashboard: {
-        title: 'Dashboard',
-        subtitle: 'Pilot your restaurant activity in real time.',
+        title: 'Tableau de bord',
+        subtitle: 'Pilotez votre activité en temps réel.',
     },
     'Profile/Edit': {
-        title: 'Profile',
-        subtitle: 'Manage your account information and security settings.',
+        title: 'Profil',
+        subtitle: 'Gérez vos informations et vos paramètres de sécurité.',
     },
     'Ingredients/Index': {
-        title: 'Ingredients',
-        subtitle: 'Control stock levels and low-threshold alerts.',
+        title: 'Ingrédients',
+        subtitle: 'Suivez les stocks et les seuils d’alerte.',
     },
     'Products/Index': {
         title: 'Produits',
@@ -43,7 +43,7 @@ function resolveHeaderContent(component, userName) {
 
     return {
         title: component?.split('/').slice(-1)[0] || 'ChefFlow',
-        subtitle: `Hello ${userName || 'User'}, welcome back!`,
+        subtitle: `Bonjour ${userName || 'Utilisateur'}, ravi de vous revoir !`,
     };
 }
 

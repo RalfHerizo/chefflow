@@ -515,7 +515,7 @@ export default function OrdersPos({ products }) {
 
                             <div>
                                 <p className="text-sm font-semibold text-slate-700">
-                                    Ingredients
+                                    Ingrédients
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-2">
                                     {productDetails.ingredients?.length ? (
@@ -530,7 +530,7 @@ export default function OrdersPos({ products }) {
                                         ))
                                     ) : (
                                         <span className="text-sm text-slate-400">
-                                            Aucun ingredient liste.
+                                            Aucun ingrédient listé.
                                         </span>
                                     )}
                                 </div>

@@ -29,10 +29,10 @@ function getOrderStatus(order) {
         order?.status === 'cancelled' ||
         order?.status === 'annule'
     ) {
-        return 'Annule';
+        return 'Annulé';
     }
 
-    return 'Termine';
+    return 'Terminé';
 }
 
 /**
@@ -62,7 +62,7 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
     if (orders.length === 0) {
         return (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
-                Aucune commande recente.
+                Aucune commande récente.
             </div>
         );
     }
@@ -73,18 +73,18 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                 
                 <TableHeader>
                     <TableRow className="border-slate-200/80 hover:bg-transparent">
-                        <TableHead className="px-4">Order ID</TableHead>
+                        <TableHead className="px-4">N° commande</TableHead>
                         <TableHead className="px-4">Produit</TableHead>
-                        <TableHead className="px-4">Quantite</TableHead>
-                        <TableHead className="px-4">Total Price</TableHead>
-                        <TableHead className="px-4">Status</TableHead>
+                        <TableHead className="px-4">Quantité</TableHead>
+                        <TableHead className="px-4">Total</TableHead>
+                        <TableHead className="px-4">Statut</TableHead>
                         <TableHead className="px-4 text-right">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {orders.map((order) => {
                         const status = getOrderStatus(order);
-                        const isCancelled = status === 'Annule';
+                        const isCancelled = status === 'Annulé';
                         const firstItem = order.items?.[0];
                         const productName = firstItem?.product?.name || 'Panier';
                         const productImage = firstItem?.product?.image_url || PRODUCT_PLACEHOLDER;

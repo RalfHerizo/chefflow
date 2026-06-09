@@ -52,7 +52,7 @@ export default function Dashboard({
 
     return (
         <AuthenticatedLayout>
-            <Head title="Dashboard" />
+            <Head title="Tableau de bord" />
 
             <div className="mx-auto max-w-7xl space-y-6">
                 {flash?.message ? (
@@ -89,7 +89,7 @@ export default function Dashboard({
                         </div>
 
                         <div className="w-36">
-                            <label className="mb-1 block text-sm font-medium text-slate-600">Quantite</label>
+                            <label className="mb-1 block text-sm font-medium text-slate-600">Quantité</label>
                             <input
                                 type="number"
                                 min="1"
@@ -118,12 +118,12 @@ export default function Dashboard({
                 </section>
 
                 <section className="space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-800">Recent Orders</h3>
+                    <h3 className="text-lg font-semibold text-slate-800">Commandes récentes</h3>
                     <RecentOrdersTable orders={orders} onCancelOrder={requestCancel} />
                 </section>
 
                 <section className="space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-800">Inventory Status</h3>
+                    <h3 className="text-lg font-semibold text-slate-800">État des stocks</h3>
                     <InventoryGrid ingredients={ingredients} />
                 </section>
             </div>
@@ -136,7 +136,7 @@ export default function Dashboard({
                     }
                 }}
                 title="Annuler cette commande ?"
-                description="Le stock associe sera restaure automatiquement."
+                description="Le stock associé sera restauré automatiquement."
                 confirmLabel="Annuler la commande"
                 destructive
                 onConfirm={confirmCancel}

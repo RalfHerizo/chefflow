@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 
 const INGREDIENT_PLACEHOLDER =
-    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="%23F3F4F6"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="%239CA3AF" font-family="Arial" font-size="16">Ingredient</text></svg>';
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="%23F3F4F6"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="%239CA3AF" font-family="Arial" font-size="16">Ingrédient</text></svg>';
 
 function formatIngredientMeta(ingredient) {
     if (ingredient?.unit_price !== undefined && ingredient?.unit_price !== null) {
@@ -13,10 +13,10 @@ function formatIngredientMeta(ingredient) {
     }
 
     if (ingredient?.unit) {
-        return `Unite: ${ingredient.unit}`;
+        return `Unité : ${ingredient.unit}`;
     }
 
-    return 'Unite non definie';
+    return 'Unité non définie';
 }
 
 /**
@@ -51,7 +51,7 @@ export default function InventoryGrid({ ingredients }) {
     if (ingredients.length === 0) {
         return (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
-                Aucun ingredient disponible.
+                Aucun ingrédient disponible.
             </div>
         );
     }
