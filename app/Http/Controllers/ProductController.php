@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ingredient;
-use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Ingredient;
+use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -142,7 +142,7 @@ class ProductController extends Controller
             $product->ingredients()->sync($pivotPayload);
         });
 
-        return to_route('products.index')->with('message', 'Produit cree avec recette.');
+        return to_route('products.index')->with('message', 'Produit créé avec recette.');
     }
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
@@ -171,14 +171,14 @@ class ProductController extends Controller
                 $imageUrl = Storage::url($path);
             }
 
-            if (!empty($validated['remove_images'])) {
+            if (! empty($validated['remove_images'])) {
                 $this->deleteProductImagesByIds($product, $validated['remove_images']);
             }
 
             $remainingImages = $product->images()->orderBy('id')->get();
             $hasMainImage = $remainingImages->contains('is_main', true);
 
-            if (!$hasMainImage && $remainingImages->isNotEmpty()) {
+            if (! $hasMainImage && $remainingImages->isNotEmpty()) {
                 // Ensure the gallery always has a single main image for display consistency.
                 $remainingImages->each(function ($image, int $index) {
                     $image->update(['is_main' => $index === 0]);
@@ -191,7 +191,7 @@ class ProductController extends Controller
                 $mainImageUrl = $this->appendProductImages(
                     $product,
                     $request->file('images'),
-                    !$hasMainImage
+                    ! $hasMainImage
                 );
 
                 if ($mainImageUrl) {
@@ -221,7 +221,7 @@ class ProductController extends Controller
             $product->ingredients()->sync($pivotPayload);
         });
 
-        return to_route('products.index')->with('message', 'Produit modifie avec succes.');
+        return to_route('products.index')->with('message', 'Produit modifié avec succès.');
     }
 
     public function destroy(Product $product): RedirectResponse
@@ -229,13 +229,13 @@ class ProductController extends Controller
         $this->deleteProductImages($product);
         $product->delete();
 
-        return to_route('products.index')->with('message', 'Produit supprime avec succes.');
+        return to_route('products.index')->with('message', 'Produit supprimé avec succès.');
     }
 
     public function toggleStatus(Product $product): RedirectResponse
     {
         $product->update([
-            'is_active' => !$product->is_active,
+            'is_active' => ! $product->is_active,
         ]);
 
         return back();

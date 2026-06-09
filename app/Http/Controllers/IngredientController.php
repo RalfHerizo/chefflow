@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ingredient;
 use App\Http\Requests\StoreIngredientRequest;
 use App\Http\Requests\UpdateIngredientRequest;
+use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -24,7 +24,7 @@ class IngredientController extends Controller
 
         Ingredient::create($validated);
 
-        return to_route('ingredients.index')->with('message', 'Ingredient created successfully.');
+        return to_route('ingredients.index')->with('message', 'Ingrédient créé.');
     }
 
     public function update(UpdateIngredientRequest $request, Ingredient $ingredient): RedirectResponse
@@ -33,13 +33,13 @@ class IngredientController extends Controller
 
         $ingredient->update($validated);
 
-        return to_route('ingredients.index')->with('message', 'Ingredient updated successfully.');
+        return to_route('ingredients.index')->with('message', 'Ingrédient mis à jour.');
     }
 
     public function destroy(Ingredient $ingredient): RedirectResponse
     {
         $ingredient->delete();
 
-        return to_route('ingredients.index')->with('message', 'Ingredient deleted successfully.');
+        return to_route('ingredients.index')->with('message', 'Ingrédient supprimé.');
     }
 }
