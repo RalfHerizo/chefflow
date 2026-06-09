@@ -15,14 +15,24 @@ class IngredientController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->query('search');
+        $sort = $request->query('sort', 'recent');
+        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
+
+        $ingredients = Ingredient::query()
+            ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'));
+
+        match ($sort) {
+            'name' => $ingredients->orderBy('name', $direction),
+            'unit' => $ingredients->orderBy('unit', $direction),
+            'stock' => $ingredients->orderBy('stock_quantity', $direction),
+            'threshold' => $ingredients->orderBy('alert_threshold', $direction),
+            'status' => $ingredients->orderByRaw('(stock_quantity <= alert_threshold) '.$direction),
+            default => $ingredients->latest('id'),
+        };
 
         return Inertia::render('Ingredients/Index', [
-            'ingredients' => Ingredient::query()
-                ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
-                ->latest('id')
-                ->paginate(8)
-                ->withQueryString(),
-            'filters' => ['search' => $search],
+            'ingredients' => $ingredients->paginate(8)->withQueryString(),
+            'filters' => ['search' => $search, 'sort' => $sort, 'direction' => $direction],
         ]);
     }
 

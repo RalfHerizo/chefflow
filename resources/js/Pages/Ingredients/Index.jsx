@@ -26,9 +26,16 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import Pagination from '@/Components/ui/pagination';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/ui/select';
 import { formatAmountDisplay } from '@/lib/amountConversion';
 import { Head, router, useForm } from '@inertiajs/react';
-import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { ArrowDown, ArrowUp, MoreHorizontal, Plus, Search } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -44,7 +51,7 @@ const INGREDIENT_THUMBNAIL_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">ING</text></svg>';
 
 /**
- * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string }, flash?: {message?: string} }} props
+ * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
  */
 export default function IngredientsIndex({ ingredients, filters, flash }) {
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -52,18 +59,23 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [ingredientToDelete, setIngredientToDelete] = useState(null);
     const [search, setSearch] = useState(filters?.search ?? '');
+    const [sort, setSort] = useState(filters?.sort ?? 'recent');
+    const [direction, setDirection] = useState(filters?.direction ?? 'desc');
     const searchTimeout = useRef();
 
     const createForm = useForm(DEFAULT_FORM);
     const editForm = useForm(DEFAULT_FORM);
 
-    const handleSearch = (value) => {
-        setSearch(value);
-        clearTimeout(searchTimeout.current);
-        searchTimeout.current = setTimeout(() => {
+    const reload = (overrides = {}, { debounce = false } = {}) => {
+        const next = { search, sort, direction, ...overrides };
+        const visit = () =>
             router.get(
                 route('ingredients.index'),
-                { search: value || undefined },
+                {
+                    search: next.search || undefined,
+                    sort: next.sort !== 'recent' ? next.sort : undefined,
+                    direction: next.direction !== 'desc' ? next.direction : undefined,
+                },
                 {
                     preserveState: true,
                     preserveScroll: true,
@@ -71,7 +83,29 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
                     only: ['ingredients', 'filters'],
                 },
             );
-        }, 150);
+
+        clearTimeout(searchTimeout.current);
+        if (debounce) {
+            searchTimeout.current = setTimeout(visit, 150);
+        } else {
+            visit();
+        }
+    };
+
+    const handleSearch = (value) => {
+        setSearch(value);
+        reload({ search: value }, { debounce: true });
+    };
+
+    const handleSort = (value) => {
+        setSort(value);
+        reload({ sort: value });
+    };
+
+    const toggleDirection = () => {
+        const next = direction === 'asc' ? 'desc' : 'asc';
+        setDirection(next);
+        reload({ direction: next });
     };
 
     const submitCreate = (e) => {
@@ -176,15 +210,51 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
                         </Dialog>
                     </div>
 
-                    <div className="relative mb-4">
-                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                        <input
-                            type="search"
-                            value={search}
-                            onChange={(e) => handleSearch(e.target.value)}
-                            placeholder="Rechercher un ingrédient..."
-                            className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-3 text-sm outline-none focus:border-[#FF7E47]"
-                        />
+                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="relative flex-1">
+                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="search"
+                                value={search}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                placeholder="Rechercher un ingrédient..."
+                                className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-3 text-sm outline-none focus:border-[#FF7E47]"
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Select value={sort} onValueChange={handleSort}>
+                                <SelectTrigger className="h-10 w-full rounded-xl sm:w-[180px]">
+                                    <SelectValue placeholder="Trier par" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="recent">Plus récent</SelectItem>
+                                    <SelectItem value="name">Nom</SelectItem>
+                                    <SelectItem value="unit">Unité</SelectItem>
+                                    <SelectItem value="stock">Stock actuel</SelectItem>
+                                    <SelectItem value="threshold">
+                                        Seuil d'alerte
+                                    </SelectItem>
+                                    <SelectItem value="status">Statut</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={toggleDirection}
+                                title={
+                                    direction === 'asc' ? 'Croissant' : 'Décroissant'
+                                }
+                                className="h-10 w-10 shrink-0 rounded-xl"
+                            >
+                                {direction === 'asc' ? (
+                                    <ArrowUp className="h-4 w-4" />
+                                ) : (
+                                    <ArrowDown className="h-4 w-4" />
+                                )}
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="rounded-xl border border-slate-200">
