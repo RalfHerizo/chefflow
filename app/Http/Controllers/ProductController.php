@@ -18,13 +18,28 @@ class ProductController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->query('search');
+        $status = $request->query('status');
+        $sort = $request->query('sort', 'recent');
+        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
+
+        $products = Product::query()
+            ->with(['ingredients:id,name,unit', 'images:id,product_id,url,is_main'])
+            ->withCount('ingredients')
+            ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
+            ->when($status === 'active', fn ($query) => $query->where('is_active', true))
+            ->when($status === 'inactive', fn ($query) => $query->where('is_active', false));
+
+        match ($sort) {
+            'name' => $products->orderBy('name', $direction),
+            'category' => $products->orderBy('category', $direction),
+            'price' => $products->orderBy('price', $direction),
+            'recipe' => $products->orderBy('ingredients_count', $direction),
+            'status' => $products->orderBy('is_active', $direction),
+            default => $products->latest('id'),
+        };
 
         return Inertia::render('Products/Index', [
-            'products' => Product::query()
-                ->with(['ingredients:id,name,unit', 'images:id,product_id,url,is_main'])
-                ->withCount('ingredients')
-                ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
-                ->latest('id')
+            'products' => $products
                 ->paginate(8)
                 ->withQueryString()
                 ->through(fn (Product $product) => [
@@ -51,7 +66,7 @@ class ProductController extends Controller
                         ])
                         ->values(),
                 ]),
-            'filters' => ['search' => $search],
+            'filters' => ['search' => $search, 'status' => $status, 'sort' => $sort, 'direction' => $direction],
         ]);
     }
 

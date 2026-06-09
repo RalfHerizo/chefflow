@@ -3,6 +3,13 @@ import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 import Pagination from '@/Components/ui/pagination';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/ui/select';
 import { formatIngredientAmountForPreview } from '@/lib/amountConversion';
 import {
     Dialog,
@@ -26,7 +33,7 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import { Head, Link, router } from '@inertiajs/react';
-import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { ArrowDown, ArrowUp, MoreHorizontal, Plus, Search } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -42,7 +49,7 @@ function formatPrice(cents) {
 }
 
 /**
- * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string } }} props
+ * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string, status?: string, sort?: string, direction?: string } }} props
  */
 export default function ProductsIndex({ products, filters }) {
     const [previewProduct, setPreviewProduct] = useState(null);
@@ -50,15 +57,25 @@ export default function ProductsIndex({ products, filters }) {
     const [productToDelete, setProductToDelete] = useState(null);
     const [statusLoadingId, setStatusLoadingId] = useState(null);
     const [search, setSearch] = useState(filters?.search ?? '');
+    const [status, setStatus] = useState(filters?.status ?? 'all');
+    const [sort, setSort] = useState(filters?.sort ?? 'recent');
+    const [direction, setDirection] = useState(filters?.direction ?? 'desc');
     const searchTimeout = useRef();
 
-    const handleSearch = (value) => {
-        setSearch(value);
-        clearTimeout(searchTimeout.current);
-        searchTimeout.current = setTimeout(() => {
+    const reload = (overrides = {}, { debounce = false } = {}) => {
+        const next = { search, status, sort, direction, ...overrides };
+        const visit = () =>
             router.get(
                 route('products.index'),
-                { search: value || undefined },
+                {
+                    search: next.search || undefined,
+                    status:
+                        next.status && next.status !== 'all'
+                            ? next.status
+                            : undefined,
+                    sort: next.sort !== 'recent' ? next.sort : undefined,
+                    direction: next.direction !== 'desc' ? next.direction : undefined,
+                },
                 {
                     preserveState: true,
                     preserveScroll: true,
@@ -66,7 +83,34 @@ export default function ProductsIndex({ products, filters }) {
                     only: ['products', 'filters'],
                 },
             );
-        }, 150);
+
+        clearTimeout(searchTimeout.current);
+        if (debounce) {
+            searchTimeout.current = setTimeout(visit, 150);
+        } else {
+            visit();
+        }
+    };
+
+    const handleSearch = (value) => {
+        setSearch(value);
+        reload({ search: value }, { debounce: true });
+    };
+
+    const handleStatus = (value) => {
+        setStatus(value);
+        reload({ status: value });
+    };
+
+    const handleSort = (value) => {
+        setSort(value);
+        reload({ sort: value });
+    };
+
+    const toggleDirection = () => {
+        const next = direction === 'asc' ? 'desc' : 'asc';
+        setDirection(next);
+        reload({ direction: next });
     };
 
     const handleDeleteProduct = () => {
@@ -130,15 +174,61 @@ export default function ProductsIndex({ products, filters }) {
                         </Button>
                     </div>
 
-                    <div className="relative mb-4">
-                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                        <input
-                            type="search"
-                            value={search}
-                            onChange={(e) => handleSearch(e.target.value)}
-                            placeholder="Rechercher un produit..."
-                            className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-3 text-sm outline-none focus:border-[#FF7E47]"
-                        />
+                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="relative flex-1">
+                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="search"
+                                value={search}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                placeholder="Rechercher un produit..."
+                                className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-3 text-sm outline-none focus:border-[#FF7E47]"
+                            />
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Select value={status} onValueChange={handleStatus}>
+                                <SelectTrigger className="h-10 w-full rounded-xl sm:w-[160px]">
+                                    <SelectValue placeholder="Statut" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">
+                                        Tous les statuts
+                                    </SelectItem>
+                                    <SelectItem value="active">Actif</SelectItem>
+                                    <SelectItem value="inactive">Inactif</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Select value={sort} onValueChange={handleSort}>
+                                <SelectTrigger className="h-10 w-full rounded-xl sm:w-[180px]">
+                                    <SelectValue placeholder="Trier par" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="recent">Plus récent</SelectItem>
+                                    <SelectItem value="name">Nom</SelectItem>
+                                    <SelectItem value="category">Catégorie</SelectItem>
+                                    <SelectItem value="price">Prix</SelectItem>
+                                    <SelectItem value="recipe">Recette</SelectItem>
+                                    <SelectItem value="status">Statut</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={toggleDirection}
+                                title={
+                                    direction === 'asc' ? 'Croissant' : 'Décroissant'
+                                }
+                                className="h-10 w-10 shrink-0 rounded-xl"
+                            >
+                                {direction === 'asc' ? (
+                                    <ArrowUp className="h-4 w-4" />
+                                ) : (
+                                    <ArrowDown className="h-4 w-4" />
+                                )}
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="rounded-xl border border-slate-200">
@@ -160,8 +250,8 @@ export default function ProductsIndex({ products, filters }) {
                                             colSpan={6}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
-                                            {search
-                                                ? 'Aucun produit ne correspond à votre recherche.'
+                                            {search || status !== 'all'
+                                                ? 'Aucun produit ne correspond aux filtres.'
                                                 : 'Aucun produit. Créez votre premier produit.'}
                                         </TableCell>
                                     </TableRow>
