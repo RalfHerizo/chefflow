@@ -1,12 +1,12 @@
 import { Link } from '@inertiajs/react';
 import {
-    ClipboardList,
     CookingPot,
     LayoutDashboard,
     LogOut,
     ReceiptText,
     Settings,
     ShoppingBag,
+    ShoppingCart,
 } from 'lucide-react';
 
 function resolveMenuItems() {
@@ -29,7 +29,7 @@ function resolveMenuItems() {
             label: 'Caisse',
             href: route('orders.pos'),
             active: route().current('orders.pos'),
-            icon: ClipboardList,
+            icon: ShoppingCart,
         });
     }
 
