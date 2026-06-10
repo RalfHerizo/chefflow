@@ -202,7 +202,7 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                     value={category}
                                     onValueChange={handleCategory}
                                 >
-                                    <SelectTrigger className="h-10 w-full rounded-xl sm:w-[170px]">
+                                    <SelectTrigger className="h-10 w-full rounded-xl sm:w-[200px]">
                                         <SelectValue placeholder="Catégorie" />
                                     </SelectTrigger>
                                     <SelectContent>
