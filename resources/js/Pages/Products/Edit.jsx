@@ -20,8 +20,8 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { PRODUCT_CATEGORIES } from '@/lib/productCategories';
 
-const CATEGORY_OPTIONS = ['Entree', 'Plat', 'Dessert', 'Boisson'];
 const EMPTY_LINE = { id: '', amount: '', input_amount: '', input_unit: '' };
 
 /**
@@ -271,7 +271,7 @@ export default function EditProduct({ product, ingredients }) {
                                             <SelectValue placeholder="Choisir une categorie" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {CATEGORY_OPTIONS.map((category) => (
+                                            {PRODUCT_CATEGORIES.map((category) => (
                                                 <SelectItem key={category} value={category}>
                                                     {category}
                                                 </SelectItem>

@@ -111,17 +111,17 @@ class DemoSeeder extends Seeder
     {
         $catalog = [
             'margherita' => [
-                'name' => 'Pizza Margherita', 'price' => 1200, 'category' => 'Pizza',
+                'name' => 'Pizza Margherita', 'price' => 1200, 'category' => 'Plat',
                 'photo' => 'https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg',
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'basilic' => 5],
             ],
             'reine' => [
-                'name' => 'Pizza Reine', 'price' => 1400, 'category' => 'Pizza',
+                'name' => 'Pizza Reine', 'price' => 1400, 'category' => 'Plat',
                 'photo' => 'https://www.themealdb.com/images/media/meals/wf49qs1763075222.jpg',
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'jambon' => 0.08, 'champignons' => 0.05],
             ],
             'burger' => [
-                'name' => 'Burger Classic', 'price' => 1100, 'category' => 'Burger',
+                'name' => 'Burger Classic', 'price' => 1100, 'category' => 'Plat',
                 'photo' => 'https://www.themealdb.com/images/media/meals/44bzep1761848278.jpg',
                 'recipe' => ['pain' => 1, 'boeuf' => 0.15, 'cheddar' => 0.03, 'tomate' => 0.03],
             ],
