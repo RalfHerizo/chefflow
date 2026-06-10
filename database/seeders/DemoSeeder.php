@@ -123,114 +123,131 @@ class DemoSeeder extends Seeder
      */
     private function createProducts(array $ing): array
     {
-        $pizzaPhoto = 'https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg';
-        $pizzaPhoto2 = 'https://www.themealdb.com/images/media/meals/wf49qs1763075222.jpg';
-        $burgerPhoto = 'https://www.themealdb.com/images/media/meals/44bzep1761848278.jpg';
-        $friesPhoto = 'https://www.themealdb.com/images/media/meals/uuyrrx1487327597.jpg';
+        // Photos : meal thumbnails TheMealDB (mêmes URLs stables que les ingrédients)
+        // + 2 cafés Wikimedia (TheMealDB n'a pas de boissons). Réutilisées par
+        // groupes cohérents pour éviter les images vides ou hors-sujet.
+        $pizza1 = 'https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg';
+        $pizza2 = 'https://www.themealdb.com/images/media/meals/wf49qs1763075222.jpg';
+        $pizza3 = 'https://www.themealdb.com/images/media/meals/lrfdwz1764438393.jpg';
+        $burger1 = 'https://www.themealdb.com/images/media/meals/44bzep1761848278.jpg';
+        $burger2 = 'https://www.themealdb.com/images/media/meals/k420tj1585565244.jpg';
+        $chickenBurger = 'https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg';
+        $chickenRice = 'https://www.themealdb.com/images/media/meals/wuyd2h1765655837.jpg';
+        $bakedDish = 'https://www.themealdb.com/images/media/meals/uwvxpv1511557015.jpg';
+        $fries = 'https://www.themealdb.com/images/media/meals/uuyrrx1487327597.jpg';
+        $tomatoSalad = 'https://www.themealdb.com/images/media/meals/6cskio1763338156.jpg';
+        $greenSalad = 'https://www.themealdb.com/images/media/meals/k29viq1585565980.jpg';
+        $mixedSalad = 'https://www.themealdb.com/images/media/meals/fqpqml1764359125.jpg';
+        $pepperSalad = 'https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg';
+        $ricePudding = 'https://www.themealdb.com/images/media/meals/5pmn0g1779813285.jpg';
+        $flan = 'https://www.themealdb.com/images/media/meals/0s80wo1764374393.jpg';
+        $iceCream = 'https://www.themealdb.com/images/media/meals/1xscby1764790242.jpg';
+        $espresso = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tazzina_di_caff%C3%A8_a_Ventimiglia.jpg/330px-Tazzina_di_caff%C3%A8_a_Ventimiglia.jpg';
+        $cappuccino = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Cappuccino_in_original.jpg/330px-Cappuccino_in_original.jpg';
         $menuPhoto = 'https://www.themealdb.com/images/media/meals/lgmnff1763789847.jpg';
 
         $catalog = [
             // — Pizzas (Plat) —
             'margherita' => [
-                'name' => 'Pizza Margherita', 'price' => 1200, 'category' => 'Plat', 'photo' => $pizzaPhoto,
+                'name' => 'Pizza Margherita', 'price' => 1200, 'category' => 'Plat', 'photo' => $pizza1,
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'basilic' => 5],
             ],
             'reine' => [
-                'name' => 'Pizza Reine', 'price' => 1400, 'category' => 'Plat', 'photo' => $pizzaPhoto2,
+                'name' => 'Pizza Reine', 'price' => 1400, 'category' => 'Plat', 'photo' => $pizza2,
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'jambon' => 0.08, 'champignons' => 0.05],
             ],
             'quatrefromages' => [
-                'name' => 'Pizza 4 Fromages', 'price' => 1500, 'category' => 'Plat', 'photo' => $pizzaPhoto,
+                'name' => 'Pizza 4 Fromages', 'price' => 1500, 'category' => 'Plat', 'photo' => $pizza3,
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.12, 'mozzarella' => 0.15, 'cheddar' => 0.05],
             ],
             'vegetarienne' => [
-                'name' => 'Pizza Végétarienne', 'price' => 1350, 'category' => 'Plat', 'photo' => $pizzaPhoto2,
+                'name' => 'Pizza Végétarienne', 'price' => 1350, 'category' => 'Plat', 'photo' => $pizza1,
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'champignons' => 0.06, 'basilic' => 5],
             ],
             'pizzapoulet' => [
-                'name' => 'Pizza Poulet', 'price' => 1450, 'category' => 'Plat', 'photo' => $pizzaPhoto,
+                'name' => 'Pizza Poulet', 'price' => 1450, 'category' => 'Plat', 'photo' => $pizza2,
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'poulet' => 0.1],
             ],
             'calzone' => [
-                'name' => 'Calzone Jambon', 'price' => 1400, 'category' => 'Plat', 'photo' => $pizzaPhoto2,
+                'name' => 'Calzone Jambon', 'price' => 1400, 'category' => 'Plat', 'photo' => $pizza3,
                 'recipe' => ['farine' => 0.3, 'tomate' => 0.12, 'mozzarella' => 0.12, 'jambon' => 0.1],
             ],
             // — Burgers (Plat) —
             'burger' => [
-                'name' => 'Burger Classic', 'price' => 1100, 'category' => 'Plat', 'photo' => $burgerPhoto,
+                'name' => 'Burger Classic', 'price' => 1100, 'category' => 'Plat', 'photo' => $burger1,
                 'recipe' => ['pain' => 1, 'boeuf' => 0.15, 'cheddar' => 0.03, 'tomate' => 0.03],
             ],
             'cheeseburger' => [
-                'name' => 'Cheeseburger', 'price' => 1250, 'category' => 'Plat', 'photo' => $burgerPhoto,
+                'name' => 'Cheeseburger', 'price' => 1250, 'category' => 'Plat', 'photo' => $burger2,
                 'recipe' => ['pain' => 1, 'boeuf' => 0.15, 'cheddar' => 0.05, 'tomate' => 0.03, 'salade' => 0.02],
             ],
             'doubleburger' => [
-                'name' => 'Double Burger', 'price' => 1600, 'category' => 'Plat', 'photo' => $burgerPhoto,
+                'name' => 'Double Burger', 'price' => 1600, 'category' => 'Plat', 'photo' => $burger1,
                 'recipe' => ['pain' => 1, 'boeuf' => 0.3, 'cheddar' => 0.06],
             ],
             'chickenburger' => [
-                'name' => 'Chicken Burger', 'price' => 1300, 'category' => 'Plat', 'photo' => $burgerPhoto,
+                'name' => 'Chicken Burger', 'price' => 1300, 'category' => 'Plat', 'photo' => $chickenBurger,
                 'recipe' => ['pain' => 1, 'poulet' => 0.13, 'cheddar' => 0.03, 'salade' => 0.02],
             ],
             // — Autres plats —
             'pouletriz' => [
-                'name' => 'Poulet Riz', 'price' => 1350, 'category' => 'Plat', 'photo' => $menuPhoto,
+                'name' => 'Poulet Riz', 'price' => 1350, 'category' => 'Plat', 'photo' => $chickenRice,
                 'recipe' => ['poulet' => 0.18, 'riz' => 0.15],
             ],
             'lasagnes' => [
-                'name' => 'Lasagnes Bolognaise', 'price' => 1250, 'category' => 'Plat', 'photo' => $menuPhoto,
+                'name' => 'Lasagnes Bolognaise', 'price' => 1250, 'category' => 'Plat', 'photo' => $bakedDish,
                 'recipe' => ['farine' => 0.12, 'boeuf' => 0.15, 'tomate' => 0.15, 'mozzarella' => 0.08],
             ],
             // — Entrées —
             'caprese' => [
-                'name' => 'Salade Caprese', 'price' => 850, 'category' => 'Entrée', 'photo' => null,
+                'name' => 'Salade Caprese', 'price' => 850, 'category' => 'Entrée', 'photo' => $tomatoSalad,
                 'recipe' => ['tomate' => 0.1, 'mozzarella' => 0.1, 'basilic' => 4],
             ],
             'cesar' => [
-                'name' => 'Salade César', 'price' => 950, 'category' => 'Entrée', 'photo' => null,
+                'name' => 'Salade César', 'price' => 950, 'category' => 'Entrée', 'photo' => $greenSalad,
                 'recipe' => ['salade' => 0.12, 'poulet' => 0.08, 'cheddar' => 0.02],
             ],
             'bruschetta' => [
-                'name' => 'Bruschetta', 'price' => 700, 'category' => 'Entrée', 'photo' => null,
+                'name' => 'Bruschetta', 'price' => 700, 'category' => 'Entrée', 'photo' => $pepperSalad,
                 'recipe' => ['pain' => 1, 'tomate' => 0.06, 'basilic' => 4],
             ],
             // — Accompagnements —
             'frites' => [
-                'name' => 'Frites Maison', 'price' => 400, 'category' => 'Accompagnement', 'photo' => $friesPhoto,
+                'name' => 'Frites Maison', 'price' => 400, 'category' => 'Accompagnement', 'photo' => $fries,
                 'recipe' => ['frites' => 0.2],
             ],
             'grandefrites' => [
-                'name' => 'Grande Frites', 'price' => 550, 'category' => 'Accompagnement', 'photo' => $friesPhoto,
+                'name' => 'Grande Frites', 'price' => 550, 'category' => 'Accompagnement', 'photo' => $fries,
                 'recipe' => ['frites' => 0.3],
             ],
             'riznature' => [
-                'name' => 'Riz Nature', 'price' => 450, 'category' => 'Accompagnement', 'photo' => $friesPhoto,
+                'name' => 'Riz Nature', 'price' => 450, 'category' => 'Accompagnement', 'photo' => $chickenRice,
                 'recipe' => ['riz' => 0.15],
             ],
             'saladeverte' => [
-                'name' => 'Salade Verte', 'price' => 500, 'category' => 'Accompagnement', 'photo' => null,
+                'name' => 'Salade Verte', 'price' => 500, 'category' => 'Accompagnement', 'photo' => $mixedSalad,
                 'recipe' => ['salade' => 0.1, 'tomate' => 0.04],
             ],
             // — Desserts —
             'rizaulait' => [
-                'name' => 'Riz au Lait', 'price' => 550, 'category' => 'Dessert', 'photo' => null,
+                'name' => 'Riz au Lait', 'price' => 550, 'category' => 'Dessert', 'photo' => $ricePudding,
                 'recipe' => ['riz' => 0.08, 'lait' => 0.2, 'sucre' => 0.03],
             ],
             'cremevanille' => [
-                'name' => 'Crème Vanille', 'price' => 600, 'category' => 'Dessert', 'photo' => null,
+                'name' => 'Crème Vanille', 'price' => 600, 'category' => 'Dessert', 'photo' => $flan,
                 'recipe' => ['lait' => 0.15, 'oeuf' => 2, 'sucre' => 0.04],
             ],
             'glacevanille' => [
-                'name' => 'Glace Vanille', 'price' => 500, 'category' => 'Dessert', 'photo' => null,
+                'name' => 'Glace Vanille', 'price' => 500, 'category' => 'Dessert', 'photo' => $iceCream,
                 'recipe' => ['lait' => 0.1, 'oeuf' => 1, 'sucre' => 0.05],
             ],
             // — Boissons —
             'espresso' => [
-                'name' => 'Café Espresso', 'price' => 250, 'category' => 'Boisson', 'photo' => null,
+                'name' => 'Café Espresso', 'price' => 250, 'category' => 'Boisson', 'photo' => $espresso,
                 'recipe' => ['cafe' => 0.01],
             ],
             'cappuccino' => [
-                'name' => 'Cappuccino', 'price' => 350, 'category' => 'Boisson', 'photo' => null,
+                'name' => 'Cappuccino', 'price' => 350, 'category' => 'Boisson', 'photo' => $cappuccino,
                 'recipe' => ['cafe' => 0.01, 'lait' => 0.08],
             ],
             // — Menus —
@@ -239,7 +256,7 @@ class DemoSeeder extends Seeder
                 'recipe' => ['pain' => 1, 'boeuf' => 0.15, 'cheddar' => 0.03, 'frites' => 0.2],
             ],
             'menupizza' => [
-                'name' => 'Menu Pizza', 'price' => 1700, 'category' => 'Menu', 'photo' => $menuPhoto,
+                'name' => 'Menu Pizza', 'price' => 1700, 'category' => 'Menu', 'photo' => $pizza1,
                 'recipe' => ['farine' => 0.25, 'tomate' => 0.15, 'mozzarella' => 0.12, 'frites' => 0.2],
             ],
             'menuenfant' => [
