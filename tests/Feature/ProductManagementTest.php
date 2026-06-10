@@ -3,6 +3,7 @@
 use App\Models\Ingredient;
 use App\Models\Product;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
 
 test('an authenticated user can create a product with recipe lines', function () {
     $user = User::factory()->create();
@@ -139,4 +140,21 @@ test('an authenticated user can toggle a product status', function () {
 
     $response->assertRedirect();
     expect($product->fresh()->is_active)->toBeFalse();
+});
+
+test('an authenticated user can filter products by category', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Product::create(['name' => 'Pizza Margherita', 'price' => 1200, 'category' => 'Pizza', 'is_active' => true]);
+    Product::create(['name' => 'Pizza Reine', 'price' => 1400, 'category' => 'Pizza', 'is_active' => true]);
+    Product::create(['name' => 'Burger Classic', 'price' => 1100, 'category' => 'Burger', 'is_active' => true]);
+
+    $this->get(route('products.index', ['category' => 'Pizza']))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Products/Index')
+            ->has('products.data', 2)
+            ->where('filters.category', 'Pizza')
+            ->where('categories', ['Burger', 'Pizza'])
+        );
 });

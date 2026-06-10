@@ -19,6 +19,7 @@ class ProductController extends Controller
     {
         $search = $request->query('search');
         $status = $request->query('status');
+        $category = $request->query('category');
         $sort = $request->query('sort', 'recent');
         $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
 
@@ -27,7 +28,8 @@ class ProductController extends Controller
             ->withCount('ingredients')
             ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
             ->when($status === 'active', fn ($query) => $query->where('is_active', true))
-            ->when($status === 'inactive', fn ($query) => $query->where('is_active', false));
+            ->when($status === 'inactive', fn ($query) => $query->where('is_active', false))
+            ->when($category, fn ($query) => $query->where('category', $category));
 
         match ($sort) {
             'name' => $products->orderBy('name', $direction),
@@ -38,7 +40,15 @@ class ProductController extends Controller
             default => $products->latest('id'),
         };
 
+        $categories = Product::query()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
         return Inertia::render('Products/Index', [
+            'categories' => $categories,
             'products' => $products
                 ->paginate(8)
                 ->withQueryString()
@@ -66,7 +76,7 @@ class ProductController extends Controller
                         ])
                         ->values(),
                 ]),
-            'filters' => ['search' => $search, 'status' => $status, 'sort' => $sort, 'direction' => $direction],
+            'filters' => ['search' => $search, 'status' => $status, 'category' => $category, 'sort' => $sort, 'direction' => $direction],
         ]);
     }
 

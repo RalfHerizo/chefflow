@@ -49,21 +49,22 @@ function formatPrice(cents) {
 }
 
 /**
- * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string, status?: string, sort?: string, direction?: string } }} props
+ * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, categories?: Array<string>, filters?: { search?: string, status?: string, category?: string, sort?: string, direction?: string } }} props
  */
-export default function ProductsIndex({ products, filters }) {
+export default function ProductsIndex({ products, categories = [], filters }) {
     const [previewProduct, setPreviewProduct] = useState(null);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [productToDelete, setProductToDelete] = useState(null);
     const [statusLoadingId, setStatusLoadingId] = useState(null);
     const [search, setSearch] = useState(filters?.search ?? '');
     const [status, setStatus] = useState(filters?.status ?? 'all');
+    const [category, setCategory] = useState(filters?.category ?? 'all');
     const [sort, setSort] = useState(filters?.sort ?? 'recent');
     const [direction, setDirection] = useState(filters?.direction ?? 'desc');
     const searchTimeout = useRef();
 
     const reload = (overrides = {}, { debounce = false } = {}) => {
-        const next = { search, status, sort, direction, ...overrides };
+        const next = { search, status, category, sort, direction, ...overrides };
         const visit = () =>
             router.get(
                 route('products.index'),
@@ -72,6 +73,10 @@ export default function ProductsIndex({ products, filters }) {
                     status:
                         next.status && next.status !== 'all'
                             ? next.status
+                            : undefined,
+                    category:
+                        next.category && next.category !== 'all'
+                            ? next.category
                             : undefined,
                     sort: next.sort !== 'recent' ? next.sort : undefined,
                     direction: next.direction !== 'desc' ? next.direction : undefined,
@@ -100,6 +105,11 @@ export default function ProductsIndex({ products, filters }) {
     const handleStatus = (value) => {
         setStatus(value);
         reload({ status: value });
+    };
+
+    const handleCategory = (value) => {
+        setCategory(value);
+        reload({ category: value });
     };
 
     const handleSort = (value) => {
@@ -187,6 +197,26 @@ export default function ProductsIndex({ products, filters }) {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
+                            {categories.length > 0 && (
+                                <Select
+                                    value={category}
+                                    onValueChange={handleCategory}
+                                >
+                                    <SelectTrigger className="h-10 w-full rounded-xl sm:w-[170px]">
+                                        <SelectValue placeholder="Catégorie" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            Toutes les catégories
+                                        </SelectItem>
+                                        {categories.map((cat) => (
+                                            <SelectItem key={cat} value={cat}>
+                                                {cat}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
                             <Select value={status} onValueChange={handleStatus}>
                                 <SelectTrigger className="h-10 w-full rounded-xl sm:w-[160px]">
                                     <SelectValue placeholder="Statut" />
@@ -250,7 +280,7 @@ export default function ProductsIndex({ products, filters }) {
                                             colSpan={6}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
-                                            {search || status !== 'all'
+                                            {search || status !== 'all' || category !== 'all'
                                                 ? 'Aucun produit ne correspond aux filtres.'
                                                 : 'Aucun produit. Créez votre premier produit.'}
                                         </TableCell>
