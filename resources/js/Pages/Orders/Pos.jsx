@@ -318,7 +318,7 @@ export default function OrdersPos({ products }) {
                     </div>
                 </section>
 
-                <aside className="w-full max-w-xl space-y-4 lg:w-[380px]">
+                <aside className="w-full max-w-xl space-y-4 lg:sticky lg:top-0 lg:w-[380px] lg:self-start">
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
