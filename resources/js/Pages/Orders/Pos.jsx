@@ -1,6 +1,5 @@
 ﻿import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
-import { ScrollArea } from '@/Components/ui/scroll-area';
 import {
     Dialog,
     DialogContent,
@@ -344,13 +343,13 @@ export default function OrdersPos({ products }) {
                             ) : null}
                         </div>
 
-                        <ScrollArea className="mt-4 h-64 lg:h-auto lg:min-h-0 lg:flex-1">
+                        <div className="mt-4 max-h-80 overflow-y-auto pr-1 lg:max-h-none lg:min-h-0 lg:flex-1">
                             {cart.length === 0 ? (
-                                <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                                <div className="py-12 text-center text-sm text-slate-400">
                                     Aucun produit dans le panier.
                                 </div>
                             ) : (
-                                <div className="space-y-3 pr-2">
+                                <div className="space-y-3">
                                     {cart.map((item) => (
                                         <div
                                             key={item.id}
@@ -398,7 +397,7 @@ export default function OrdersPos({ products }) {
                                     ))}
                                 </div>
                             )}
-                        </ScrollArea>
+                        </div>
 
                         <div className="mt-4 shrink-0 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
                             <div className="flex items-center justify-between text-slate-600">
