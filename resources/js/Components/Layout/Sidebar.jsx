@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     CookingPot,
     LayoutDashboard,
@@ -9,7 +9,7 @@ import {
     ShoppingCart,
 } from 'lucide-react';
 
-function resolveMenuItems() {
+function resolveMenuItems(lowStockCount = 0) {
     const canUseRoute = typeof route === 'function';
     const hasRoute = (name) => canUseRoute && route().has(name);
 
@@ -57,6 +57,7 @@ function resolveMenuItems() {
             href: route('ingredients.index'),
             active: route().current('ingredients.*'),
             icon: CookingPot,
+            badge: lowStockCount > 0 ? lowStockCount : null,
         });
     }
 
@@ -73,7 +74,8 @@ function resolveMenuItems() {
 }
 
 export default function Sidebar({ offsetForBanner = false }) {
-    const menuItems = resolveMenuItems();
+    const lowStockCount = usePage().props.lowStockCount ?? 0;
+    const menuItems = resolveMenuItems(lowStockCount);
 
     return (
         <aside
@@ -112,6 +114,17 @@ export default function Sidebar({ offsetForBanner = false }) {
                         >
                             <Icon size={18} />
                             <span>{item.label}</span>
+                            {item.badge ? (
+                                <span
+                                    className={`ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-semibold ${
+                                        item.active
+                                            ? 'bg-white text-[#FF7E47]'
+                                            : 'bg-red-500 text-white'
+                                    }`}
+                                >
+                                    {item.badge > 9 ? '9+' : item.badge}
+                                </span>
+                            ) : null}
                         </Link>
                     );
                 })}

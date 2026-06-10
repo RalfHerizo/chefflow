@@ -20,6 +20,10 @@ test('the demo seeder builds a coherent catalog without exhausting stock', funct
     expect(Product::count())->toBe(27);
     expect(Order::count())->toBeGreaterThan(0);
 
+    // The demo intentionally leaves 2 perishables below threshold so the
+    // stock alerts are visible (sidebar badge + dashboard block).
+    expect(Ingredient::whereColumn('stock_quantity', '<=', 'alert_threshold')->count())->toBe(2);
+
     $allowedCategories = ['Entrée', 'Plat', 'Accompagnement', 'Dessert', 'Boisson', 'Menu'];
 
     Product::with('ingredients')->get()->each(function (Product $product) use ($allowedCategories) {

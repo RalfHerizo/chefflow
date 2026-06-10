@@ -42,6 +42,7 @@ class DemoSeeder extends Seeder
             $ingredients = $this->createIngredients();
             $products = $this->createProducts($ingredients);
             $this->createOrders($products);
+            $this->flagLowStock($ingredients);
         } finally {
             $previous ? Auth::login($previous) : Auth::logout();
         }
@@ -324,5 +325,17 @@ class DemoSeeder extends Seeder
             $order->created_at = now()->subDays($daysAgo)->setTime(12, 0);
             $order->save();
         }
+    }
+
+    /**
+     * Leave a couple of perishables under their alert threshold so the stock
+     * alerts (sidebar badge + dashboard block) are visible in the demo.
+     *
+     * @param  array<string, Ingredient>  $ing
+     */
+    private function flagLowStock(array $ing): void
+    {
+        $ing['basilic']->update(['stock_quantity' => 35]);     // seuil 50 g
+        $ing['champignons']->update(['stock_quantity' => 1]);  // seuil 2 kg
     }
 }

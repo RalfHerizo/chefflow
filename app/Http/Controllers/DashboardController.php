@@ -78,6 +78,11 @@ class DashboardController extends Controller
                 ->values(),
             'orders' => Order::with('items.product')->latest('id')->take(5)->get(),
             'ingredients' => Ingredient::query()->latest('id')->take(6)->get(),
+            'lowStockIngredients' => Ingredient::query()
+                ->whereColumn('stock_quantity', '<=', 'alert_threshold')
+                ->orderByRaw('(stock_quantity - alert_threshold) asc')
+                ->take(6)
+                ->get(),
         ]);
     }
 }

@@ -1,4 +1,5 @@
 import InventoryGrid from '@/Components/Dashboard/InventoryGrid';
+import LowStockAlerts from '@/Components/Dashboard/LowStockAlerts';
 import RecentOrdersTable from '@/Components/Dashboard/RecentOrdersTable';
 import RevenueChart from '@/Components/Dashboard/RevenueChart';
 import StatCard from '@/Components/Dashboard/StatCard';
@@ -30,6 +31,7 @@ export default function Dashboard({
     topProducts,
     orders,
     ingredients,
+    lowStockIngredients,
     flash,
     errors,
 }) {
@@ -113,6 +115,10 @@ export default function Dashboard({
                         href={route('ingredients.index')}
                     />
                 </div>
+
+                {lowStockIngredients?.length > 0 ? (
+                    <LowStockAlerts ingredients={lowStockIngredients} />
+                ) : null}
 
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <div className="lg:col-span-2">
