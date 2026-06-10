@@ -319,8 +319,8 @@ export default function OrdersPos({ products }) {
                 </section>
 
                 <aside className="w-full max-w-xl space-y-4 lg:sticky lg:top-0 lg:w-[380px] lg:self-start">
-                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
-                        <div className="flex items-center justify-between">
+                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm lg:flex lg:max-h-[calc(100vh-12rem)] lg:flex-col">
+                        <div className="flex shrink-0 items-center justify-between">
                             <div className="flex items-center gap-2">
                                 
                                 <div>
@@ -344,7 +344,7 @@ export default function OrdersPos({ products }) {
                             ) : null}
                         </div>
 
-                        <ScrollArea className="mt-4 h-64">
+                        <ScrollArea className="mt-4 h-64 lg:h-auto lg:min-h-0 lg:flex-1">
                             {cart.length === 0 ? (
                                 <div className="flex h-full items-center justify-center text-sm text-slate-400">
                                     Aucun produit dans le panier.
@@ -400,7 +400,7 @@ export default function OrdersPos({ products }) {
                             )}
                         </ScrollArea>
 
-                        <div className="mt-4 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
+                        <div className="mt-4 shrink-0 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
                             <div className="flex items-center justify-between text-slate-600">
                                 <span>Total HT</span>
                                 <span className="font-semibold text-slate-800">
@@ -421,7 +421,7 @@ export default function OrdersPos({ products }) {
                             </div>
                         </div>
 
-                        <div className="mt-4 flex flex-col justify-center gap-3 sm:flex-row">
+                        <div className="mt-4 flex shrink-0 flex-col justify-center gap-3 sm:flex-row">
                             <Button
                                 type="button"
                                 variant="outline"
