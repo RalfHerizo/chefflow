@@ -35,6 +35,10 @@ class IngredientController extends Controller
 
         return Inertia::render('Ingredients/Index', [
             'ingredients' => $ingredients->paginate(8)->withQueryString(),
+            'lowStockIngredients' => Ingredient::query()
+                ->whereColumn('stock_quantity', '<=', 'alert_threshold')
+                ->orderByRaw('(stock_quantity - alert_threshold) asc')
+                ->get(),
             'filters' => ['search' => $search, 'status' => $status, 'sort' => $sort, 'direction' => $direction],
         ]);
     }

@@ -13,9 +13,9 @@ const INGREDIENT_PLACEHOLDER =
  * alert_threshold: number|string,
  * unit?: string,
  * image_url?: string|null
- * }> }} props
+ * }>, showManageLink?: boolean }} props
  */
-export default function LowStockAlerts({ ingredients = [] }) {
+export default function LowStockAlerts({ ingredients = [], showManageLink = true }) {
     if (!ingredients.length) {
         return null;
     }
@@ -36,13 +36,15 @@ export default function LowStockAlerts({ ingredients = [] }) {
                         </p>
                     </div>
                 </div>
-                <Link
-                    href={route('ingredients.index')}
-                    className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-[#FF7E47] hover:underline"
-                >
-                    Gérer les stocks
-                    <ArrowRight className="h-4 w-4" />
-                </Link>
+                {showManageLink ? (
+                    <Link
+                        href={route('ingredients.index')}
+                        className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-[#FF7E47] hover:underline"
+                    >
+                        Gérer les stocks
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
+                ) : null}
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">

@@ -1,4 +1,5 @@
 import IngredientForm from '@/Components/Ingredients/IngredientForm';
+import LowStockAlerts from '@/Components/Dashboard/LowStockAlerts';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -51,9 +52,9 @@ const INGREDIENT_THUMBNAIL_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">ING</text></svg>';
 
 /**
- * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, filters?: { search?: string, status?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
+ * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, lowStockIngredients?: Array<{id: number, name: string, stock_quantity: number|string, alert_threshold: number|string, unit?: string, image_url?: string|null}>, filters?: { search?: string, status?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
  */
-export default function IngredientsIndex({ ingredients, filters, flash }) {
+export default function IngredientsIndex({ ingredients, lowStockIngredients = [], filters, flash }) {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editingIngredient, setEditingIngredient] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -181,6 +182,13 @@ export default function IngredientsIndex({ ingredients, filters, flash }) {
                     <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
                         {flash.message}
                     </div>
+                ) : null}
+
+                {lowStockIngredients?.length > 0 ? (
+                    <LowStockAlerts
+                        ingredients={lowStockIngredients}
+                        showManageLink={false}
+                    />
                 ) : null}
 
                 <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm">
