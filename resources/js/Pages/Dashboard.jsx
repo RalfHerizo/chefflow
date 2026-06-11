@@ -6,7 +6,7 @@ import StatCard from '@/Components/Dashboard/StatCard';
 import TopProducts from '@/Components/Dashboard/TopProducts';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     Plus,
@@ -35,6 +35,7 @@ export default function Dashboard({
     flash,
     errors,
 }) {
+    const lowStockCount = usePage().props.lowStockCount ?? 0;
     const [orderToCancel, setOrderToCancel] = useState(null);
 
     const confirmCancel = () => {
@@ -117,7 +118,10 @@ export default function Dashboard({
                 </div>
 
                 {lowStockIngredients?.length > 0 ? (
-                    <LowStockAlerts ingredients={lowStockIngredients} />
+                    <LowStockAlerts
+                        ingredients={lowStockIngredients}
+                        totalCount={lowStockCount}
+                    />
                 ) : null}
 
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

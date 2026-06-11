@@ -13,12 +13,23 @@ const INGREDIENT_PLACEHOLDER =
  * alert_threshold: number|string,
  * unit?: string,
  * image_url?: string|null
- * }>, showManageLink?: boolean }} props
+ * }>, showManageLink?: boolean, totalCount?: number, seeAllHref?: string|null }} props
  */
-export default function LowStockAlerts({ ingredients = [], showManageLink = true }) {
+export default function LowStockAlerts({
+    ingredients = [],
+    showManageLink = true,
+    totalCount,
+    seeAllHref = null,
+}) {
     if (!ingredients.length) {
         return null;
     }
+
+    // The list may be capped (e.g. top 3); totalCount keeps the header honest
+    // and drives the "+N autres" overflow link to the full critical list.
+    const total =
+        typeof totalCount === 'number' ? totalCount : ingredients.length;
+    const remaining = Math.max(0, total - ingredients.length);
 
     return (
         <div className="rounded-2xl border border-red-200 bg-red-50/60 p-5 shadow-sm">
@@ -32,7 +43,7 @@ export default function LowStockAlerts({ ingredients = [], showManageLink = true
                             À réapprovisionner
                         </h3>
                         <p className="text-xs text-slate-500">
-                            {ingredients.length} ingrédient(s) sous le seuil d'alerte.
+                            {total} ingrédient(s) sous le seuil d'alerte.
                         </p>
                     </div>
                 </div>
@@ -82,6 +93,18 @@ export default function LowStockAlerts({ ingredients = [], showManageLink = true
                     </div>
                 ))}
             </div>
+
+            {seeAllHref && remaining > 0 ? (
+                <div className="mt-4 flex justify-center">
+                    <Link
+                        href={seeAllHref}
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-[#FF7E47] hover:underline"
+                    >
+                        + {remaining} autre{remaining > 1 ? 's' : ''} sous le seuil
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
+                </div>
+            ) : null}
         </div>
     );
 }

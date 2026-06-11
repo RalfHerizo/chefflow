@@ -38,6 +38,7 @@ class IngredientController extends Controller
             'lowStockIngredients' => Ingredient::query()
                 ->whereColumn('stock_quantity', '<=', 'alert_threshold')
                 ->orderByRaw('(stock_quantity - alert_threshold) asc')
+                ->take(3)
                 ->get(),
             'filters' => ['search' => $search, 'status' => $status, 'sort' => $sort, 'direction' => $direction],
         ]);

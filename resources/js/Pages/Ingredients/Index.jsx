@@ -35,7 +35,7 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { formatAmountDisplay } from '@/lib/amountConversion';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { ArrowDown, ArrowUp, MoreHorizontal, Plus, Search } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -55,6 +55,7 @@ const INGREDIENT_THUMBNAIL_PLACEHOLDER =
  * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, lowStockIngredients?: Array<{id: number, name: string, stock_quantity: number|string, alert_threshold: number|string, unit?: string, image_url?: string|null}>, filters?: { search?: string, status?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
  */
 export default function IngredientsIndex({ ingredients, lowStockIngredients = [], filters, flash }) {
+    const lowStockCount = usePage().props.lowStockCount ?? 0;
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editingIngredient, setEditingIngredient] = useState(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -187,6 +188,8 @@ export default function IngredientsIndex({ ingredients, lowStockIngredients = []
                 {lowStockIngredients?.length > 0 ? (
                     <LowStockAlerts
                         ingredients={lowStockIngredients}
+                        totalCount={lowStockCount}
+                        seeAllHref={route('ingredients.index', { status: 'critique' })}
                         showManageLink={false}
                     />
                 ) : null}
