@@ -1,6 +1,7 @@
-import { Search, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Link, usePage } from '@inertiajs/react';
 import { useCart } from '@/Contexts/CartContext';
+import GlobalSearch from '@/Components/Layout/GlobalSearch';
 import { useEffect, useRef, useState } from 'react';
 
 const PAGE_CONTENT = {
@@ -87,22 +88,7 @@ function TopHeader({ user }) {
                     </h2>
                     <p className="text-sm text-slate-500">{headerContent.subtitle}</p>
                 </div>
-                {/*
-                    Recherche globale — désactivée pour l'instant (décorative,
-                    sans logique). À réactiver plus tard en feature dédiée
-                    (recherche multi-entités : produits, commandes, ingrédients).
-                <div className="relative w-full max-w-xl">
-                    <Search
-                        size={18}
-                        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-                    <input
-                        type="search"
-                        placeholder="Rechercher un produit, une commande, un client..."
-                        className="h-11 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-[#FF7E47]"
-                    />
-                </div>
-                */}
+                <GlobalSearch />
 
                 <div className="flex items-center gap-4">
                     <Link
