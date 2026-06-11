@@ -31,3 +31,20 @@ test('the demo seeder builds a coherent catalog without exhausting stock', funct
         expect($allowedCategories)->toContain($product->category);
     });
 });
+
+test('the demo seeder leaves at least one product not makeable while keeping the low-stock count', function () {
+    $this->seed(DemoSeeder::class);
+
+    $demo = User::where('email', config('demo.email'))->firstOrFail();
+    $this->actingAs($demo);
+
+    // Champignons forced to 0 → Pizza Reine + Pizza Végétarienne become unmakeable.
+    $notMakeable = Product::with('ingredients')->get()
+        ->filter(fn (Product $product) => ! $product->is_makeable);
+
+    expect($notMakeable)->not->toBeEmpty();
+    expect($notMakeable->pluck('name'))->toContain('Pizza Reine');
+
+    // A hard stock-out (0) still satisfies <= threshold, so the alert count is unchanged.
+    expect(Ingredient::whereColumn('stock_quantity', '<=', 'alert_threshold')->count())->toBe(2);
+});

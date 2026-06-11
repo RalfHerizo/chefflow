@@ -53,4 +53,22 @@ class Product extends Model
 
         );
     }
+
+    /**
+     * Derived availability: a product is makeable when every recipe ingredient
+     * has enough stock for at least one unit (mirrors SellProductAction's rule).
+     * Not appended on purpose — only computed where the recipe is eager-loaded
+     * (POS + products index), so it never triggers an N+1 elsewhere.
+     */
+    protected function isMakeable(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->relationLoaded('ingredients')
+                ? $this->ingredients->every(
+                    fn (Ingredient $ingredient) => (float) $ingredient->stock_quantity
+                        >= (float) ($ingredient->pivot->amount ?? 0)
+                )
+                : true,
+        )->shouldCache();
+    }
 }

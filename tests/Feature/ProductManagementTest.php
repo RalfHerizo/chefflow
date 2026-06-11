@@ -158,3 +158,26 @@ test('an authenticated user can filter products by category', function () {
             ->where('categories', ['Burger', 'Pizza'])
         );
 });
+
+test('the products index exposes is_makeable derived from stock', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $flour = Ingredient::create(['name' => 'Farine', 'unit' => 'kg', 'stock_quantity' => 50, 'alert_threshold' => 5]);
+    $truffle = Ingredient::create(['name' => 'Truffe', 'unit' => 'kg', 'stock_quantity' => 0.01, 'alert_threshold' => 1]);
+
+    $ok = Product::create(['name' => 'AAA Stocked', 'price' => 1000, 'is_active' => true]);
+    $ok->ingredients()->attach($flour->id, ['amount' => 0.25]);
+
+    $ko = Product::create(['name' => 'BBB OutOfStock', 'price' => 1200, 'is_active' => true]);
+    $ko->ingredients()->attach($truffle->id, ['amount' => 0.05]); // 0.01 < 0.05
+
+    $this->get(route('products.index', ['sort' => 'name', 'direction' => 'asc']))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Products/Index')
+            ->where('products.data.0.name', 'AAA Stocked')
+            ->where('products.data.0.is_makeable', true)
+            ->where('products.data.1.name', 'BBB OutOfStock')
+            ->where('products.data.1.is_makeable', false)
+        );
+});

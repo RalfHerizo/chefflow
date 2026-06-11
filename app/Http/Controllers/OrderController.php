@@ -66,7 +66,7 @@ class OrderController extends Controller
     {
         return Inertia::render('Orders/Pos', [
             'products' => Product::query()
-                ->with(['ingredients:id,name', 'images:id,product_id,url,is_main'])
+                ->with(['ingredients:id,name,stock_quantity', 'images:id,product_id,url,is_main'])
                 ->orderBy('name')
                 ->get(['id', 'name', 'price', 'image_url', 'category', 'is_active'])
                 ->map(function (Product $product) {
@@ -77,6 +77,7 @@ class OrderController extends Controller
                         'image_url' => $product->image_url,
                         'category' => $product->category,
                         'is_active' => $product->is_active,
+                        'is_makeable' => $product->is_makeable,
                         'images' => $product->images
                             ->map(fn ($image) => [
                                 'id' => $image->id,

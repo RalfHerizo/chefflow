@@ -49,7 +49,7 @@ function formatPrice(cents) {
 }
 
 /**
- * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, categories?: Array<string>, filters?: { search?: string, status?: string, category?: string, sort?: string, direction?: string } }} props
+ * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, is_makeable: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, categories?: Array<string>, filters?: { search?: string, status?: string, category?: string, sort?: string, direction?: string } }} props
  */
 export default function ProductsIndex({ products, categories = [], filters }) {
     const [previewProduct, setPreviewProduct] = useState(null);
@@ -270,6 +270,7 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                     <TableHead className="px-4">Prix</TableHead>
                                     <TableHead className="px-4">Recette</TableHead>
                                     <TableHead className="px-4">Statut</TableHead>
+                                    <TableHead className="px-4">Stock</TableHead>
                                     <TableHead className="px-4 text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -277,7 +278,7 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                 {products.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={6}
+                                            colSpan={7}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
                                             {search || status !== 'all' || category !== 'all'
@@ -324,6 +325,17 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                                 >
                                                     {product.is_active ? 'Actif' : 'Inactif'}
                                                 </Button>
+                                            </TableCell>
+                                            <TableCell className="px-4">
+                                                <Badge
+                                                    className={
+                                                        product.is_makeable
+                                                            ? 'border-transparent bg-emerald-100 text-emerald-700'
+                                                            : 'border-transparent bg-red-100 text-red-700'
+                                                    }
+                                                >
+                                                    {product.is_makeable ? 'OK' : 'Rupture'}
+                                                </Badge>
                                             </TableCell>
                                             <TableCell className="px-4 text-right">
                                                 <DropdownMenu>

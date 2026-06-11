@@ -24,7 +24,7 @@ class ProductController extends Controller
         $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
 
         $products = Product::query()
-            ->with(['ingredients:id,name,unit', 'images:id,product_id,url,is_main'])
+            ->with(['ingredients:id,name,unit,stock_quantity', 'images:id,product_id,url,is_main'])
             ->withCount('ingredients')
             ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
             ->when($status === 'active', fn ($query) => $query->where('is_active', true))
@@ -66,6 +66,7 @@ class ProductController extends Controller
                         ->values(),
                     'price' => $product->price,
                     'is_active' => $product->is_active,
+                    'is_makeable' => $product->is_makeable,
                     'ingredients_count' => $product->ingredients_count,
                     'ingredients' => $product->ingredients
                         ->map(fn ($ingredient) => [
