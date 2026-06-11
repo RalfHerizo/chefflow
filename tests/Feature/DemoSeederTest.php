@@ -20,9 +20,9 @@ test('the demo seeder builds a coherent catalog without exhausting stock', funct
     expect(Product::count())->toBe(27);
     expect(Order::count())->toBeGreaterThan(0);
 
-    // The demo intentionally leaves 2 perishables below threshold so the
-    // stock alerts are visible (sidebar badge + dashboard block).
-    expect(Ingredient::whereColumn('stock_quantity', '<=', 'alert_threshold')->count())->toBe(2);
+    // The demo intentionally leaves several perishables below threshold so the
+    // stock alerts are visible (sidebar badge + dashboard block + overflow link).
+    expect(Ingredient::whereColumn('stock_quantity', '<=', 'alert_threshold')->count())->toBe(7);
 
     $allowedCategories = ['Entrée', 'Plat', 'Accompagnement', 'Dessert', 'Boisson', 'Menu'];
 
@@ -45,6 +45,6 @@ test('the demo seeder leaves at least one product not makeable while keeping the
     expect($notMakeable)->not->toBeEmpty();
     expect($notMakeable->pluck('name'))->toContain('Pizza Reine');
 
-    // A hard stock-out (0) still satisfies <= threshold, so the alert count is unchanged.
-    expect(Ingredient::whereColumn('stock_quantity', '<=', 'alert_threshold')->count())->toBe(2);
+    // Champignons at 0 plus the other flagged perishables → 7 under threshold.
+    expect(Ingredient::whereColumn('stock_quantity', '<=', 'alert_threshold')->count())->toBe(7);
 });

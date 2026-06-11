@@ -328,16 +328,22 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * Leave perishables low so the stock states are visible in the demo:
-     * basilic stays under its alert threshold (sidebar badge + dashboard block),
-     * and champignons is driven to a hard stock-out so Pizza Reine + Végétarienne
-     * render as "Rupture" (unavailable) in the POS. Both still count as low stock.
+     * Push several perishables under their alert threshold so the demo shows
+     * the "À réapprovisionner" panel with its top-3 + "+N autres" overflow
+     * link. Low values stay above the per-unit recipe needs (products remain
+     * makeable), except champignons which is driven to a hard stock-out so
+     * Pizza Reine + Végétarienne render as "Rupture" (unavailable) in the POS.
      *
      * @param  array<string, Ingredient>  $ing
      */
     private function flagLowStock(array $ing): void
     {
         $ing['basilic']->update(['stock_quantity' => 35]);     // seuil 50 g
+        $ing['farine']->update(['stock_quantity' => 8]);       // seuil 10 kg
+        $ing['tomate']->update(['stock_quantity' => 4]);       // seuil 5 kg
+        $ing['mozzarella']->update(['stock_quantity' => 3]);   // seuil 4 kg
+        $ing['jambon']->update(['stock_quantity' => 2]);       // seuil 3 kg
+        $ing['cheddar']->update(['stock_quantity' => 2]);      // seuil 3 kg
         $ing['champignons']->update(['stock_quantity' => 0]);  // rupture: Reine + Végétarienne indisponibles
     }
 }
