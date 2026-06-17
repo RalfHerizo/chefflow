@@ -10,10 +10,17 @@ export default defineConfig({
         },
     },
     plugins: [
-        laravel({
-            input: 'resources/js/app.jsx',
-            refresh: true,
-        }),
+        // The Laravel plugin manages the dev server / build manifest and refuses
+        // to start under CI (CI=true). It is irrelevant to Vitest, so skip it
+        // during tests — otherwise `vitest` trips its "no HMR server in CI" guard.
+        ...(process.env.VITEST
+            ? []
+            : [
+                  laravel({
+                      input: 'resources/js/app.jsx',
+                      refresh: true,
+                  }),
+              ]),
         react(),
     ],
     test: {
