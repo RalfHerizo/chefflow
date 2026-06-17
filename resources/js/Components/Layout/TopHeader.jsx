@@ -9,6 +9,10 @@ const PAGE_CONTENT = {
         title: 'Tableau de bord',
         subtitle: 'Pilotez votre activité en temps réel.',
     },
+    'Analytics/Index': {
+        title: 'Analytics',
+        subtitle: 'Vos performances de vente d’un coup d’œil.',
+    },
     'Profile/Edit': {
         title: 'Profil',
         subtitle: 'Gérez vos informations et vos paramètres de sécurité.',

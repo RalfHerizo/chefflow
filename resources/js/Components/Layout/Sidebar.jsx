@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
+    BarChart3,
     CookingPot,
     LayoutDashboard,
     LogOut,
@@ -21,6 +22,15 @@ function resolveMenuItems(lowStockCount = 0, isDemo = false) {
             href: route('dashboard'),
             active: route().current('dashboard'),
             icon: LayoutDashboard,
+        });
+    }
+
+    if (hasRoute('analytics')) {
+        items.push({
+            label: 'Analytics',
+            href: route('analytics'),
+            active: route().current('analytics'),
+            icon: BarChart3,
         });
     }
 
