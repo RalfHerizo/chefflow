@@ -6,7 +6,10 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 
 ## Live Demo
 
-- Railway deployment (Dockerfile + entrypoint.sh): https://chefflow-production.up.railway.app/
+**[chefflow.onrender.com](https://chefflow.onrender.com)** — **no sign-up required**: click
+**"Démo en direct"** on the landing page (or visit `/demo`) to enter a shared, pre-seeded demo
+account. Hosted on Render via Docker + SQLite (free tier, so the first request after a period of
+inactivity can take ~1 min to wake). See the Deployment section below for details.
 
 ## Product Status (Current Progress)
 
@@ -14,7 +17,7 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] Laravel + Inertia + React foundation with auth pages.
 - [x] Modern app shell: fixed sidebar + top header + content area.
 - [x] Dynamic top header title/subtitle by current Inertia page.
-- [x] Railway deployment via Dockerfile + entrypoint.sh.
+- [x] Containerized deploy (Docker), now hosted on Render + SQLite (free tier, self-seeding demo).
 - [x] Dashboard sales form to register product sales.
 - [x] Recent orders table with action to cancel an order.
 - [x] Confirmation modal for order cancellation (no browser alert).
@@ -46,12 +49,20 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - [x] StoreOrderRequest validation layer for cart payload.
 - [x] Form Requests extended to ingredients and products for controller validation.
 - [x] Frontend tests (Vitest + RTL) for cart and POS flows.
+- [x] Multi-tenancy: per-account data isolation via the `BelongsToTenant` trait, with tenant-scoped validation.
+- [x] No-login demo account (`/demo`) with one-click reset; account settings hidden for the demo.
+- [x] Low-stock alerts: dashboard + ingredients panel (top 3 + overflow link) and a sidebar badge.
+- [x] Derived product availability (`Rupture`) when an ingredient can no longer cover one unit; blocked in the POS.
+- [x] Category filter on the products list.
+- [x] Real global search in the header (products, ingredients, orders).
+- [x] Orders history page with search, period filter, sorting and pagination.
+- [x] Analytics page: KPIs with deltas, revenue trend, revenue by category, best sellers, 7/30/90-day window.
+- [x] Continuous integration (GitHub Actions): Pint, Pest, Vitest and the production build on every push.
 
 ### In Progress / Next
-- [ ] Replace image URL input with drag and drop upload.
-- [ ] Orders list page with filtering and pagination.
-- [ ] Better analytics and reporting blocks.
-- [ ] Notifications workflow (stock alerts).
+- [ ] Replace the image URL input with drag-and-drop upload.
+- [ ] Ingredient cost field → stock valuation (€) and per-product margins.
+- [ ] CSV / PDF export of sales.
 
 ## Main Features
 
@@ -79,6 +90,16 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
   - Cart with quantity controls, totals HT/TVA/TTC, and clear confirmation.
   - Cart badge in header with live updates.
   - Toast feedback for add/remove/submit actions.
+  - Products whose recipe can no longer be made are flagged `Rupture` and cannot be added.
+- Analytics:
+  - KPIs (revenue, orders, average basket, items sold) with period-over-period deltas.
+  - Daily revenue trend, revenue by product category, and best sellers by revenue.
+  - Switchable 7 / 30 / 90-day window.
+- Global search:
+  - Header typeahead across products, ingredients and orders (tenant-scoped).
+- Demo & multi-tenancy:
+  - Per-account data isolation (`BelongsToTenant`) — each account is one restaurant.
+  - No-login demo account at `/demo` with one-click reset.
 
 ## Tech Stack
 
@@ -88,6 +109,8 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - Charts: Recharts
 - Icons: Lucide React
 - Tests: Pest + Vitest (React Testing Library)
+- CI: GitHub Actions (Pint, Pest, Vitest, build) — see badge above
+- Deployment: Docker on Render (SQLite, free tier)
 
 ## Key Routes
 
@@ -106,6 +129,10 @@ ChefFlow is a SaaS web app for restaurant operations: sales, inventory tracking,
 - `PATCH /products/{product}/toggle-status` -> toggle status
 - `DELETE /products/{product}` -> delete product
 - `GET /orders/pos` -> POS ordering page
+- `GET /orders` -> orders history (search, filter, pagination)
+- `GET /analytics` -> sales analytics page
+- `GET /search` -> global search (JSON, header typeahead)
+- `GET /demo` -> no-login demo (logs into the shared demo account)
 
 ## Setup
 
@@ -134,6 +161,15 @@ npm run build
 npm test
 php artisan test
 ```
+
+Code style (Laravel Pint):
+
+```bash
+vendor/bin/pint        # fix
+vendor/bin/pint --test # check only (used in CI)
+```
+
+Everything above (Pint, Pest, Vitest, build) also runs in CI on every push — see the badge at the top.
 
 Targeted suites added for latest features:
 
