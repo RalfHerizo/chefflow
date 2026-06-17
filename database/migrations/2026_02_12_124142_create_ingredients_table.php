@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('unit');
-            $table->decimal('stock_quantity',12, 4)->default(0);
-            $table->decimal('alert_threshold',12,4)->default(0);
+            $table->decimal('stock_quantity', 12, 4)->default(0);
+            $table->decimal('alert_threshold', 12, 4)->default(0);
             $table->timestamps();
         });
     }

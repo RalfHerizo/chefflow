@@ -1,10 +1,11 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
-$app = require __DIR__ . '/../bootstrap/app.php';
+
+require __DIR__.'/../vendor/autoload.php';
+$app = require __DIR__.'/../bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 $product = App\Models\Product::with('images')->latest()->first();
-if (!$product) {
+if (! $product) {
     var_export(['product_id' => null]);
     exit;
 }

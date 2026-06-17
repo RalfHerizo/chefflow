@@ -11,6 +11,7 @@ class SellProductAction
 {
     /**
      * Execute the cart sale and deduct stocks.
+     *
      * @throws Exception
      */
     public function execute(array $items): Order
@@ -48,7 +49,7 @@ class SellProductAction
                 $product = $products->get($item['product_id']);
                 $quantity = (int) $item['quantity'];
 
-                if (!$product) {
+                if (! $product) {
                     throw new Exception('Product not found.');
                 }
 
@@ -56,7 +57,7 @@ class SellProductAction
                     throw new Exception('Invalid quantity.');
                 }
 
-                if (!$product->is_active) {
+                if (! $product->is_active) {
                     throw new Exception('Disabled product');
                 }
 

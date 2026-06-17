@@ -18,6 +18,7 @@ return new class extends Migration
             DB::statement('DROP TABLE orders_old');
             DB::statement('CREATE TABLE order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER NOT NULL, product_id INTEGER NOT NULL, quantity INTEGER NOT NULL, price_at_sale DECIMAL(10, 2) NOT NULL, created_at DATETIME, updated_at DATETIME, FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE, FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)');
             DB::statement('PRAGMA foreign_keys=on');
+
             return;
         }
 
@@ -36,6 +37,7 @@ return new class extends Migration
             DB::statement('INSERT INTO orders (id, quantity, total_price, created_at, updated_at) SELECT id, quantity, total_price, created_at, updated_at FROM orders_old');
             DB::statement('DROP TABLE orders_old');
             DB::statement('PRAGMA foreign_keys=on');
+
             return;
         }
 
