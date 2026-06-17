@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [master, "feat/**"]
+  pull_request:
+
+jobs:
+  tests:
+    name: Tests & build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, bcmath, pdo_sqlite, sqlite3
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      # Copy the env before `composer install` so the post-autoload-dump
+      # package:discover script has a config file to read.
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      # Feature tests render Inertia pages whose root view preloads the page
+      # chunk from the Vite manifest, so the assets must be built first.
+      - name: Build front-end assets
+        run: npm run build
+
+      - name: Run PHP tests (Pest)
+        run: php artisan test
+
+      - name: Run JS tests (Vitest)
+        run: npx vitest run
