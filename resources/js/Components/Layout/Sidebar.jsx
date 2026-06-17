@@ -9,7 +9,7 @@ import {
     ShoppingCart,
 } from 'lucide-react';
 
-function resolveMenuItems(lowStockCount = 0) {
+function resolveMenuItems(lowStockCount = 0, isDemo = false) {
     const canUseRoute = typeof route === 'function';
     const hasRoute = (name) => canUseRoute && route().has(name);
 
@@ -61,7 +61,7 @@ function resolveMenuItems(lowStockCount = 0) {
         });
     }
 
-    if (hasRoute('profile.edit')) {
+    if (hasRoute('profile.edit') && !isDemo) {
         items.push({
             label: 'Paramètres',
             href: route('profile.edit'),
@@ -74,8 +74,8 @@ function resolveMenuItems(lowStockCount = 0) {
 }
 
 export default function Sidebar({ offsetForBanner = false }) {
-    const lowStockCount = usePage().props.lowStockCount ?? 0;
-    const menuItems = resolveMenuItems(lowStockCount);
+    const { lowStockCount = 0, isDemo = false } = usePage().props;
+    const menuItems = resolveMenuItems(lowStockCount, isDemo);
 
     return (
         <aside

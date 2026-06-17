@@ -48,3 +48,9 @@ test('the demo account cannot delete itself or change its password', function ()
         'password_confirmation' => 'new-password',
     ])->assertForbidden();
 });
+
+test('the demo account is redirected away from the settings page', function () {
+    $this->get('/demo'); // log in as demo
+
+    $this->get(route('profile.edit'))->assertRedirect(route('dashboard'));
+});
