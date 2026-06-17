@@ -107,3 +107,37 @@ test('new records are stamped with the authenticated owner', function () {
 
     expect($ingredient->user_id)->toBe($user->id);
 });
+
+test('a product recipe cannot reference another account ingredient', function () {
+    $alice = User::factory()->create();
+    $this->actingAs($alice);
+    $aliceIngredient = Ingredient::create(['name' => 'Truffe Alice', 'unit' => 'kg', 'stock_quantity' => 10]);
+
+    $this->actingAs(User::factory()->create());
+
+    $this->from(route('products.index'))
+        ->post(route('products.store'), [
+            'name' => 'Pizza Pirate',
+            'price' => 12,
+            'ingredients' => [['id' => $aliceIngredient->id, 'amount' => 0.1]],
+        ])
+        ->assertSessionHasErrors('ingredients.0.id');
+
+    $this->assertDatabaseMissing('products', ['name' => 'Pizza Pirate']);
+});
+
+test('an order cannot reference another account product', function () {
+    $alice = User::factory()->create();
+    $this->actingAs($alice);
+    $aliceIngredient = Ingredient::create(['name' => 'Cafe Alice', 'unit' => 'g', 'stock_quantity' => 1000]);
+    $aliceProduct = Product::create(['name' => 'Espresso Alice', 'price' => 200]);
+    $aliceProduct->ingredients()->attach($aliceIngredient->id, ['amount' => 5]);
+
+    $this->actingAs(User::factory()->create());
+
+    $this->from(route('orders.pos'))
+        ->post(route('orders.store'), [
+            'items' => [['id' => $aliceProduct->id, 'quantity' => 1]],
+        ])
+        ->assertSessionHasErrors('items.0.id');
+});

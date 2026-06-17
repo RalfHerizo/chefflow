@@ -1,21 +1,26 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Product;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Validator;
 
 uses(\Tests\TestCase::class, RefreshDatabase::class);
 
 function makeValidator(array $data): \Illuminate\Validation\Validator
 {
-    $request = new StoreOrderRequest();
+    $request = new StoreOrderRequest;
+
     return Validator::make($data, $request->rules(), $request->messages());
 }
 
 beforeEach(function () {
+    // The order rule now scopes products to the authenticated tenant, so the
+    // fixture product must belong to the acting user.
+    $this->actingAs(User::factory()->create());
     $this->product = Product::factory()->create([
-        'id'    => 1,
+        'id' => 1,
         'price' => 1200,
     ]);
 });
@@ -93,7 +98,7 @@ describe('items.*.quantity field', function () {
 
 describe('french error messages', function () {
     it('returns the correct French message for each rule', function () {
-        $messages = (new StoreOrderRequest())->messages();
+        $messages = (new StoreOrderRequest)->messages();
 
         expect($messages)->toHaveKey('items.required')
             ->and($messages['items.required'])->toBe('Le panier ne peut pas être vide.')

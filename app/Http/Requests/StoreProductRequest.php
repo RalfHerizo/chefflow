@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class StoreProductRequest extends FormRequest
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['integer', 'exists:product_images,id'],
             'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.id' => ['required', 'exists:ingredients,id'],
+            'ingredients.*.id' => ['required', Rule::exists('ingredients', 'id')->where('user_id', auth()->id())],
             'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
         ];
     }

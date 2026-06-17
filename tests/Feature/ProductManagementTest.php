@@ -7,6 +7,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 test('an authenticated user can create a product with recipe lines', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
     $tomato = Ingredient::create([
         'name' => 'Tomate',
         'unit' => 'kg',
