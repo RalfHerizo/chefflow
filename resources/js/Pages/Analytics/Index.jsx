@@ -1,8 +1,9 @@
 import StatCard from '@/Components/Dashboard/StatCard';
+import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import { Boxes, PiggyBank, Percent, ReceiptText, ShoppingCart, Wallet } from 'lucide-react';
+import { Boxes, Percent, PiggyBank, Printer, ReceiptText, ShoppingCart, Wallet } from 'lucide-react';
 import {
     Area,
     AreaChart,
@@ -98,7 +99,25 @@ export default function AnalyticsIndex({
             <Head title="Analytics" />
 
             <div className="mx-auto max-w-7xl space-y-6">
-                <div className="flex items-center justify-end">
+                {/* Print-only report header (hidden on screen). */}
+                <div className="hidden print:block">
+                    <h1 className="text-xl font-bold text-slate-900">Rapport analytics</h1>
+                    <p className="text-sm text-slate-500">
+                        Période : {period} jours — édité le{' '}
+                        {new Date().toLocaleDateString('fr-FR')}
+                    </p>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 print:hidden">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => window.print()}
+                        className="rounded-xl border-slate-200 text-slate-600 hover:border-[#FF7E47] hover:text-[#FF7E47]"
+                    >
+                        <Printer className="h-4 w-4" />
+                        Imprimer / PDF
+                    </Button>
                     <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
                         {PERIODS.map((value) => (
                             <button

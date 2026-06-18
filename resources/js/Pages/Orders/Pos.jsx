@@ -12,7 +12,7 @@ import { Slider } from '@/Components/ui/slider';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useCart } from '@/Contexts/CartContext';
 import { Head, useForm } from '@inertiajs/react';
-import { Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react';
+import { Minus, Plus, Receipt, Search, ShoppingCart, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
@@ -28,6 +28,7 @@ export default function OrdersPos({ products }) {
     const [clearOpen, setClearOpen] = useState(false);
     const form = useForm({ items: [] });
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [lastOrderId, setLastOrderId] = useState(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -189,9 +190,10 @@ export default function OrdersPos({ products }) {
         }
 
         form.post(route('orders.store'), {
-            onSuccess: () => {
+            onSuccess: (page) => {
                 toast.success('Commande validée');
                 clearCart();
+                setLastOrderId(page?.props?.flash?.orderId ?? null);
             },
             onError: (formErrors) => {
                 toast.error(formErrors.items || 'Stock insuffisant');
@@ -468,6 +470,18 @@ export default function OrdersPos({ products }) {
                                 <span className="text-red-500 text-sm">{form.errors.items}</span>
                             ) : null}
                         </div>
+
+                        {lastOrderId ? (
+                            <a
+                                href={route('orders.receipt', lastOrderId)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
+                            >
+                                <Receipt className="h-4 w-4" />
+                                Imprimer le ticket #{lastOrderId}
+                            </a>
+                        ) : null}
                     </div>
                 </aside>
             </div>

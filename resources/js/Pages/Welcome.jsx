@@ -15,8 +15,6 @@ import {
     Github,
     Globe,
     Users,
-    FileDown,
-    PiggyBank,
     Store,
 } from 'lucide-react';
 import MarketingLayout from '@/Layouts/MarketingLayout';
@@ -468,30 +466,23 @@ function PremiumFeaturesSection() {
 
 const roadmapItems = [
     {
-        quarter: 'Q2 2026',
-        title: 'Rentabilité & food cost',
-        status: 'En cours',
-        description: 'Coût d\'achat par ingrédient, coût des recettes, marge et food cost % par plat — directement dans les analytics.',
-        icon: PiggyBank,
-    },
-    {
-        quarter: 'Q3 2026',
-        title: 'Export & impression',
-        status: 'Planifié',
-        description: 'Export CSV des commandes, fiches techniques en PDF et impression des tickets de caisse.',
-        icon: FileDown,
-    },
-    {
         quarter: 'Q3 2026',
         title: 'Fournisseurs & réapprovisionnement',
-        status: 'Planifié',
+        status: 'En cours',
         description: 'Carnet de fournisseurs, bons de commande et suggestions de réappro à partir des seuils d\'alerte.',
         icon: PackageCheck,
     },
     {
+        quarter: 'Q3 2026',
+        title: 'Notifications temps réel',
+        status: 'Planifié',
+        description: 'Alertes par e-mail et notifications dans l\'app dès qu\'un ingrédient passe sous son seuil critique.',
+        icon: Activity,
+    },
+    {
         quarter: 'Q4 2026',
         title: 'Gestion d\'équipe',
-        status: 'Vision',
+        status: 'Planifié',
         description: 'Attribuez des rôles à vos collaborateurs : Admin, Manager, Caissier, Cuisinier.',
         icon: Users,
     },

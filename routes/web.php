@@ -37,8 +37,10 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:5,1')
         ->name('demo.reset');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/export', [OrderController::class, 'export'])->name('orders.export');
     Route::get('/orders/pos', [OrderController::class, 'pos'])->name('orders.pos');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders/{order}/receipt', [OrderController::class, 'receipt'])->name('orders.receipt');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients.index');
     Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store');
@@ -48,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::get('/products/{product}/recipe', [ProductController::class, 'recipe'])->name('products.recipe');
     Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');

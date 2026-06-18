@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
                 'error' => fn () => $request->session()->get('error'),
+                'orderId' => fn () => $request->session()->get('orderId'),
             ],
             'isDemo' => fn () => optional($request->user())->email === config('demo.email'),
             // Powers the low-stock badge in the sidebar (tenant-scoped; the

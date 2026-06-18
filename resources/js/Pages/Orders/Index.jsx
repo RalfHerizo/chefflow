@@ -11,7 +11,7 @@ import {
 } from '@/Components/ui/select';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import { ArrowDown, ArrowUp, Search } from 'lucide-react';
+import { ArrowDown, ArrowUp, Download, Search } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -75,6 +75,14 @@ export default function OrdersIndex({ orders, filters }) {
         reload({ direction: next });
     };
 
+    // Mirror the active filters in the CSV export link (omit defaults).
+    const exportParams = {
+        search: search || undefined,
+        period: period !== 'all' ? period : undefined,
+        sort: sort !== 'recent' ? sort : undefined,
+        direction: direction !== 'desc' ? direction : undefined,
+    };
+
     const confirmCancel = () => {
         if (!orderToCancel) {
             return;
@@ -93,13 +101,26 @@ export default function OrdersIndex({ orders, filters }) {
 
             <div className="mx-auto max-w-7xl space-y-6">
                 <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm">
-                    <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-slate-800">
-                            Historique des commandes
-                        </h3>
-                        <p className="text-sm text-slate-500">
-                            Toutes les commandes enregistrées.
-                        </p>
+                    <div className="mb-4 flex items-start justify-between gap-4">
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-800">
+                                Historique des commandes
+                            </h3>
+                            <p className="text-sm text-slate-500">
+                                Toutes les commandes enregistrées.
+                            </p>
+                        </div>
+
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="shrink-0 rounded-xl border-slate-200 text-slate-600 hover:border-[#FF7E47] hover:text-[#FF7E47]"
+                        >
+                            <a href={route('orders.export', exportParams)}>
+                                <Download className="h-4 w-4" />
+                                Exporter CSV
+                            </a>
+                        </Button>
                     </div>
 
                     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -155,6 +176,7 @@ export default function OrdersIndex({ orders, filters }) {
                     <RecentOrdersTable
                         orders={orders.data}
                         onCancelOrder={setOrderToCancel}
+                        getReceiptHref={(id) => route('orders.receipt', id)}
                     />
 
                     <Pagination

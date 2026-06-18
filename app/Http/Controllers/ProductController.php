@@ -130,6 +130,41 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Print-friendly recipe sheet (fiche technique) for one product: recipe
+     * lines with per-line cost, plus total cost, price and margin.
+     */
+    public function recipe(Product $product): Response
+    {
+        $product->load(['ingredients:id,name,unit,cost_price']);
+
+        return Inertia::render('Products/Recipe', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'category' => $product->category,
+                'price' => $product->price_in_euro,
+                'recipe_cost' => $product->recipe_cost,
+                'margin' => $product->margin,
+                'margin_ratio' => $product->margin_ratio,
+                'ingredients' => $product->ingredients
+                    ->map(fn ($ingredient) => [
+                        'id' => $ingredient->id,
+                        'name' => $ingredient->name,
+                        'unit' => $ingredient->unit,
+                        'amount' => $ingredient->pivot?->amount,
+                        'cost_price' => $ingredient->cost_price,
+                        'line_cost' => round(
+                            (float) $ingredient->cost_price * (float) ($ingredient->pivot?->amount ?? 0),
+                            2,
+                        ),
+                    ])
+                    ->values(),
+            ],
+            'restaurant' => auth()->user()->name ?? 'ChefFlow',
+        ]);
+    }
+
     public function store(StoreProductRequest $request): RedirectResponse
     {
         $validated = $request->validated();

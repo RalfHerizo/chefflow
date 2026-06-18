@@ -42,12 +42,16 @@ export default function AuthenticatedLayout({ children }) {
                     );
                 }}
             </Toaster>
-            <DemoBanner />
-            <Sidebar offsetForBanner={isDemo} />
-            <div className={`pl-64 ${isDemo ? 'pt-10' : ''}`}>
-                <TopHeader user={user} />
+            <div className="print:hidden">
+                <DemoBanner />
+                <Sidebar offsetForBanner={isDemo} />
+            </div>
+            <div className={`pl-64 print:pl-0 ${isDemo ? 'pt-10 print:pt-0' : ''}`}>
+                <div className="print:hidden">
+                    <TopHeader user={user} />
+                </div>
                 <main
-                    className={`overflow-y-auto p-8 ${
+                    className={`overflow-y-auto p-8 print:h-auto print:overflow-visible print:p-0 ${
                         isDemo
                             ? 'h-[calc(100vh-5rem-2.5rem)]'
                             : 'h-[calc(100vh-5rem)]'

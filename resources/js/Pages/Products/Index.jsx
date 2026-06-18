@@ -391,6 +391,15 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                                                 Modifier
                                                             </Link>
                                                         </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <a
+                                                                href={route('products.recipe', product.id)}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                            >
+                                                                Fiche technique
+                                                            </a>
+                                                        </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             className="text-red-600 hover:text-red-700"
                                                             onClick={() => setProductToDelete(product)}

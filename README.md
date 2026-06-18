@@ -24,6 +24,7 @@ fully isolated — **one account, one restaurant**.
 - 📦 **Recipe-driven inventory** — each sale deducts the recipe's ingredients; a low-stock panel and a sidebar badge surface what to reorder first.
 - 📊 **Sales analytics** — revenue trend, revenue by category, best sellers and KPIs with period-over-period deltas, over a switchable 7 / 30 / 90-day window.
 - 💰 **Cost & margins** — a purchase cost per ingredient drives recipe cost, per-dish margin, stock valuation and a food-cost % across the analytics window.
+- 🖨️ **Export & print** — CSV export of orders, printable receipts, recipe sheets and an analytics report (PDF via the browser).
 - 🔎 **Global search** — instant header typeahead across products, ingredients and orders.
 - 🏢 **Multi-tenant by design** — strict per-account isolation through a global scope, enforced down to validation.
 - ✅ **Tested & CI-checked** — Pest + Vitest suites and a GitHub Actions pipeline (Pint, tests, build) on every push.
@@ -58,6 +59,11 @@ fully isolated — **one account, one restaurant**.
 **Sales & orders**
 - Cart checkout (`order_items`) supporting multiple products per sale with transactional stock deduction.
 - Orders history with search, period filter, sorting and pagination; cancel-and-restore-stock.
+- CSV export of orders (filter-aware) and a printable receipt per sale (HT / VAT / TTC).
+
+**Export & print**
+- Orders CSV (`;`-delimited, UTF-8 BOM) honouring the active history filters.
+- Print-friendly receipt, recipe sheet (fiche technique) and analytics report via `window.print()` — no server-side PDF dependency.
 
 **Platform**
 - No-login demo account (`/demo`) with one-click reset; account settings hidden for the demo.
@@ -85,13 +91,14 @@ fully isolated — **one account, one restaurant**.
 - [x] Orders history page with search, period filter, sorting and pagination.
 - [x] Analytics page: KPIs with deltas, revenue trend, revenue by category, best sellers, 7/30/90-day window.
 - [x] Ingredient cost → recipe cost, per-product margins, stock valuation and food-cost % in analytics.
+- [x] Export & print: orders CSV, printable receipts, recipe sheets and analytics report (browser PDF).
 - [x] Pest + Vitest test suites; CI (GitHub Actions) running Pint, tests and the build on every push.
 - [x] Containerized deploy (Docker) on Render + SQLite (free tier, self-seeding demo).
 
 **Next**
-- [ ] Drag-and-drop image upload (replace the URL input).
-- [ ] CSV / PDF export of sales and PDF recipe sheets.
 - [ ] Suppliers & purchase orders (reorder suggestions from alert thresholds).
+- [ ] Real-time low-stock notifications (email + in-app).
+- [ ] Drag-and-drop image upload (replace the URL input).
 - [ ] Team roles (Admin / Manager / Cashier) and multi-restaurant accounts.
 
 </details>
