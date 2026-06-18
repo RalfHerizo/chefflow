@@ -46,13 +46,19 @@ const DEFAULT_FORM = {
     unit: 'kg',
     stock_quantity: '',
     alert_threshold: '',
+    cost_price: '',
 };
+
+const euroFormatter = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+});
 
 const INGREDIENT_THUMBNAIL_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">ING</text></svg>';
 
 /**
- * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, lowStockIngredients?: Array<{id: number, name: string, stock_quantity: number|string, alert_threshold: number|string, unit?: string, image_url?: string|null}>, filters?: { search?: string, status?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
+ * @param {{ ingredients: { data: Array<{id: number, name: string, image_url?: string|null, unit: string, stock_quantity: number|string, alert_threshold: number|string, cost_price?: number|string, stock_value?: number|string}>, links: Array<{url: string|null, label: string, active: boolean}> }, lowStockIngredients?: Array<{id: number, name: string, stock_quantity: number|string, alert_threshold: number|string, unit?: string, image_url?: string|null}>, filters?: { search?: string, status?: string, sort?: string, direction?: string }, flash?: {message?: string} }} props
  */
 export default function IngredientsIndex({ ingredients, lowStockIngredients = [], filters, flash }) {
     const lowStockCount = usePage().props.lowStockCount ?? 0;
@@ -145,6 +151,10 @@ export default function IngredientsIndex({ ingredients, lowStockIngredients = []
                 ingredient.alert_threshold,
                 ingredient.unit,
             ),
+            cost_price:
+                ingredient.cost_price != null && Number(ingredient.cost_price) > 0
+                    ? String(Number(ingredient.cost_price))
+                    : '',
         });
         setIsEditOpen(true);
     };
@@ -298,6 +308,7 @@ export default function IngredientsIndex({ ingredients, lowStockIngredients = []
                                     <TableHead className="px-4">Unité</TableHead>
                                     <TableHead className="px-4">Stock actuel</TableHead>
                                     <TableHead className="px-4">Seuil d'alerte</TableHead>
+                                    <TableHead className="px-4">Coût</TableHead>
                                     <TableHead className="px-4">Statut</TableHead>
                                     <TableHead className="px-4 text-right">Actions</TableHead>
                                 </TableRow>
@@ -306,7 +317,7 @@ export default function IngredientsIndex({ ingredients, lowStockIngredients = []
                                 {ingredients.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={6}
+                                            colSpan={7}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
                                             {search || status !== 'all'
@@ -348,6 +359,31 @@ export default function IngredientsIndex({ ingredients, lowStockIngredients = []
                                                     {formatAmountDisplay(
                                                         ingredient.alert_threshold,
                                                         ingredient.unit,
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="px-4 text-slate-600">
+                                                    {Number(ingredient.cost_price) > 0 ? (
+                                                        <div className="flex flex-col">
+                                                            <span>
+                                                                {euroFormatter.format(
+                                                                    Number(ingredient.cost_price),
+                                                                )}
+                                                                <span className="text-slate-400">
+                                                                    {' / '}
+                                                                    {ingredient.unit}
+                                                                </span>
+                                                            </span>
+                                                            {Number(ingredient.stock_value) > 0 ? (
+                                                                <span className="text-xs text-slate-400">
+                                                                    Stock&nbsp;:{' '}
+                                                                    {euroFormatter.format(
+                                                                        Number(ingredient.stock_value),
+                                                                    )}
+                                                                </span>
+                                                            ) : null}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-slate-300">—</span>
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="px-4">

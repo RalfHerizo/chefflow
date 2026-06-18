@@ -71,4 +71,44 @@ class Product extends Model
                 : true,
         )->shouldCache();
     }
+
+    /**
+     * Theoretical food cost of one unit, in euros: the sum of each recipe
+     * ingredient's unit cost times the amount it uses. Like is_makeable, it
+     * is not appended — only computed where `ingredients` is eager-loaded, so
+     * it never triggers an N+1. Returns null when no recipe is loaded.
+     */
+    protected function recipeCost(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => ($this->relationLoaded('ingredients') && $this->ingredients->isNotEmpty())
+                ? round($this->ingredients->sum(
+                    fn (Ingredient $ingredient) => (float) $ingredient->cost_price
+                        * (float) ($ingredient->pivot->amount ?? 0)
+                ), 2)
+                : null,
+        )->shouldCache();
+    }
+
+    /**
+     * Gross margin per unit in euros (selling price - food cost) and the
+     * margin as a percentage of the selling price. Both null without a recipe.
+     */
+    protected function margin(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->recipe_cost === null
+                ? null
+                : round($this->price_in_euro - $this->recipe_cost, 2),
+        )->shouldCache();
+    }
+
+    protected function marginRatio(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => ($this->recipe_cost === null || ($this->price ?? 0) <= 0)
+                ? null
+                : (int) round(($this->margin / $this->price_in_euro) * 100),
+        )->shouldCache();
+    }
 }

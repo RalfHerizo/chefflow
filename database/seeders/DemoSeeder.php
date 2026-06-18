@@ -67,24 +67,26 @@ class DemoSeeder extends Seeder
      */
     private function createIngredients(): array
     {
+        // cost_price = purchase cost in euros per base unit (used for recipe
+        // cost / product margin in Analytics and the products list).
         $rows = [
-            'farine' => ['name' => 'Farine T55', 'unit' => 'kg', 'stock_quantity' => 50, 'alert_threshold' => 10],
-            'tomate' => ['name' => 'Sauce tomate', 'unit' => 'kg', 'stock_quantity' => 30, 'alert_threshold' => 5],
-            'mozzarella' => ['name' => 'Mozzarella', 'unit' => 'kg', 'stock_quantity' => 20, 'alert_threshold' => 4],
-            'basilic' => ['name' => 'Basilic frais', 'unit' => 'g', 'stock_quantity' => 200, 'alert_threshold' => 50],
-            'jambon' => ['name' => 'Jambon', 'unit' => 'kg', 'stock_quantity' => 15, 'alert_threshold' => 3],
-            'champignons' => ['name' => 'Champignons', 'unit' => 'kg', 'stock_quantity' => 10, 'alert_threshold' => 2],
-            'boeuf' => ['name' => 'Boeuf haché', 'unit' => 'kg', 'stock_quantity' => 25, 'alert_threshold' => 5],
-            'pain' => ['name' => 'Pain burger', 'unit' => 'pcs', 'stock_quantity' => 100, 'alert_threshold' => 20],
-            'cheddar' => ['name' => 'Cheddar', 'unit' => 'kg', 'stock_quantity' => 12, 'alert_threshold' => 3],
-            'frites' => ['name' => 'Frites', 'unit' => 'kg', 'stock_quantity' => 40, 'alert_threshold' => 8],
-            'salade' => ['name' => 'Salade', 'unit' => 'kg', 'stock_quantity' => 15, 'alert_threshold' => 3],
-            'poulet' => ['name' => 'Poulet', 'unit' => 'kg', 'stock_quantity' => 20, 'alert_threshold' => 4],
-            'riz' => ['name' => 'Riz', 'unit' => 'kg', 'stock_quantity' => 30, 'alert_threshold' => 6],
-            'lait' => ['name' => 'Lait', 'unit' => 'L', 'stock_quantity' => 40, 'alert_threshold' => 8],
-            'sucre' => ['name' => 'Sucre', 'unit' => 'kg', 'stock_quantity' => 25, 'alert_threshold' => 5],
-            'oeuf' => ['name' => 'Oeufs', 'unit' => 'pcs', 'stock_quantity' => 300, 'alert_threshold' => 60],
-            'cafe' => ['name' => 'Café', 'unit' => 'kg', 'stock_quantity' => 10, 'alert_threshold' => 2],
+            'farine' => ['name' => 'Farine T55', 'unit' => 'kg', 'stock_quantity' => 50, 'alert_threshold' => 10, 'cost_price' => 1.20],
+            'tomate' => ['name' => 'Sauce tomate', 'unit' => 'kg', 'stock_quantity' => 30, 'alert_threshold' => 5, 'cost_price' => 2.50],
+            'mozzarella' => ['name' => 'Mozzarella', 'unit' => 'kg', 'stock_quantity' => 20, 'alert_threshold' => 4, 'cost_price' => 8.00],
+            'basilic' => ['name' => 'Basilic frais', 'unit' => 'g', 'stock_quantity' => 200, 'alert_threshold' => 50, 'cost_price' => 0.04],
+            'jambon' => ['name' => 'Jambon', 'unit' => 'kg', 'stock_quantity' => 15, 'alert_threshold' => 3, 'cost_price' => 12.00],
+            'champignons' => ['name' => 'Champignons', 'unit' => 'kg', 'stock_quantity' => 10, 'alert_threshold' => 2, 'cost_price' => 5.00],
+            'boeuf' => ['name' => 'Boeuf haché', 'unit' => 'kg', 'stock_quantity' => 25, 'alert_threshold' => 5, 'cost_price' => 11.00],
+            'pain' => ['name' => 'Pain burger', 'unit' => 'pcs', 'stock_quantity' => 100, 'alert_threshold' => 20, 'cost_price' => 0.35],
+            'cheddar' => ['name' => 'Cheddar', 'unit' => 'kg', 'stock_quantity' => 12, 'alert_threshold' => 3, 'cost_price' => 9.00],
+            'frites' => ['name' => 'Frites', 'unit' => 'kg', 'stock_quantity' => 40, 'alert_threshold' => 8, 'cost_price' => 1.80],
+            'salade' => ['name' => 'Salade', 'unit' => 'kg', 'stock_quantity' => 15, 'alert_threshold' => 3, 'cost_price' => 2.20],
+            'poulet' => ['name' => 'Poulet', 'unit' => 'kg', 'stock_quantity' => 20, 'alert_threshold' => 4, 'cost_price' => 8.50],
+            'riz' => ['name' => 'Riz', 'unit' => 'kg', 'stock_quantity' => 30, 'alert_threshold' => 6, 'cost_price' => 1.50],
+            'lait' => ['name' => 'Lait', 'unit' => 'L', 'stock_quantity' => 40, 'alert_threshold' => 8, 'cost_price' => 1.10],
+            'sucre' => ['name' => 'Sucre', 'unit' => 'kg', 'stock_quantity' => 25, 'alert_threshold' => 5, 'cost_price' => 1.00],
+            'oeuf' => ['name' => 'Oeufs', 'unit' => 'pcs', 'stock_quantity' => 300, 'alert_threshold' => 60, 'cost_price' => 0.30],
+            'cafe' => ['name' => 'Café', 'unit' => 'kg', 'stock_quantity' => 10, 'alert_threshold' => 2, 'cost_price' => 18.00],
         ];
 
         // TheMealDB ingredient names → real cut-out photos (transparent PNG).

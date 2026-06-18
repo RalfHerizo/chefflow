@@ -23,6 +23,7 @@ fully isolated — **one account, one restaurant**.
 - 🧾 **Stock-aware point of sale** — visual product grid, cart with HT/VAT/TTC totals; products whose recipe can no longer be made are flagged **`Rupture`** and can't be sold.
 - 📦 **Recipe-driven inventory** — each sale deducts the recipe's ingredients; a low-stock panel and a sidebar badge surface what to reorder first.
 - 📊 **Sales analytics** — revenue trend, revenue by category, best sellers and KPIs with period-over-period deltas, over a switchable 7 / 30 / 90-day window.
+- 💰 **Cost & margins** — a purchase cost per ingredient drives recipe cost, per-dish margin, stock valuation and a food-cost % across the analytics window.
 - 🔎 **Global search** — instant header typeahead across products, ingredients and orders.
 - 🏢 **Multi-tenant by design** — strict per-account isolation through a global scope, enforced down to validation.
 - ✅ **Tested & CI-checked** — Pest + Vitest suites and a GitHub Actions pipeline (Pint, tests, build) on every push.
@@ -41,15 +42,18 @@ fully isolated — **one account, one restaurant**.
 - Full CRUD with search, status filter and sorting.
 - Stock health badge (`Critique` / `Stable`) against a per-ingredient threshold.
 - “À réapprovisionner” panel (top 3 + overflow) on the dashboard and the ingredients page.
+- Purchase cost per base unit, with live stock valuation (cost × quantity).
 
 **Products & recipes**
 - Product CRUD with a recipe builder (ingredient + amount per line).
 - Smart input units (`kg/g`, `L/ml`, `pcs`) converted to a base unit before submit.
 - Multi-image gallery (up to 4), category filter and an active/inactive toggle.
+- Per-product recipe cost and margin (€ + %) in the list and the preview modal.
 
 **Analytics**
 - KPIs: revenue, orders, average basket, items sold — each with a delta vs. the previous window.
 - Daily revenue trend, revenue by product category and best sellers by revenue.
+- Profitability: gross margin, food-cost % and a “most profitable dishes” ranking.
 
 **Sales & orders**
 - Cart checkout (`order_items`) supporting multiple products per sale with transactional stock deduction.
@@ -80,13 +84,15 @@ fully isolated — **one account, one restaurant**.
 - [x] Real global search in the header (products, ingredients, orders).
 - [x] Orders history page with search, period filter, sorting and pagination.
 - [x] Analytics page: KPIs with deltas, revenue trend, revenue by category, best sellers, 7/30/90-day window.
+- [x] Ingredient cost → recipe cost, per-product margins, stock valuation and food-cost % in analytics.
 - [x] Pest + Vitest test suites; CI (GitHub Actions) running Pint, tests and the build on every push.
 - [x] Containerized deploy (Docker) on Render + SQLite (free tier, self-seeding demo).
 
 **Next**
 - [ ] Drag-and-drop image upload (replace the URL input).
-- [ ] Ingredient cost field → stock valuation (€) and per-product margins.
-- [ ] CSV / PDF export of sales.
+- [ ] CSV / PDF export of sales and PDF recipe sheets.
+- [ ] Suppliers & purchase orders (reorder suggestions from alert thresholds).
+- [ ] Team roles (Admin / Manager / Cashier) and multi-restaurant accounts.
 
 </details>
 

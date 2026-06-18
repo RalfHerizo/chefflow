@@ -16,6 +16,8 @@ import {
     Globe,
     Users,
     FileDown,
+    PiggyBank,
+    Store,
 } from 'lucide-react';
 import MarketingLayout from '@/Layouts/MarketingLayout';
 
@@ -467,44 +469,44 @@ function PremiumFeaturesSection() {
 const roadmapItems = [
     {
         quarter: 'Q2 2026',
-        title: 'Historique des commandes',
+        title: 'Rentabilité & food cost',
         status: 'En cours',
-        description: 'Consultez toutes vos ventes passées, filtrez par date et par statut, et naviguez par pages.',
-        icon: ClipboardList,
-    },
-    {
-        quarter: 'Q2 2026',
-        title: 'Alertes stock automatiques',
-        status: 'En cours',
-        description: 'Notifications en temps réel dès qu\'un ingrédient passe sous son seuil critique.',
-        icon: Activity,
+        description: 'Coût d\'achat par ingrédient, coût des recettes, marge et food cost % par plat — directement dans les analytics.',
+        icon: PiggyBank,
     },
     {
         quarter: 'Q3 2026',
-        title: 'Multi-établissements',
+        title: 'Export & impression',
         status: 'Planifié',
-        description: 'Un seul compte pour gérer plusieurs restaurants. Idéal pour les gérants de chaînes et franchises.',
-        icon: LockKeyhole,
+        description: 'Export CSV des commandes, fiches techniques en PDF et impression des tickets de caisse.',
+        icon: FileDown,
     },
     {
         quarter: 'Q3 2026',
+        title: 'Fournisseurs & réapprovisionnement',
+        status: 'Planifié',
+        description: 'Carnet de fournisseurs, bons de commande et suggestions de réappro à partir des seuils d\'alerte.',
+        icon: PackageCheck,
+    },
+    {
+        quarter: 'Q4 2026',
         title: 'Gestion d\'équipe',
-        status: 'Planifié',
+        status: 'Vision',
         description: 'Attribuez des rôles à vos collaborateurs : Admin, Manager, Caissier, Cuisinier.',
         icon: Users,
     },
     {
         quarter: 'Q4 2026',
-        title: 'Export & intégrations',
+        title: 'Multi-établissements',
         status: 'Vision',
-        description: 'Export PDF des fiches techniques, CSV des commandes, impression tickets et connexion comptabilité.',
-        icon: FileDown,
+        description: 'Un seul compte pour gérer plusieurs restaurants. Idéal pour les gérants de chaînes et franchises.',
+        icon: Store,
     },
     {
         quarter: '2027',
         title: 'Intelligence prédictive',
         status: 'Vision',
-        description: 'Prévisions de stocks, suggestions de réapprovisionnement et analyse de rentabilité par plat.',
+        description: 'Prévisions de stocks et suggestions de réapprovisionnement basées sur l\'historique des ventes.',
         icon: Sparkles,
     },
 ];

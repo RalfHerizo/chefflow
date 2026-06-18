@@ -19,6 +19,7 @@ class StoreIngredientRequest extends FormRequest
             'stock_quantity' => ['required', 'numeric', 'min:0'],
             'unit' => ['required', 'string', 'max:50'],
             'alert_threshold' => ['required', 'numeric', 'min:0'],
+            'cost_price' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -39,6 +40,8 @@ class StoreIngredientRequest extends FormRequest
             'alert_threshold.required' => "Le seuil d'alerte est obligatoire.",
             'alert_threshold.numeric' => "Le seuil d'alerte doit etre un nombre.",
             'alert_threshold.min' => "Le seuil d'alerte ne peut pas etre negatif.",
+            'cost_price.numeric' => 'Le cout doit etre un nombre.',
+            'cost_price.min' => 'Le cout ne peut pas etre negatif.',
         ];
     }
 }

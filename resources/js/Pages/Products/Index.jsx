@@ -40,16 +40,31 @@ import toast from 'react-hot-toast';
 const PRODUCT_THUMBNAIL_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">PRD</text></svg>';
 
+const euroFormatter = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+});
+
 function formatPrice(cents) {
-    const value = Number(cents || 0) / 100;
-    return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR',
-    }).format(value);
+    return euroFormatter.format(Number(cents || 0) / 100);
+}
+
+// Colour the margin by how much of the selling price is kept (higher = better).
+function marginToneClass(ratio) {
+    if (ratio == null) {
+        return 'text-slate-400';
+    }
+    if (ratio >= 60) {
+        return 'text-emerald-600';
+    }
+    if (ratio >= 40) {
+        return 'text-amber-600';
+    }
+    return 'text-red-600';
 }
 
 /**
- * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, is_makeable: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, categories?: Array<string>, filters?: { search?: string, status?: string, category?: string, sort?: string, direction?: string } }} props
+ * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, is_makeable: boolean, recipe_cost?: number|string|null, margin?: number|string|null, margin_ratio?: number|null, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, categories?: Array<string>, filters?: { search?: string, status?: string, category?: string, sort?: string, direction?: string } }} props
  */
 export default function ProductsIndex({ products, categories = [], filters }) {
     const [previewProduct, setPreviewProduct] = useState(null);
@@ -268,6 +283,7 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                     <TableHead className="px-4">Produit</TableHead>
                                     <TableHead className="px-4">Catégorie</TableHead>
                                     <TableHead className="px-4">Prix</TableHead>
+                                    <TableHead className="px-4">Marge</TableHead>
                                     <TableHead className="px-4">Recette</TableHead>
                                     <TableHead className="px-4">Statut</TableHead>
                                     <TableHead className="px-4">Stock</TableHead>
@@ -278,7 +294,7 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                 {products.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={7}
+                                            colSpan={8}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
                                             {search || status !== 'all' || category !== 'all'
@@ -307,6 +323,24 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                             </TableCell>
                                             <TableCell className="px-4 text-slate-600">
                                                 {formatPrice(product.price)}
+                                            </TableCell>
+                                            <TableCell className="px-4">
+                                                {product.margin == null ? (
+                                                    <span className="text-slate-300">—</span>
+                                                ) : (
+                                                    <div className="flex flex-col">
+                                                        <span
+                                                            className={`font-medium ${marginToneClass(product.margin_ratio)}`}
+                                                        >
+                                                            {euroFormatter.format(Number(product.margin))}
+                                                        </span>
+                                                        {product.margin_ratio != null ? (
+                                                            <span className="text-xs text-slate-400">
+                                                                {product.margin_ratio}% de marge
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
+                                                )}
                                             </TableCell>
                                             <TableCell className="px-4 text-slate-600">
                                                 {product.ingredients_count} ingrédient(s)
@@ -404,6 +438,23 @@ export default function ProductsIndex({ products, categories = [], filters }) {
                                     <p className="text-sm text-slate-500">
                                         Prix: {formatPrice(previewProduct.price)}
                                     </p>
+                                    {previewProduct.recipe_cost != null ? (
+                                        <>
+                                            <p className="text-sm text-slate-500">
+                                                Coût recette:{' '}
+                                                {euroFormatter.format(Number(previewProduct.recipe_cost))}
+                                            </p>
+                                            <p className="text-sm text-slate-500">
+                                                Marge:{' '}
+                                                <span className={marginToneClass(previewProduct.margin_ratio)}>
+                                                    {euroFormatter.format(Number(previewProduct.margin))}
+                                                    {previewProduct.margin_ratio != null
+                                                        ? ` (${previewProduct.margin_ratio}%)`
+                                                        : ''}
+                                                </span>
+                                            </p>
+                                        </>
+                                    ) : null}
                                     <p className="text-sm text-slate-500">
                                         Statut: {previewProduct.is_active ? 'Actif' : 'Inactif'}
                                     </p>

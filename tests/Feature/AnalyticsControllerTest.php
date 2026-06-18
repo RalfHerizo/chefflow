@@ -37,6 +37,30 @@ test('the analytics page renders kpis, trend, category revenue and top products'
         );
 });
 
+test('analytics exposes profitability and most profitable dishes', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $flour = Ingredient::create(['name' => 'Farine', 'unit' => 'kg', 'stock_quantity' => 100, 'alert_threshold' => 5, 'cost_price' => 2.00]);
+    $pizza = Product::create(['name' => 'Pizza', 'price' => 1000, 'category' => 'Plat', 'is_active' => true]);
+    $pizza->ingredients()->attach($flour->id, ['amount' => 0.5]); // 1.00 € of food cost per unit
+
+    // Sell 2 pizzas → revenue 20 €, food cost 2 €, gross margin 18 €, food cost 10 %.
+    $this->post(route('orders.store'), ['items' => [['id' => $pizza->id, 'quantity' => 2]]])->assertSessionHasNoErrors();
+
+    $this->get(route('analytics'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('profitability.foodCostRatio', 10)
+            ->where('profitability.grossMargin', fn ($value) => round((float) $value, 2) === 18.0)
+            ->where('profitability.totalCost', fn ($value) => round((float) $value, 2) === 2.0)
+            ->has('topProfitable', 1)
+            ->where('topProfitable.0.name', 'Pizza')
+            ->where('topProfitable.0.margin', fn ($value) => round((float) $value, 2) === 18.0)
+            ->where('topProfitable.0.margin_ratio', 90)
+        );
+});
+
 test('the analytics window can be switched to 7 days', function () {
     $user = User::factory()->create();
     $this->actingAs($user);

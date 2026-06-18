@@ -10,11 +10,25 @@ class Ingredient extends Model
 {
     use BelongsToTenant;
 
-    protected $fillable = ['name', 'image_url', 'unit', 'stock_quantity', 'alert_threshold'];
+    protected $fillable = ['name', 'image_url', 'unit', 'stock_quantity', 'alert_threshold', 'cost_price'];
 
     public function products()
     {
         return $this->belongsToMany(Product::class)->withTimestamps();
+    }
+
+    /**
+     * Inventory value held in stock for this ingredient: unit cost * quantity,
+     * in euros. Appended so the ingredients list can show stock valuation.
+     */
+    public function stockValue(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => round(
+                (float) ($attributes['cost_price'] ?? 0) * (float) ($attributes['stock_quantity'] ?? 0),
+                2,
+            ),
+        );
     }
 
     public function isLowStock(): Attribute
@@ -33,5 +47,12 @@ class Ingredient extends Model
         );
     }
 
-    protected $appends = ['is_low_stock'];
+    protected $appends = ['is_low_stock', 'stock_value'];
+
+    protected function casts(): array
+    {
+        return [
+            'cost_price' => 'decimal:4',
+        ];
+    }
 }

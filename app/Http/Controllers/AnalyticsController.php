@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -76,24 +77,57 @@ class AnalyticsController extends Controller
             ])
             ->values();
 
-        // Best sellers by revenue over the window.
-        $topProducts = OrderItem::query()
+        // Units sold per product over the window (revenue in euros) — drives
+        // both the best-sellers list and the food-cost / margin figures.
+        $soldProducts = OrderItem::query()
             ->whereHas('order', fn ($query) => $query->whereBetween('created_at', [$start, $end]))
             ->whereHas('product')
             ->selectRaw('product_id, SUM(quantity) as total_qty, SUM(quantity * price_at_sale) as revenue_eur')
             ->groupBy('product_id')
-            ->orderByDesc('revenue_eur')
-            ->with('product:id,name,image_url')
-            ->limit(8)
-            ->get()
-            ->map(fn (OrderItem $item) => [
-                'id' => $item->product_id,
-                'name' => $item->product?->name,
-                'image_url' => $item->product?->image_url,
-                'quantity' => (int) $item->total_qty,
-                'revenue' => round((float) $item->revenue_eur, 2),
-            ])
-            ->values();
+            ->get();
+
+        // Resolve each sold product's per-unit recipe cost in a single batch
+        // (recipe_cost is computed from the eager-loaded ingredients).
+        $products = Product::query()
+            ->with('ingredients:id,cost_price')
+            ->whereIn('id', $soldProducts->pluck('product_id'))
+            ->get(['id', 'name', 'image_url'])
+            ->keyBy('id');
+
+        $totalCostEur = 0.0;
+        $totalSalesEur = 0.0;
+
+        $rows = $soldProducts
+            ->map(function (OrderItem $item) use ($products, &$totalCostEur, &$totalSalesEur) {
+                $product = $products->get($item->product_id);
+                $quantity = (int) $item->total_qty;
+                $revenue = round((float) $item->revenue_eur, 2);
+                $cost = round(((float) ($product?->recipe_cost ?? 0)) * $quantity, 2);
+                $margin = round($revenue - $cost, 2);
+
+                $totalCostEur += $cost;
+                $totalSalesEur += $revenue;
+
+                return [
+                    'id' => $item->product_id,
+                    'name' => $product?->name,
+                    'image_url' => $product?->image_url,
+                    'quantity' => $quantity,
+                    'revenue' => $revenue,
+                    'cost' => $cost,
+                    'margin' => $margin,
+                    'margin_ratio' => $revenue > 0 ? (int) round(($margin / $revenue) * 100) : null,
+                ];
+            });
+
+        // Best sellers by revenue, and most profitable dishes by total margin.
+        $topProducts = $rows->sortByDesc('revenue')->take(8)->values();
+        $topProfitable = $rows->sortByDesc('margin')->take(8)->values();
+
+        $grossMargin = round($totalSalesEur - $totalCostEur, 2);
+        $foodCostRatio = $totalSalesEur > 0
+            ? (int) round(($totalCostEur / $totalSalesEur) * 100)
+            : null;
 
         return Inertia::render('Analytics/Index', [
             'period' => $days,
@@ -106,6 +140,12 @@ class AnalyticsController extends Controller
             'revenueTrend' => $revenueTrend,
             'categoryRevenue' => $categoryRevenue,
             'topProducts' => $topProducts,
+            'topProfitable' => $topProfitable,
+            'profitability' => [
+                'grossMargin' => $grossMargin,
+                'foodCostRatio' => $foodCostRatio,
+                'totalCost' => round($totalCostEur, 2),
+            ],
         ]);
     }
 }

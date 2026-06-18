@@ -2,7 +2,7 @@ import StatCard from '@/Components/Dashboard/StatCard';
 import { Card, CardContent } from '@/Components/ui/card';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import { Boxes, ReceiptText, ShoppingCart, Wallet } from 'lucide-react';
+import { Boxes, PiggyBank, Percent, ReceiptText, ShoppingCart, Wallet } from 'lucide-react';
 import {
     Area,
     AreaChart,
@@ -44,7 +44,9 @@ function formatEuro(value) {
  *   kpis: { revenue: {value: number, delta: number|null}, orders: {value: number, delta: number|null}, avgBasket: {value: number, delta: number|null}, itemsSold: {value: number, delta: number|null} },
  *   revenueTrend: Array<{date: string, revenue: number}>,
  *   categoryRevenue: Array<{category: string, revenue: number}>,
- *   topProducts: Array<{id: number|string, name: string, image_url?: string|null, quantity: number, revenue: number}>
+ *   topProducts: Array<{id: number|string, name: string, image_url?: string|null, quantity: number, revenue: number, cost: number, margin: number, margin_ratio: number|null}>,
+ *   topProfitable: Array<{id: number|string, name: string, image_url?: string|null, quantity: number, revenue: number, cost: number, margin: number, margin_ratio: number|null}>,
+ *   profitability: { grossMargin: number, foodCostRatio: number|null, totalCost: number }
  * }} props
  */
 export default function AnalyticsIndex({
@@ -53,6 +55,8 @@ export default function AnalyticsIndex({
     revenueTrend,
     categoryRevenue,
     topProducts,
+    topProfitable,
+    profitability,
 }) {
     const changePeriod = (next) => {
         if (next === period) {
@@ -72,6 +76,8 @@ export default function AnalyticsIndex({
                     'revenueTrend',
                     'categoryRevenue',
                     'topProducts',
+                    'topProfitable',
+                    'profitability',
                 ],
             },
         );
@@ -80,6 +86,11 @@ export default function AnalyticsIndex({
     const maxRevenue = Math.max(
         1,
         ...topProducts.map((product) => Number(product.revenue || 0)),
+    );
+
+    const maxMargin = Math.max(
+        1,
+        ...topProfitable.map((product) => Number(product.margin || 0)),
     );
 
     return (
@@ -304,6 +315,12 @@ export default function AnalyticsIndex({
                                                     }}
                                                 />
                                             </div>
+                                            {product.margin_ratio != null ? (
+                                                <p className="mt-1 text-xs text-slate-400">
+                                                    Marge {formatEuro(product.margin)} ·{' '}
+                                                    {product.margin_ratio}%
+                                                </p>
+                                            ) : null}
                                         </div>
                                         <span className="shrink-0 text-xs font-medium text-slate-400">
                                             ×{product.quantity}
@@ -314,6 +331,116 @@ export default function AnalyticsIndex({
                         )}
                     </CardContent>
                 </Card>
+
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                    <Card className="border-slate-200/70 bg-white shadow-sm">
+                        <CardContent className="space-y-5 p-6">
+                            <div>
+                                <h3 className="text-lg font-semibold text-slate-800">
+                                    Rentabilité
+                                </h3>
+                                <p className="text-sm text-slate-500">
+                                    Marge estimée sur {period} jours
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                                        <PiggyBank className="h-5 w-5" />
+                                    </span>
+                                    <div>
+                                        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                                            Marge brute
+                                        </p>
+                                        <p className="text-xl font-bold text-slate-800">
+                                            {formatEuro(profitability.grossMargin)}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#FF7E47]">
+                                        <Percent className="h-5 w-5" />
+                                    </span>
+                                    <div>
+                                        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                                            Food cost
+                                        </p>
+                                        <p className="text-xl font-bold text-slate-800">
+                                            {profitability.foodCostRatio != null
+                                                ? `${profitability.foodCostRatio}%`
+                                                : '—'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="border-t border-slate-100 pt-3 text-xs text-slate-400">
+                                Coût matière total :{' '}
+                                {formatEuro(profitability.totalCost)}. Estimé à partir
+                                du coût des recettes.
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-slate-200/70 bg-white shadow-sm lg:col-span-2">
+                        <CardContent className="p-6">
+                            <h3 className="text-lg font-semibold text-slate-800">
+                                Plats les plus rentables
+                            </h3>
+                            <p className="text-sm text-slate-500">
+                                Classés par marge dégagée sur la période
+                            </p>
+                            {topProfitable.length === 0 ? (
+                                <p className="mt-6 text-sm text-slate-400">
+                                    Aucune vente sur la période.
+                                </p>
+                            ) : (
+                                <ol className="mt-5 space-y-4">
+                                    {topProfitable.map((product, index) => (
+                                        <li
+                                            key={product.id}
+                                            className="flex items-center gap-4"
+                                        >
+                                            <span className="w-4 shrink-0 text-sm font-semibold text-slate-400">
+                                                {index + 1}
+                                            </span>
+                                            <img
+                                                src={product.image_url || PRODUCT_PLACEHOLDER}
+                                                alt={product.name}
+                                                className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                                            />
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <p className="truncate text-sm font-medium text-slate-700">
+                                                        {product.name}
+                                                    </p>
+                                                    <p className="shrink-0 text-sm font-semibold text-emerald-600">
+                                                        {formatEuro(product.margin)}
+                                                    </p>
+                                                </div>
+                                                <div className="mt-1.5 h-1.5 w-full rounded-full bg-slate-100">
+                                                    <div
+                                                        className="h-1.5 rounded-full bg-emerald-500"
+                                                        style={{
+                                                            width: `${(Number(product.margin) / maxMargin) * 100}%`,
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {product.margin_ratio != null ? (
+                                                <span className="shrink-0 text-xs font-medium text-slate-400">
+                                                    {product.margin_ratio}%
+                                                </span>
+                                            ) : null}
+                                        </li>
+                                    ))}
+                                </ol>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </AuthenticatedLayout>
     );

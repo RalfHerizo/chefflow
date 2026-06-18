@@ -26,9 +26,16 @@ test('the demo seeder builds a coherent catalog without exhausting stock', funct
 
     $allowedCategories = ['Entrée', 'Plat', 'Accompagnement', 'Dessert', 'Boisson', 'Menu'];
 
+    // Every ingredient carries a purchase cost so margins are meaningful.
+    expect(Ingredient::where('cost_price', '<=', 0)->count())->toBe(0);
+
     Product::with('ingredients')->get()->each(function (Product $product) use ($allowedCategories) {
         expect($product->ingredients)->not->toBeEmpty("Le produit {$product->name} n'a aucune recette.");
         expect($allowedCategories)->toContain($product->category);
+
+        // A realistic menu sells above its food cost: every product is profitable.
+        expect($product->recipe_cost)->toBeGreaterThan(0);
+        expect($product->margin)->toBeGreaterThan(0, "Le produit {$product->name} a une marge négative.");
     });
 });
 
