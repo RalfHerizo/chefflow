@@ -27,7 +27,7 @@ export default function DemoBanner() {
             <div className="flex min-w-0 items-center gap-2">
                 <FlaskConical className="h-4 w-4 shrink-0 text-[#FF7E47]" />
                 <span className="truncate">
-                    Mode démo — données d'exemple, réinitialisées régulièrement.
+                    Mode démo - données d'exemple, réinitialisées régulièrement.
                     Explorez librement&nbsp;!
                 </span>
             </div>
