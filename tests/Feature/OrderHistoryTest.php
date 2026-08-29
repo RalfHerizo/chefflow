@@ -1,25 +1,25 @@
 <?php
 
-use App\Models\Product;
-use App\Models\Order;
 use App\Models\Ingredient;
+use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-it('records an order after a successful sale', function(){
-    
-    $product = Product::factory()->create(['name'=>'Cheese Burger','price' => 1000]); // 10.00€
-    
+it('records an order after a successful sale', function () {
+
+    $product = Product::factory()->create(['name' => 'Cheese Burger', 'price' => 1000]); // 10.00€
+
     $ingredient = Ingredient::create([
-        'name'=>'Cheese',
-        'unit'=>'g',
-        'stock_quantity'=>1900
+        'name' => 'Cheese',
+        'unit' => 'g',
+        'stock_quantity' => 1900,
     ]);
 
     $product->ingredients()->attach($ingredient->id, ['amount' => 80]);
 
-    $action = new \App\Actions\SellProductAction();
+    $action = new \App\Actions\SellProductAction;
     $order = $action->execute([
         ['id' => $product->id, 'qty' => 2],
     ]);

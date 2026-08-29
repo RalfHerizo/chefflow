@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Product;
 use Illuminate\Support\Str;
 
 /**
@@ -19,7 +18,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Product ' . Str::random(8),
+            'name' => 'Product '.Str::random(8),
             'price' => $this->faker->numberBetween(100, 10000),
             'is_active' => true,
         ];

@@ -1,23 +1,26 @@
 <?php
-use App\Models\Product;
+
 use App\Models\Ingredient;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+it('permet de vendre un produit via une requête HTTP', function () {
 
-it('permet de vendre un produit via une requête HTTP', function(){
-    
+    $this->actingAs(User::factory()->create());
+
     $ingredient = Ingredient::create([
-        'name'=>'Sucre',
-        'unit'=>'g',
-        'stock_quantity'=>1000
+        'name' => 'Sucre',
+        'unit' => 'g',
+        'stock_quantity' => 1000,
     ]);
 
-    $product = Product::create(['name'=>'Jus de Fruit', 'price'=> 500]);
+    $product = Product::create(['name' => 'Jus de Fruit', 'price' => 500]);
     $product->ingredients()->attach($ingredient->id, ['amount' => 50]);
 
-    $response = $this->post('/orders',[
+    $response = $this->post('/orders', [
         'items' => [
             ['id' => $product->id, 'quantity' => 2],
         ],

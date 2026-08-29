@@ -7,7 +7,7 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
 export default function Edit({ mustVerifyEmail, status }) {
     return (
         <AuthenticatedLayout>
-            <Head title="Profile" />
+            <Head title="Profil" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">

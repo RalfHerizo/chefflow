@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import {
     Activity,
@@ -15,7 +15,7 @@ import {
     Github,
     Globe,
     Users,
-    FileDown,
+    Store,
 } from 'lucide-react';
 import MarketingLayout from '@/Layouts/MarketingLayout';
 
@@ -51,6 +51,7 @@ function BrowserMockup() {
 }
 
 function WhoWeAreSection() {
+    const user = usePage().props.auth?.user;
     return (
         <section id='about' className="bg-[#faf8f5] px-6 py-24 lg:px-16">
             <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
@@ -98,7 +99,7 @@ function WhoWeAreSection() {
                     </p>
 
                     <Link
-                        href={route('login')}
+                        href={user ? route('dashboard') : route('login')}
                         className="group mt-6 inline-flex items-center gap-2 rounded-lg bg-[#FF7E47] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e86f3d]"
                     >
                         Découvrez comment ça marche
@@ -465,28 +466,21 @@ function PremiumFeaturesSection() {
 
 const roadmapItems = [
     {
-        quarter: 'Q2 2026',
-        title: 'Historique des commandes',
+        quarter: 'Q3 2026',
+        title: 'Fournisseurs & réapprovisionnement',
         status: 'En cours',
-        description: 'Consultez toutes vos ventes passées, filtrez par date et par statut, et naviguez par pages.',
-        icon: ClipboardList,
+        description: 'Carnet de fournisseurs, bons de commande et suggestions de réappro à partir des seuils d\'alerte.',
+        icon: PackageCheck,
     },
     {
-        quarter: 'Q2 2026',
-        title: 'Alertes stock automatiques',
-        status: 'En cours',
-        description: 'Notifications en temps réel dès qu\'un ingrédient passe sous son seuil critique.',
+        quarter: 'Q3 2026',
+        title: 'Notifications temps réel',
+        status: 'Planifié',
+        description: 'Alertes par e-mail et notifications dans l\'app dès qu\'un ingrédient passe sous son seuil critique.',
         icon: Activity,
     },
     {
-        quarter: 'Q3 2026',
-        title: 'Multi-établissements',
-        status: 'Planifié',
-        description: 'Un seul compte pour gérer plusieurs restaurants. Idéal pour les gérants de chaînes et franchises.',
-        icon: LockKeyhole,
-    },
-    {
-        quarter: 'Q3 2026',
+        quarter: 'Q4 2026',
         title: 'Gestion d\'équipe',
         status: 'Planifié',
         description: 'Attribuez des rôles à vos collaborateurs : Admin, Manager, Caissier, Cuisinier.',
@@ -494,16 +488,16 @@ const roadmapItems = [
     },
     {
         quarter: 'Q4 2026',
-        title: 'Export & intégrations',
+        title: 'Multi-établissements',
         status: 'Vision',
-        description: 'Export PDF des fiches techniques, CSV des commandes, impression tickets et connexion comptabilité.',
-        icon: FileDown,
+        description: 'Un seul compte pour gérer plusieurs restaurants. Idéal pour les gérants de chaînes et franchises.',
+        icon: Store,
     },
     {
         quarter: '2027',
         title: 'Intelligence prédictive',
         status: 'Vision',
-        description: 'Prévisions de stocks, suggestions de réapprovisionnement et analyse de rentabilité par plat.',
+        description: 'Prévisions de stocks et suggestions de réapprovisionnement basées sur l\'historique des ventes.',
         icon: Sparkles,
     },
 ];
@@ -664,6 +658,7 @@ function FadeInSection({ children, delay = 0 }) {
 }
 
 export default function Welcome() {
+    const user = usePage().props.auth?.user;
     return (
         <MarketingLayout>
             <Head>
@@ -696,22 +691,34 @@ export default function Welcome() {
                         </div>
                         <div className="mt-6 flex flex-wrap justify-center items-center gap-4">
                             <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-                                <Link
-                                    href={route('register')}
-                                    className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7E47] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d]"
-                                >
-                                    Créer mon compte gratuitement
-                                    <ArrowRight className="hidden sm:inline-flex h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                </Link>
-                                <Link
-                                    href={route('login')}
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
-                                >
-                                    Se connecter
-                                </Link>
+                                {user ? (
+                                    <Link
+                                        href={route('dashboard')}
+                                        className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7E47] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition-all hover:bg-[#e86f3d]"
+                                    >
+                                        Accéder à mon tableau de bord
+                                        <ArrowRight className="hidden sm:inline-flex h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                    </Link>
+                                ) : (
+                                    <>
+                                        <a
+                                            href="/demo"
+                                            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 rounded-xl bg-[#1f1a17] px-6 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-black"
+                                        >
+                                            Démo en direct
+                                            <ArrowRight className="hidden sm:inline-flex h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                        </a>
+                                        <Link
+                                            href={route('login')}
+                                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                                        >
+                                            Se connecter
+                                        </Link>
+                                    </>
+                                )}
                             </div>
-                            
-                        </div> 
+
+                        </div>
                         <div className="my-8 flex items-center  gap-6 text-sm text-slate-500">
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 className="h-4 w-4 text-[#FF7E47]" />
@@ -745,7 +752,7 @@ export default function Welcome() {
             </section>
 
             <section className="pb-16">
-                <FinalCTASection />
+                {!user && <FinalCTASection />}
             </section>
 
             <footer className="border-t border-slate-200 bg-white px-6 py-12">

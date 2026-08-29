@@ -1,30 +1,46 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DemoController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+
+Route::get('/demo', [DemoController::class, 'login'])
+    ->middleware('throttle:10,1')
+    ->name('demo.login');
 
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', [DashboardController::class,'index'])
-    ->middleware(['auth','verified'])
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/search', SearchController::class)->name('search');
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile', [ProfileController::class, 'update'])->middleware('not-demo')->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->middleware('not-demo')->name('profile.destroy');
+
+    Route::post('/demo/reset', [DemoController::class, 'reset'])
+        ->middleware('throttle:5,1')
+        ->name('demo.reset');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/export', [OrderController::class, 'export'])->name('orders.export');
     Route::get('/orders/pos', [OrderController::class, 'pos'])->name('orders.pos');
-    Route::post('/orders',[OrderController::class,'store'])->name('orders.store');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders/{order}/receipt', [OrderController::class, 'receipt'])->name('orders.receipt');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients.index');
     Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store');
@@ -34,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::get('/products/{product}/recipe', [ProductController::class, 'recipe'])->name('products.recipe');
     Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');

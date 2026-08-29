@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -21,7 +22,7 @@ class UpdateProductRequest extends FormRequest
             'images' => ['nullable', 'array', 'max:4'],
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.id' => ['required', 'exists:ingredients,id'],
+            'ingredients.*.id' => ['required', Rule::exists('ingredients', 'id')->where('user_id', auth()->id())],
             'ingredients.*.amount' => ['required', 'numeric', 'gt:0'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['integer', 'exists:product_images,id'],

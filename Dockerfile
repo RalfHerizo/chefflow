@@ -30,11 +30,13 @@ RUN apt-get update \
         libjpeg-dev \
         libxml2-dev \
         libfreetype6-dev \
+        libsqlite3-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         bcmath \
         gd \
         pdo_mysql \
+        pdo_sqlite \
         zip \
         mbstring \
         xml \

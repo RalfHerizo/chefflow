@@ -1,43 +1,42 @@
 import InventoryGrid from '@/Components/Dashboard/InventoryGrid';
+import LowStockAlerts from '@/Components/Dashboard/LowStockAlerts';
 import RecentOrdersTable from '@/Components/Dashboard/RecentOrdersTable';
 import RevenueChart from '@/Components/Dashboard/RevenueChart';
+import StatCard from '@/Components/Dashboard/StatCard';
+import TopProducts from '@/Components/Dashboard/TopProducts';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import {
+    ArrowRight,
+    Plus,
+    ReceiptText,
+    ShoppingCart,
+    TriangleAlert,
+    Wallet,
+} from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
+function formatEuro(cents) {
+    return new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'EUR',
+    }).format(Number(cents || 0) / 100);
+}
+
 export default function Dashboard({
+    stats,
+    weeklyRevenue,
+    topProducts,
+    orders,
     ingredients,
-    products,
+    lowStockIngredients,
     flash,
     errors,
-    orders,
-    weeklyRevenue,
 }) {
+    const lowStockCount = usePage().props.lowStockCount ?? 0;
     const [orderToCancel, setOrderToCancel] = useState(null);
-
-    const { data, setData, post, processing, reset } = useForm({
-        items: [{ id: '', quantity: 1 }],
-    });
-
-    const submit = (e) => {
-        e.preventDefault();
-
-        post(route('orders.store'), {
-            onSuccess: () => {
-                toast.success('Vente enregistree');
-                reset();
-            },
-            onError: (formErrors) => {
-                toast.error(formErrors.items || 'Stock insuffisant');
-            },
-        });
-    };
-
-    const requestCancel = (orderId) => {
-        setOrderToCancel(orderId);
-    };
 
     const confirmCancel = () => {
         if (!orderToCancel) {
@@ -45,14 +44,21 @@ export default function Dashboard({
         }
 
         router.delete(route('orders.destroy', orderToCancel), {
-            onSuccess: () => toast.success('Commande annulee'),
+            onSuccess: () => toast.success('Commande annulée'),
             onFinish: () => setOrderToCancel(null),
         });
     };
 
+    const today = new Date().toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    });
+
     return (
         <AuthenticatedLayout>
-            <Head title="Dashboard" />
+            <Head title="Tableau de bord" />
 
             <div className="mx-auto max-w-7xl space-y-6">
                 {flash?.message ? (
@@ -67,63 +73,98 @@ export default function Dashboard({
                     </div>
                 ) : null}
 
-                <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800">Enregistrer une vente</h3>
-                    <form onSubmit={submit} className="flex flex-wrap items-end gap-4">
-                        <div className="min-w-[220px] flex-1">
-                            <label className="mb-1 block text-sm font-medium text-slate-600">Produit</label>
-                            <select
-                                value={data.items[0]?.id || ''}
-                                onChange={(e) =>
-                                    setData('items', [{ ...data.items[0], id: e.target.value }])
-                                }
-                                className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm shadow-sm outline-none focus:border-[#FF7E47]"
-                            >
-                                <option value="">Choisir...</option>
-                                {products.map((product) => (
-                                    <option key={product.id} value={product.id}>
-                                        {product.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-slate-500 first-letter:uppercase">
+                        {today}
+                    </p>
+                    <Link
+                        href={route('orders.pos')}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7E47] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#e86f3d]"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Nouvelle commande
+                    </Link>
+                </div>
 
-                        <div className="w-36">
-                            <label className="mb-1 block text-sm font-medium text-slate-600">Quantite</label>
-                            <input
-                                type="number"
-                                min="1"
-                                value={data.items[0]?.quantity || 1}
-                                onChange={(e) =>
-                                    setData('items', [
-                                        { ...data.items[0], quantity: Number(e.target.value) },
-                                    ])
-                                }
-                                className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm shadow-sm outline-none focus:border-[#FF7E47]"
-                            />
-                        </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <StatCard
+                        icon={Wallet}
+                        label="CA · 7 jours"
+                        value={formatEuro(stats.revenue.value)}
+                        delta={stats.revenue.delta}
+                        tone="orange"
+                    />
+                    <StatCard
+                        icon={ReceiptText}
+                        label="Commandes · 7 jours"
+                        value={stats.orders.value}
+                        delta={stats.orders.delta}
+                        tone="sky"
+                    />
+                    <StatCard
+                        icon={ShoppingCart}
+                        label="Panier moyen"
+                        value={formatEuro(stats.avgBasket.value)}
+                        delta={stats.avgBasket.delta}
+                        tone="emerald"
+                    />
+                    <StatCard
+                        icon={TriangleAlert}
+                        label="Stock critique"
+                        value={stats.lowStock.value}
+                        tone="red"
+                        href={route('ingredients.index')}
+                    />
+                </div>
 
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="h-11 rounded-xl bg-[#FF7E47] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#e86f3d] disabled:opacity-50"
+                {lowStockIngredients?.length > 0 ? (
+                    <LowStockAlerts
+                        ingredients={lowStockIngredients}
+                        totalCount={lowStockCount}
+                    />
+                ) : null}
+
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                    <div className="lg:col-span-2">
+                        <RevenueChart
+                            data={weeklyRevenue ?? []}
+                            total={stats.revenue.value}
+                        />
+                    </div>
+                    <div>
+                        <TopProducts products={topProducts ?? []} />
+                    </div>
+                </div>
+
+                <section className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-slate-800">
+                            Commandes récentes
+                        </h3>
+                        <Link
+                            href={route('orders.index')}
+                            className="inline-flex items-center gap-1 text-sm font-semibold text-[#FF7E47] hover:underline"
                         >
-                            {processing ? 'Traitement...' : 'Vendre'}
-                        </button>
-                    </form>
+                            Voir tout
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
+                    <RecentOrdersTable orders={orders} onCancelOrder={setOrderToCancel} />
                 </section>
 
                 <section className="space-y-3">
-                    <RevenueChart data={weeklyRevenue ?? []} />
-                </section>
-
-                <section className="space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-800">Recent Orders</h3>
-                    <RecentOrdersTable orders={orders} onCancelOrder={requestCancel} />
-                </section>
-
-                <section className="space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-800">Inventory Status</h3>
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-slate-800">
+                            État des stocks
+                        </h3>
+                        <Link
+                            href={route('ingredients.index')}
+                            className="inline-flex items-center gap-1 text-sm font-semibold text-[#FF7E47] hover:underline"
+                        >
+                            Voir tout
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
                     <InventoryGrid ingredients={ingredients} />
                 </section>
             </div>
@@ -136,7 +177,7 @@ export default function Dashboard({
                     }
                 }}
                 title="Annuler cette commande ?"
-                description="Le stock associe sera restaure automatiquement."
+                description="Le stock associé sera restauré automatiquement."
                 confirmLabel="Annuler la commande"
                 destructive
                 onConfirm={confirmCancel}

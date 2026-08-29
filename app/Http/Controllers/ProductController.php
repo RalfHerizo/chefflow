@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ingredient;
-use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Ingredient;
+use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -14,41 +15,72 @@ use Inertia\Response;
 
 class ProductController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $search = $request->query('search');
+        $status = $request->query('status');
+        $category = $request->query('category');
+        $sort = $request->query('sort', 'recent');
+        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
+
+        $products = Product::query()
+            ->with(['ingredients:id,name,unit,stock_quantity,cost_price', 'images:id,product_id,url,is_main'])
+            ->withCount('ingredients')
+            ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
+            ->when($status === 'active', fn ($query) => $query->where('is_active', true))
+            ->when($status === 'inactive', fn ($query) => $query->where('is_active', false))
+            ->when($category, fn ($query) => $query->where('category', $category));
+
+        match ($sort) {
+            'name' => $products->orderBy('name', $direction),
+            'category' => $products->orderBy('category', $direction),
+            'price' => $products->orderBy('price', $direction),
+            'recipe' => $products->orderBy('ingredients_count', $direction),
+            'status' => $products->orderBy('is_active', $direction),
+            default => $products->latest('id'),
+        };
+
+        $categories = Product::query()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
         return Inertia::render('Products/Index', [
-            'products' => Product::query()
-                ->with(['ingredients:id,name,unit', 'images:id,product_id,url,is_main'])
-                ->withCount('ingredients')
-                ->orderBy('name')
-                ->get(['id', 'name', 'category', 'image_url', 'price', 'is_active'])
-                ->map(function (Product $product) {
-                    return [
-                        'id' => $product->id,
-                        'name' => $product->name,
-                        'category' => $product->category,
-                        'image_url' => $product->image_url,
-                        'images' => $product->images
-                            ->map(fn ($image) => [
-                                'id' => $image->id,
-                                'url' => $image->url,
-                                'is_main' => (bool) $image->is_main,
-                            ])
-                            ->values(),
-                        'price' => $product->price,
-                        'is_active' => $product->is_active,
-                        'ingredients_count' => $product->ingredients_count,
-                        'ingredients' => $product->ingredients
-                            ->map(fn ($ingredient) => [
-                                'id' => $ingredient->id,
-                                'name' => $ingredient->name,
-                                'unit' => $ingredient->unit,
-                                'amount' => $ingredient->pivot?->amount,
-                            ])
-                            ->values(),
-                    ];
-                })
-                ->values(),
+            'categories' => $categories,
+            'products' => $products
+                ->paginate(8)
+                ->withQueryString()
+                ->through(fn (Product $product) => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category' => $product->category,
+                    'image_url' => $product->image_url,
+                    'images' => $product->images
+                        ->map(fn ($image) => [
+                            'id' => $image->id,
+                            'url' => $image->url,
+                            'is_main' => (bool) $image->is_main,
+                        ])
+                        ->values(),
+                    'price' => $product->price,
+                    'is_active' => $product->is_active,
+                    'is_makeable' => $product->is_makeable,
+                    'recipe_cost' => $product->recipe_cost,
+                    'margin' => $product->margin,
+                    'margin_ratio' => $product->margin_ratio,
+                    'ingredients_count' => $product->ingredients_count,
+                    'ingredients' => $product->ingredients
+                        ->map(fn ($ingredient) => [
+                            'id' => $ingredient->id,
+                            'name' => $ingredient->name,
+                            'unit' => $ingredient->unit,
+                            'amount' => $ingredient->pivot?->amount,
+                        ])
+                        ->values(),
+                ]),
+            'filters' => ['search' => $search, 'status' => $status, 'category' => $category, 'sort' => $sort, 'direction' => $direction],
         ]);
     }
 
@@ -98,6 +130,41 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Print-friendly recipe sheet (fiche technique) for one product: recipe
+     * lines with per-line cost, plus total cost, price and margin.
+     */
+    public function recipe(Product $product): Response
+    {
+        $product->load(['ingredients:id,name,unit,cost_price']);
+
+        return Inertia::render('Products/Recipe', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'category' => $product->category,
+                'price' => $product->price_in_euro,
+                'recipe_cost' => $product->recipe_cost,
+                'margin' => $product->margin,
+                'margin_ratio' => $product->margin_ratio,
+                'ingredients' => $product->ingredients
+                    ->map(fn ($ingredient) => [
+                        'id' => $ingredient->id,
+                        'name' => $ingredient->name,
+                        'unit' => $ingredient->unit,
+                        'amount' => $ingredient->pivot?->amount,
+                        'cost_price' => $ingredient->cost_price,
+                        'line_cost' => round(
+                            (float) $ingredient->cost_price * (float) ($ingredient->pivot?->amount ?? 0),
+                            2,
+                        ),
+                    ])
+                    ->values(),
+            ],
+            'restaurant' => auth()->user()->name ?? 'ChefFlow',
+        ]);
+    }
+
     public function store(StoreProductRequest $request): RedirectResponse
     {
         $validated = $request->validated();
@@ -142,7 +209,7 @@ class ProductController extends Controller
             $product->ingredients()->sync($pivotPayload);
         });
 
-        return to_route('products.index')->with('message', 'Produit cree avec recette.');
+        return to_route('products.index')->with('message', 'Produit créé avec recette.');
     }
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
@@ -171,14 +238,14 @@ class ProductController extends Controller
                 $imageUrl = Storage::url($path);
             }
 
-            if (!empty($validated['remove_images'])) {
+            if (! empty($validated['remove_images'])) {
                 $this->deleteProductImagesByIds($product, $validated['remove_images']);
             }
 
             $remainingImages = $product->images()->orderBy('id')->get();
             $hasMainImage = $remainingImages->contains('is_main', true);
 
-            if (!$hasMainImage && $remainingImages->isNotEmpty()) {
+            if (! $hasMainImage && $remainingImages->isNotEmpty()) {
                 // Ensure the gallery always has a single main image for display consistency.
                 $remainingImages->each(function ($image, int $index) {
                     $image->update(['is_main' => $index === 0]);
@@ -191,7 +258,7 @@ class ProductController extends Controller
                 $mainImageUrl = $this->appendProductImages(
                     $product,
                     $request->file('images'),
-                    !$hasMainImage
+                    ! $hasMainImage
                 );
 
                 if ($mainImageUrl) {
@@ -221,7 +288,7 @@ class ProductController extends Controller
             $product->ingredients()->sync($pivotPayload);
         });
 
-        return to_route('products.index')->with('message', 'Produit modifie avec succes.');
+        return to_route('products.index')->with('message', 'Produit modifié avec succès.');
     }
 
     public function destroy(Product $product): RedirectResponse
@@ -229,13 +296,13 @@ class ProductController extends Controller
         $this->deleteProductImages($product);
         $product->delete();
 
-        return to_route('products.index')->with('message', 'Produit supprime avec succes.');
+        return to_route('products.index')->with('message', 'Produit supprimé avec succès.');
     }
 
     public function toggleStatus(Product $product): RedirectResponse
     {
         $product->update([
-            'is_active' => !$product->is_active,
+            'is_active' => ! $product->is_active,
         ]);
 
         return back();

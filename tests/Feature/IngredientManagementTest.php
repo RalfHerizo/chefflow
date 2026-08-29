@@ -2,6 +2,7 @@
 
 use App\Models\Ingredient;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
 
 test('an authenticated user can create an ingredient with image url', function () {
     $user = User::factory()->create();
@@ -29,6 +30,8 @@ test('an authenticated user can create an ingredient with image url', function (
 
 test('an authenticated user can update an ingredient', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $ingredient = Ingredient::create([
         'name' => 'Lait',
         'image_url' => null,
@@ -38,7 +41,6 @@ test('an authenticated user can update an ingredient', function () {
     ]);
 
     $response = $this
-        ->actingAs($user)
         ->patch(route('ingredients.update', $ingredient), [
             'name' => 'Lait entier',
             'image_url' => 'https://images.example.com/lait-entier.png',
@@ -60,6 +62,8 @@ test('an authenticated user can update an ingredient', function () {
 
 test('an authenticated user can delete an ingredient', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $ingredient = Ingredient::create([
         'name' => 'Sel',
         'unit' => 'g',
@@ -68,7 +72,6 @@ test('an authenticated user can delete an ingredient', function () {
     ]);
 
     $response = $this
-        ->actingAs($user)
         ->delete(route('ingredients.destroy', $ingredient));
 
     $response->assertRedirect(route('ingredients.index'));
@@ -96,3 +99,25 @@ test('ingredient creation validates image url format', function () {
         ->assertSessionHasErrors(['image_url']);
 });
 
+test('the ingredients index caps the low-stock panel at the three most urgent items', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    // Five ingredients under threshold (varying urgency) + one healthy.
+    Ingredient::create(['name' => 'Urgent 1', 'unit' => 'kg', 'stock_quantity' => 0, 'alert_threshold' => 10]);
+    Ingredient::create(['name' => 'Urgent 2', 'unit' => 'kg', 'stock_quantity' => 1, 'alert_threshold' => 10]);
+    Ingredient::create(['name' => 'Urgent 3', 'unit' => 'kg', 'stock_quantity' => 2, 'alert_threshold' => 10]);
+    Ingredient::create(['name' => 'Low 4', 'unit' => 'kg', 'stock_quantity' => 3, 'alert_threshold' => 10]);
+    Ingredient::create(['name' => 'Low 5', 'unit' => 'kg', 'stock_quantity' => 4, 'alert_threshold' => 10]);
+    Ingredient::create(['name' => 'Healthy', 'unit' => 'kg', 'stock_quantity' => 50, 'alert_threshold' => 10]);
+
+    // The panel shows the 3 most urgent, while lowStockCount (shared prop)
+    // keeps the true total so the header and "+N autres" link stay honest.
+    $this->get(route('ingredients.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Ingredients/Index')
+            ->has('lowStockIngredients', 3)
+            ->where('lowStockIngredients.0.name', 'Urgent 1')
+            ->where('lowStockCount', 5)
+        );
+});

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -34,10 +35,17 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'flash'=> [
-                'message' => fn()=> $request->session()->get('message'),
-                'error' => fn() => $request->session()->get('error'),
-            ]
+            'flash' => [
+                'message' => fn () => $request->session()->get('message'),
+                'error' => fn () => $request->session()->get('error'),
+                'orderId' => fn () => $request->session()->get('orderId'),
+            ],
+            'isDemo' => fn () => optional($request->user())->email === config('demo.email'),
+            // Powers the low-stock badge in the sidebar (tenant-scoped; the
+            // Ingredient global scope only applies when authenticated).
+            'lowStockCount' => fn () => $request->user()
+                ? Ingredient::whereColumn('stock_quantity', '<=', 'alert_threshold')->count()
+                : 0,
         ];
     }
 }

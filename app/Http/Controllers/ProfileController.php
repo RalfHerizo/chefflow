@@ -16,8 +16,15 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request): Response|RedirectResponse
     {
+        // The shared demo account has no business managing the account itself,
+        // and update/password/delete are blocked anyway — keep the settings page
+        // out of the demo entirely by redirecting to the dashboard.
+        if ($request->user()->email === config('demo.email')) {
+            return redirect()->route('dashboard');
+        }
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),

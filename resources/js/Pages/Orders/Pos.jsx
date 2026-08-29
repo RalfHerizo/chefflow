@@ -1,6 +1,5 @@
 ﻿import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
-import { ScrollArea } from '@/Components/ui/scroll-area';
 import {
     Dialog,
     DialogContent,
@@ -13,7 +12,7 @@ import { Slider } from '@/Components/ui/slider';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useCart } from '@/Contexts/CartContext';
 import { Head, useForm } from '@inertiajs/react';
-import { Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react';
+import { Minus, Plus, Receipt, Search, ShoppingCart, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
@@ -21,7 +20,7 @@ import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
 const PRODUCT_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="140"><rect width="100%" height="100%" fill="%23E2E8F0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="12">IMG</text></svg>';
 /**
- * @param {{ products: Array<{id: number|string, name: string, price: number, image_url?: string|null, category?: string|null, is_active: boolean, ingredients?: Array<{id: number|string, name: string}>}> }} props
+ * @param {{ products: Array<{id: number|string, name: string, price: number, image_url?: string|null, category?: string|null, is_active: boolean, is_makeable: boolean, ingredients?: Array<{id: number|string, name: string}>}> }} props
  */
 export default function OrdersPos({ products }) {
     const [search, setSearch] = useState('');
@@ -29,6 +28,7 @@ export default function OrdersPos({ products }) {
     const [clearOpen, setClearOpen] = useState(false);
     const form = useForm({ items: [] });
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [lastOrderId, setLastOrderId] = useState(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -98,6 +98,11 @@ export default function OrdersPos({ products }) {
             return;
         }
 
+        if (product.is_makeable === false) {
+            toast.error('Rupture de stock');
+            return;
+        }
+
         addToCart(product);
         toast.success(`${product.name} ajouté`);
     };
@@ -105,6 +110,11 @@ export default function OrdersPos({ products }) {
     const openDetails = (product) => {
         if (!product.is_active) {
             toast.error('Produit indisponible');
+            return;
+        }
+
+        if (product.is_makeable === false) {
+            toast.error('Rupture de stock');
             return;
         }
 
@@ -180,9 +190,10 @@ export default function OrdersPos({ products }) {
         }
 
         form.post(route('orders.store'), {
-            onSuccess: () => {
+            onSuccess: (page) => {
                 toast.success('Commande validée');
                 clearCart();
+                setLastOrderId(page?.props?.flash?.orderId ?? null);
             },
             onError: (formErrors) => {
                 toast.error(formErrors.items || 'Stock insuffisant');
@@ -255,72 +266,85 @@ export default function OrdersPos({ products }) {
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                        {filteredProducts.map((product) => (
-                            <div
-                                key={product.id}
-                                role="button"
-                                tabIndex={0}
-                                onClick={() => openDetails(product)}
-                                onKeyDown={(event) => {
-                                    if (event.key === 'Enter' || event.key === ' ') {
-                                        event.preventDefault();
-                                        openDetails(product);
-                                    }
-                                }}
-                                className={`group relative rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7E47]/60 hover:shadow-md ${
-                                    product.is_active
-                                        ? 'cursor-pointer'
-                                        : 'cursor-not-allowed opacity-60'
-                                }`}
-                            >
-                                <div className="relative h-36 w-full overflow-hidden rounded-xl bg-slate-100">
-                                    <img
-                                        src={product.image_url || PRODUCT_PLACEHOLDER}
-                                        alt={product.name}
-                                        className="h-full w-full object-cover"
-                                    />
-                                    <Badge
-                                        className={`absolute left-3 top-3 ${
-                                            product.is_active
-                                                ? 'bg-emerald-100 text-emerald-700'
-                                                : 'bg-slate-200 text-slate-500'
-                                        }`}
-                                    >
-                                        {product.is_active ? 'Disponible' : 'Indisponible'}
-                                    </Badge>
+                        {filteredProducts.map((product) => {
+                            const available =
+                                product.is_active && product.is_makeable !== false;
+                            const outOfStock =
+                                product.is_active && product.is_makeable === false;
+
+                            return (
+                                <div
+                                    key={product.id}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => openDetails(product)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter' || event.key === ' ') {
+                                            event.preventDefault();
+                                            openDetails(product);
+                                        }
+                                    }}
+                                    className={`group relative rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF7E47]/60 hover:shadow-md ${
+                                        available
+                                            ? 'cursor-pointer'
+                                            : 'cursor-not-allowed opacity-60'
+                                    }`}
+                                >
+                                    <div className="relative h-36 w-full overflow-hidden rounded-xl bg-slate-100">
+                                        <img
+                                            src={product.image_url || PRODUCT_PLACEHOLDER}
+                                            alt={product.name}
+                                            className="h-full w-full object-cover"
+                                        />
+                                        <Badge
+                                            className={`absolute left-3 top-3 ${
+                                                available
+                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                    : outOfStock
+                                                      ? 'bg-red-100 text-red-700'
+                                                      : 'bg-slate-200 text-slate-500'
+                                            }`}
+                                        >
+                                            {available
+                                                ? 'Disponible'
+                                                : outOfStock
+                                                  ? 'Rupture'
+                                                  : 'Indisponible'}
+                                        </Badge>
+                                    </div>
+                                    <div className="mt-3">
+                                        <p className="text-sm font-semibold text-slate-800">
+                                            {product.name}
+                                        </p>
+                                        <p className="text-xs text-slate-500">
+                                            {product.category || 'Sans categorie'}
+                                        </p>
+                                        <p className="mt-1 text-sm font-semibold text-slate-800">
+                                            {formatPrice(product.price)}
+                                        </p>
+                                    </div>
+                                    {available ? (
+                                        <button
+                                            type="button"
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                handleAddToCart(product);
+                                            }}
+                                            className="absolute bottom-3 right-3 flex h-8 w-10 items-center justify-center gap-1 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#FF7E47] hover:text-[#FF7E47]"
+                                            aria-label={`Ajouter ${product.name} au panier`}
+                                        >
+                                            <ShoppingCart className="h-3.5 w-3.5" />
+                                        </button>
+                                    ) : null}
                                 </div>
-                                <div className="mt-3">
-                                    <p className="text-sm font-semibold text-slate-800">
-                                        {product.name}
-                                    </p>
-                                    <p className="text-xs text-slate-500">
-                                        {product.category || 'Sans categorie'}
-                                    </p>
-                                    <p className="mt-1 text-sm font-semibold text-slate-800">
-                                        {formatPrice(product.price)}
-                                    </p>
-                                </div>
-                                {product.is_active ? (
-                                    <button
-                                        type="button"
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            handleAddToCart(product);
-                                        }}
-                                        className="absolute bottom-3 right-3 flex h-8 w-10 items-center justify-center gap-1 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#FF7E47] hover:text-[#FF7E47]"
-                                        aria-label={`Ajouter ${product.name} au panier`}
-                                    >
-                                        <ShoppingCart className="h-3.5 w-3.5" />
-                                    </button>
-                                ) : null}
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
 
-                <aside className="w-full max-w-xl space-y-4 lg:w-[380px]">
-                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
-                        <div className="flex items-center justify-between">
+                <aside className="w-full max-w-xl space-y-4 lg:sticky lg:top-0 lg:w-[380px] lg:self-start">
+                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm lg:flex lg:max-h-[calc(100vh-12rem)] lg:flex-col">
+                        <div className="flex shrink-0 items-center justify-between">
                             <div className="flex items-center gap-2">
                                 
                                 <div>
@@ -344,13 +368,13 @@ export default function OrdersPos({ products }) {
                             ) : null}
                         </div>
 
-                        <ScrollArea className="mt-4 h-64">
+                        <div className="mt-4 max-h-80 overflow-y-auto pr-1 lg:max-h-none lg:min-h-0 lg:flex-1">
                             {cart.length === 0 ? (
-                                <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                                <div className="py-12 text-center text-sm text-slate-400">
                                     Aucun produit dans le panier.
                                 </div>
                             ) : (
-                                <div className="space-y-3 pr-2">
+                                <div className="space-y-3">
                                     {cart.map((item) => (
                                         <div
                                             key={item.id}
@@ -398,9 +422,9 @@ export default function OrdersPos({ products }) {
                                     ))}
                                 </div>
                             )}
-                        </ScrollArea>
+                        </div>
 
-                        <div className="mt-4 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
+                        <div className="mt-4 shrink-0 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
                             <div className="flex items-center justify-between text-slate-600">
                                 <span>Total HT</span>
                                 <span className="font-semibold text-slate-800">
@@ -421,7 +445,7 @@ export default function OrdersPos({ products }) {
                             </div>
                         </div>
 
-                        <div className="mt-4 flex flex-col justify-center gap-3 sm:flex-row">
+                        <div className="mt-4 flex shrink-0 flex-col justify-center gap-3 sm:flex-row">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -446,6 +470,18 @@ export default function OrdersPos({ products }) {
                                 <span className="text-red-500 text-sm">{form.errors.items}</span>
                             ) : null}
                         </div>
+
+                        {lastOrderId ? (
+                            <a
+                                href={route('orders.receipt', lastOrderId)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
+                            >
+                                <Receipt className="h-4 w-4" />
+                                Imprimer le ticket #{lastOrderId}
+                            </a>
+                        ) : null}
                     </div>
                 </aside>
             </div>
@@ -515,7 +551,7 @@ export default function OrdersPos({ products }) {
 
                             <div>
                                 <p className="text-sm font-semibold text-slate-700">
-                                    Ingredients
+                                    Ingrédients
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-2">
                                     {productDetails.ingredients?.length ? (
@@ -530,7 +566,7 @@ export default function OrdersPos({ products }) {
                                         ))
                                     ) : (
                                         <span className="text-sm text-slate-400">
-                                            Aucun ingredient liste.
+                                            Aucun ingrédient listé.
                                         </span>
                                     )}
                                 </div>

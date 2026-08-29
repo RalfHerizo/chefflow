@@ -1,11 +1,13 @@
 import Sidebar from '@/Components/Layout/Sidebar';
 import TopHeader from '@/Components/Layout/TopHeader';
+import DemoBanner from '@/Components/DemoBanner';
 import { usePage } from '@inertiajs/react';
 import { Toaster } from 'react-hot-toast';
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
 
 export default function AuthenticatedLayout({ children }) {
-    const user = usePage().props.auth.user;
+    const { auth, isDemo } = usePage().props;
+    const user = auth.user;
 
     return (
         <div className="min-h-screen bg-[#F8F4F1] text-slate-800">
@@ -40,10 +42,21 @@ export default function AuthenticatedLayout({ children }) {
                     );
                 }}
             </Toaster>
-            <Sidebar />
-            <div className="pl-64">
-                <TopHeader user={user} />
-                <main className="h-[calc(100vh-5rem)] overflow-y-auto p-8">
+            <div className="print:hidden">
+                <DemoBanner />
+                <Sidebar offsetForBanner={isDemo} />
+            </div>
+            <div className={`pl-64 print:pl-0 ${isDemo ? 'pt-10 print:pt-0' : ''}`}>
+                <div className="print:hidden">
+                    <TopHeader user={user} />
+                </div>
+                <main
+                    className={`overflow-y-auto p-8 print:h-auto print:overflow-visible print:p-0 ${
+                        isDemo
+                            ? 'h-[calc(100vh-5rem-2.5rem)]'
+                            : 'h-[calc(100vh-5rem)]'
+                    }`}
+                >
                     {children}
                 </main>
             </div>

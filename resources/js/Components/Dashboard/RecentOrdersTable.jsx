@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/Components/ui/table';
-import { RotateCcw } from 'lucide-react';
+import { Receipt, RotateCcw } from 'lucide-react';
 
 const PRODUCT_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="100%" height="100%" fill="%23F3F4F6"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="%239CA3AF" font-family="Arial" font-size="12">IMG</text></svg>';
@@ -22,6 +22,17 @@ function formatPrice(totalPrice) {
     }).format(value);
 }
 
+function formatDate(value) {
+    if (!value) {
+        return '—';
+    }
+
+    return new Date(value).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: 'short',
+    });
+}
+
 function getOrderStatus(order) {
     if (
         order?.is_cancelled ||
@@ -29,10 +40,10 @@ function getOrderStatus(order) {
         order?.status === 'cancelled' ||
         order?.status === 'annule'
     ) {
-        return 'Annule';
+        return 'Annulé';
     }
 
-    return 'Termine';
+    return 'Terminé';
 }
 
 /**
@@ -46,9 +57,9 @@ function getOrderStatus(order) {
  *   quantity: number,
  *   product?: { name?: string, image_url?: string|null }
  * }>
- * }>, onCancelOrder?: (orderId: number|string) => void }} props
+ * }>, onCancelOrder?: (orderId: number|string) => void, getReceiptHref?: (orderId: number|string) => string }} props
  */
-export default function RecentOrdersTable({ orders, onCancelOrder }) {
+export default function RecentOrdersTable({ orders, onCancelOrder, getReceiptHref }) {
     if (!orders) {
         return (
             <div className="space-y-3 rounded-2xl border border-slate-200/70 bg-white p-4">
@@ -62,7 +73,7 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
     if (orders.length === 0) {
         return (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
-                Aucune commande recente.
+                Aucune commande récente.
             </div>
         );
     }
@@ -73,18 +84,19 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                 
                 <TableHeader>
                     <TableRow className="border-slate-200/80 hover:bg-transparent">
-                        <TableHead className="px-4">Order ID</TableHead>
+                        <TableHead className="px-4">N° commande</TableHead>
+                        <TableHead className="px-4">Date</TableHead>
                         <TableHead className="px-4">Produit</TableHead>
-                        <TableHead className="px-4">Quantite</TableHead>
-                        <TableHead className="px-4">Total Price</TableHead>
-                        <TableHead className="px-4">Status</TableHead>
+                        <TableHead className="px-4">Quantité</TableHead>
+                        <TableHead className="px-4">Total</TableHead>
+                        <TableHead className="px-4">Statut</TableHead>
                         <TableHead className="px-4 text-right">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {orders.map((order) => {
                         const status = getOrderStatus(order);
-                        const isCancelled = status === 'Annule';
+                        const isCancelled = status === 'Annulé';
                         const firstItem = order.items?.[0];
                         const productName = firstItem?.product?.name || 'Panier';
                         const productImage = firstItem?.product?.image_url || PRODUCT_PLACEHOLDER;
@@ -97,6 +109,9 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                             <TableRow key={order.id} className="border-slate-100">
                                 <TableCell className="px-4 font-semibold text-slate-700">
                                     #{order.id}
+                                </TableCell>
+                                <TableCell className="px-4 text-slate-600">
+                                    {formatDate(order.created_at)}
                                 </TableCell>
                                 <TableCell className="px-4">
                                     <div className="flex items-center gap-3">
@@ -129,16 +144,36 @@ export default function RecentOrdersTable({ orders, onCancelOrder }) {
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="px-4 text-right">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        disabled={isCancelled}
-                                        onClick={() => onCancelOrder?.(order.id)}
-                                        className="border-slate-200 text-slate-600 hover:border-[#FF7E47] hover:text-[#FF7E47]"
-                                    >
-                                        <RotateCcw />
-                                        Annuler
-                                    </Button>
+                                    <div className="flex items-center justify-end gap-2">
+                                        {getReceiptHref ? (
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                size="icon"
+                                                title="Voir le ticket"
+                                                className="border-slate-200 text-slate-600 hover:border-[#FF7E47] hover:text-[#FF7E47]"
+                                            >
+                                                <a
+                                                    href={getReceiptHref(order.id)}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    aria-label={`Ticket de la commande ${order.id}`}
+                                                >
+                                                    <Receipt className="h-4 w-4" />
+                                                </a>
+                                            </Button>
+                                        ) : null}
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            disabled={isCancelled}
+                                            onClick={() => onCancelOrder?.(order.id)}
+                                            className="border-slate-200 text-slate-600 hover:border-[#FF7E47] hover:text-[#FF7E47]"
+                                        >
+                                            <RotateCcw />
+                                            Annuler
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         );

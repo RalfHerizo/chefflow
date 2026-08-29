@@ -8,6 +8,7 @@ vi.mock('@inertiajs/react', () => ({
         post: vi.fn(),
         processing: false,
         setData: vi.fn(),
+        errors: {},
     }),
 }));
 
@@ -58,7 +59,7 @@ describe('POS', () => {
         fireEvent.click(card);
 
         expect(
-            await screen.findByText('Ingredients'),
+            await screen.findByText('Ingrédients'),
         ).toBeInTheDocument();
         expect(screen.getByText('Tomate')).toBeInTheDocument();
         expect(screen.getByText('Mozzarella')).toBeInTheDocument();

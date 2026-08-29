@@ -1,14 +1,16 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
-    ClipboardList,
+    BarChart3,
     CookingPot,
     LayoutDashboard,
     LogOut,
+    ReceiptText,
     Settings,
     ShoppingBag,
+    ShoppingCart,
 } from 'lucide-react';
 
-function resolveMenuItems() {
+function resolveMenuItems(lowStockCount = 0, isDemo = false) {
     const canUseRoute = typeof route === 'function';
     const hasRoute = (name) => canUseRoute && route().has(name);
 
@@ -16,10 +18,19 @@ function resolveMenuItems() {
 
     if (hasRoute('dashboard')) {
         items.push({
-            label: 'Dashboard',
+            label: 'Tableau de bord',
             href: route('dashboard'),
             active: route().current('dashboard'),
             icon: LayoutDashboard,
+        });
+    }
+
+    if (hasRoute('analytics')) {
+        items.push({
+            label: 'Analytics',
+            href: route('analytics'),
+            active: route().current('analytics'),
+            icon: BarChart3,
         });
     }
 
@@ -28,7 +39,16 @@ function resolveMenuItems() {
             label: 'Caisse',
             href: route('orders.pos'),
             active: route().current('orders.pos'),
-            icon: ClipboardList,
+            icon: ShoppingCart,
+        });
+    }
+
+    if (hasRoute('orders.index')) {
+        items.push({
+            label: 'Commandes',
+            href: route('orders.index'),
+            active: route().current('orders.index'),
+            icon: ReceiptText,
         });
     }
 
@@ -43,14 +63,15 @@ function resolveMenuItems() {
 
     if (hasRoute('ingredients.index')) {
         items.push({
-            label: 'Ingredients',
+            label: 'Ingrédients',
             href: route('ingredients.index'),
             active: route().current('ingredients.*'),
             icon: CookingPot,
+            badge: lowStockCount > 0 ? lowStockCount : null,
         });
     }
 
-    if (hasRoute('profile.edit')) {
+    if (hasRoute('profile.edit') && !isDemo) {
         items.push({
             label: 'Paramètres',
             href: route('profile.edit'),
@@ -62,11 +83,16 @@ function resolveMenuItems() {
     return items;
 }
 
-export default function Sidebar() {
-    const menuItems = resolveMenuItems();
+export default function Sidebar({ offsetForBanner = false }) {
+    const { lowStockCount = 0, isDemo = false } = usePage().props;
+    const menuItems = resolveMenuItems(lowStockCount, isDemo);
 
     return (
-        <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-slate-200/70 bg-white">
+        <aside
+            className={`fixed left-0 z-30 flex w-64 flex-col border-r border-slate-200/70 bg-white ${
+                offsetForBanner ? 'top-10 h-[calc(100vh-2.5rem)]' : 'top-0 h-screen'
+            }`}
+        >
             <div className="px-6 py-7">
                 <Link href="/" className="inline-flex items-center gap-2">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF7E47] text-sm font-semibold text-white">
@@ -98,6 +124,17 @@ export default function Sidebar() {
                         >
                             <Icon size={18} />
                             <span>{item.label}</span>
+                            {item.badge ? (
+                                <span
+                                    className={`ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-semibold ${
+                                        item.active
+                                            ? 'bg-white text-[#FF7E47]'
+                                            : 'bg-red-500 text-white'
+                                    }`}
+                                >
+                                    {item.badge > 9 ? '9+' : item.badge}
+                                </span>
+                            ) : null}
                         </Link>
                     );
                 })}
@@ -111,7 +148,7 @@ export default function Sidebar() {
                     className="flex w-full items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-[#FF7E47] hover:text-[#FF7E47]"
                 >
                     <LogOut size={18} />
-                    <span>Logout</span>
+                    <span>Déconnexion</span>
                 </Link>
             </div>
         </aside>

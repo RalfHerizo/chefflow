@@ -2,6 +2,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import ConfirmationDialog from '@/Components/ui/confirmation-dialog';
+import Pagination from '@/Components/ui/pagination';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/ui/select';
 import { formatIngredientAmountForPreview } from '@/lib/amountConversion';
 import {
     Dialog,
@@ -25,29 +33,110 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import { Head, Link, router } from '@inertiajs/react';
-import {MoreHorizontal, Plus} from 'lucide-react';
-import { useState } from 'react';
+import { ArrowDown, ArrowUp, MoreHorizontal, Plus, Search } from 'lucide-react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const PRODUCT_THUMBNAIL_PLACEHOLDER =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="%23F1F5F9"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" fill="%2394A3B8" font-family="Arial" font-size="10">PRD</text></svg>';
 
+const euroFormatter = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+});
+
 function formatPrice(cents) {
-    const value = Number(cents || 0) / 100;
-    return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR',
-    }).format(value);
+    return euroFormatter.format(Number(cents || 0) / 100);
+}
+
+// Colour the margin by how much of the selling price is kept (higher = better).
+function marginToneClass(ratio) {
+    if (ratio == null) {
+        return 'text-slate-400';
+    }
+    if (ratio >= 60) {
+        return 'text-emerald-600';
+    }
+    if (ratio >= 40) {
+        return 'text-amber-600';
+    }
+    return 'text-red-600';
 }
 
 /**
- * @param {{ products: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}> }} props
+ * @param {{ products: { data: Array<{id: number|string, name: string, category?: string|null, image_url?: string|null, price: number|string, is_active: boolean, is_makeable: boolean, recipe_cost?: number|string|null, margin?: number|string|null, margin_ratio?: number|null, ingredients_count: number, ingredients?: Array<{id: number|string, name: string, unit: string, amount: number|string}>}>, links: Array<{url: string|null, label: string, active: boolean}> }, categories?: Array<string>, filters?: { search?: string, status?: string, category?: string, sort?: string, direction?: string } }} props
  */
-export default function ProductsIndex({ products }) {
+export default function ProductsIndex({ products, categories = [], filters }) {
     const [previewProduct, setPreviewProduct] = useState(null);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [productToDelete, setProductToDelete] = useState(null);
     const [statusLoadingId, setStatusLoadingId] = useState(null);
+    const [search, setSearch] = useState(filters?.search ?? '');
+    const [status, setStatus] = useState(filters?.status ?? 'all');
+    const [category, setCategory] = useState(filters?.category ?? 'all');
+    const [sort, setSort] = useState(filters?.sort ?? 'recent');
+    const [direction, setDirection] = useState(filters?.direction ?? 'desc');
+    const searchTimeout = useRef();
+
+    const reload = (overrides = {}, { debounce = false } = {}) => {
+        const next = { search, status, category, sort, direction, ...overrides };
+        const visit = () =>
+            router.get(
+                route('products.index'),
+                {
+                    search: next.search || undefined,
+                    status:
+                        next.status && next.status !== 'all'
+                            ? next.status
+                            : undefined,
+                    category:
+                        next.category && next.category !== 'all'
+                            ? next.category
+                            : undefined,
+                    sort: next.sort !== 'recent' ? next.sort : undefined,
+                    direction: next.direction !== 'desc' ? next.direction : undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                    only: ['products', 'filters'],
+                },
+            );
+
+        clearTimeout(searchTimeout.current);
+        if (debounce) {
+            searchTimeout.current = setTimeout(visit, 150);
+        } else {
+            visit();
+        }
+    };
+
+    const handleSearch = (value) => {
+        setSearch(value);
+        reload({ search: value }, { debounce: true });
+    };
+
+    const handleStatus = (value) => {
+        setStatus(value);
+        reload({ status: value });
+    };
+
+    const handleCategory = (value) => {
+        setCategory(value);
+        reload({ category: value });
+    };
+
+    const handleSort = (value) => {
+        setSort(value);
+        reload({ sort: value });
+    };
+
+    const toggleDirection = () => {
+        const next = direction === 'asc' ? 'desc' : 'asc';
+        setDirection(next);
+        reload({ direction: next });
+    };
 
     const handleDeleteProduct = () => {
         if (!productToDelete) {
@@ -55,7 +144,7 @@ export default function ProductsIndex({ products }) {
         }
 
         router.delete(route('products.destroy', productToDelete.id), {
-            onSuccess: () => toast.success('Produit supprime avec succès.'),
+            onSuccess: () => toast.success('Produit supprimé avec succès.'),
             onFinish: () => setProductToDelete(null),
         });
     };
@@ -110,30 +199,111 @@ export default function ProductsIndex({ products }) {
                         </Button>
                     </div>
 
+                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="relative flex-1">
+                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="search"
+                                value={search}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                placeholder="Rechercher un produit..."
+                                className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-3 text-sm outline-none focus:border-[#FF7E47]"
+                            />
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                            {categories.length > 0 && (
+                                <Select
+                                    value={category}
+                                    onValueChange={handleCategory}
+                                >
+                                    <SelectTrigger className="h-10 w-full rounded-xl sm:w-[200px]">
+                                        <SelectValue placeholder="Catégorie" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            Toutes les catégories
+                                        </SelectItem>
+                                        {categories.map((cat) => (
+                                            <SelectItem key={cat} value={cat}>
+                                                {cat}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                            <Select value={status} onValueChange={handleStatus}>
+                                <SelectTrigger className="h-10 w-full rounded-xl sm:w-[160px]">
+                                    <SelectValue placeholder="Statut" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">
+                                        Tous les statuts
+                                    </SelectItem>
+                                    <SelectItem value="active">Actif</SelectItem>
+                                    <SelectItem value="inactive">Inactif</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Select value={sort} onValueChange={handleSort}>
+                                <SelectTrigger className="h-10 w-full rounded-xl sm:w-[180px]">
+                                    <SelectValue placeholder="Trier par" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="recent">Plus récent</SelectItem>
+                                    <SelectItem value="name">Nom</SelectItem>
+                                    <SelectItem value="category">Catégorie</SelectItem>
+                                    <SelectItem value="price">Prix</SelectItem>
+                                    <SelectItem value="recipe">Recette</SelectItem>
+                                    <SelectItem value="status">Statut</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={toggleDirection}
+                                title={
+                                    direction === 'asc' ? 'Croissant' : 'Décroissant'
+                                }
+                                className="h-10 w-10 shrink-0 rounded-xl"
+                            >
+                                {direction === 'asc' ? (
+                                    <ArrowUp className="h-4 w-4" />
+                                ) : (
+                                    <ArrowDown className="h-4 w-4" />
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+
                     <div className="rounded-xl border border-slate-200">
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="px-4">Produit</TableHead>
-                                    <TableHead className="px-4">Categorie</TableHead>
+                                    <TableHead className="px-4">Catégorie</TableHead>
                                     <TableHead className="px-4">Prix</TableHead>
+                                    <TableHead className="px-4">Marge</TableHead>
                                     <TableHead className="px-4">Recette</TableHead>
                                     <TableHead className="px-4">Statut</TableHead>
+                                    <TableHead className="px-4">Stock</TableHead>
                                     <TableHead className="px-4 text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {products.length === 0 ? (
+                                {products.data.length === 0 ? (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={6}
+                                            colSpan={8}
                                             className="px-4 py-8 text-center text-sm text-slate-500"
                                         >
-                                            Aucun produit disponible. Cree ton premier produit.
+                                            {search || status !== 'all' || category !== 'all'
+                                                ? 'Aucun produit ne correspond aux filtres.'
+                                                : 'Aucun produit. Créez votre premier produit.'}
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    products.map((product) => (
+                                    products.data.map((product) => (
                                         <TableRow key={product.id}>
                                             <TableCell className="px-4 font-medium text-slate-700">
                                                 <div className="flex items-center gap-3">
@@ -154,8 +324,26 @@ export default function ProductsIndex({ products }) {
                                             <TableCell className="px-4 text-slate-600">
                                                 {formatPrice(product.price)}
                                             </TableCell>
+                                            <TableCell className="px-4">
+                                                {product.margin == null ? (
+                                                    <span className="text-slate-300">—</span>
+                                                ) : (
+                                                    <div className="flex flex-col">
+                                                        <span
+                                                            className={`font-medium ${marginToneClass(product.margin_ratio)}`}
+                                                        >
+                                                            {euroFormatter.format(Number(product.margin))}
+                                                        </span>
+                                                        {product.margin_ratio != null ? (
+                                                            <span className="text-xs text-slate-400">
+                                                                {product.margin_ratio}% de marge
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
+                                                )}
+                                            </TableCell>
                                             <TableCell className="px-4 text-slate-600">
-                                                {product.ingredients_count} ingredient(s)
+                                                {product.ingredients_count} ingrédient(s)
                                             </TableCell>
                                             <TableCell className="px-4">
                                                 <Button
@@ -171,6 +359,17 @@ export default function ProductsIndex({ products }) {
                                                 >
                                                     {product.is_active ? 'Actif' : 'Inactif'}
                                                 </Button>
+                                            </TableCell>
+                                            <TableCell className="px-4">
+                                                <Badge
+                                                    className={
+                                                        product.is_makeable
+                                                            ? 'border-transparent bg-emerald-100 text-emerald-700'
+                                                            : 'border-transparent bg-red-100 text-red-700'
+                                                    }
+                                                >
+                                                    {product.is_makeable ? 'OK' : 'Rupture'}
+                                                </Badge>
                                             </TableCell>
                                             <TableCell className="px-4 text-right">
                                                 <DropdownMenu>
@@ -192,6 +391,15 @@ export default function ProductsIndex({ products }) {
                                                                 Modifier
                                                             </Link>
                                                         </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <a
+                                                                href={route('products.recipe', product.id)}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                            >
+                                                                Fiche technique
+                                                            </a>
+                                                        </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             className="text-red-600 hover:text-red-700"
                                                             onClick={() => setProductToDelete(product)}
@@ -207,15 +415,20 @@ export default function ProductsIndex({ products }) {
                             </TableBody>
                         </Table>
                     </div>
+
+                    <Pagination
+                        links={products.links}
+                        className="mt-4 border-t border-slate-100 pt-4"
+                    />
                 </section>
             </div>
 
             <Dialog open={Boolean(previewProduct)} onOpenChange={(open) => !open && closePreview()}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{previewProduct?.name || 'Apercu produit'}</DialogTitle>
+                        <DialogTitle>{previewProduct?.name || 'Aperçu produit'}</DialogTitle>
                         <DialogDescription>
-                            Details du produit et de sa recette.
+                            Détails du produit et de sa recette.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -229,11 +442,28 @@ export default function ProductsIndex({ products }) {
                                 />
                                 <div className="space-y-1">
                                     <p className="text-sm text-slate-500">
-                                        Categorie: {previewProduct.category || '-'}
+                                        Catégorie: {previewProduct.category || '-'}
                                     </p>
                                     <p className="text-sm text-slate-500">
                                         Prix: {formatPrice(previewProduct.price)}
                                     </p>
+                                    {previewProduct.recipe_cost != null ? (
+                                        <>
+                                            <p className="text-sm text-slate-500">
+                                                Coût recette:{' '}
+                                                {euroFormatter.format(Number(previewProduct.recipe_cost))}
+                                            </p>
+                                            <p className="text-sm text-slate-500">
+                                                Marge:{' '}
+                                                <span className={marginToneClass(previewProduct.margin_ratio)}>
+                                                    {euroFormatter.format(Number(previewProduct.margin))}
+                                                    {previewProduct.margin_ratio != null
+                                                        ? ` (${previewProduct.margin_ratio}%)`
+                                                        : ''}
+                                                </span>
+                                            </p>
+                                        </>
+                                    ) : null}
                                     <p className="text-sm text-slate-500">
                                         Statut: {previewProduct.is_active ? 'Actif' : 'Inactif'}
                                     </p>

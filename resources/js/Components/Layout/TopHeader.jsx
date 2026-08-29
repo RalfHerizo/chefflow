@@ -1,20 +1,25 @@
-import { Search, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Link, usePage } from '@inertiajs/react';
 import { useCart } from '@/Contexts/CartContext';
+import GlobalSearch from '@/Components/Layout/GlobalSearch';
 import { useEffect, useRef, useState } from 'react';
 
 const PAGE_CONTENT = {
     Dashboard: {
-        title: 'Dashboard',
-        subtitle: 'Pilot your restaurant activity in real time.',
+        title: 'Tableau de bord',
+        subtitle: 'Pilotez votre activité en temps réel.',
+    },
+    'Analytics/Index': {
+        title: 'Analytics',
+        subtitle: 'Vos performances de vente d’un coup d’œil.',
     },
     'Profile/Edit': {
-        title: 'Profile',
-        subtitle: 'Manage your account information and security settings.',
+        title: 'Profil',
+        subtitle: 'Gérez vos informations et vos paramètres de sécurité.',
     },
     'Ingredients/Index': {
-        title: 'Ingredients',
-        subtitle: 'Control stock levels and low-threshold alerts.',
+        title: 'Ingrédients',
+        subtitle: 'Suivez les stocks et les seuils d’alerte.',
     },
     'Products/Index': {
         title: 'Produits',
@@ -28,9 +33,13 @@ const PAGE_CONTENT = {
         title: 'Modifier Produit',
         subtitle: 'Mettez a jour les informations et la recette du produit.',
     },
+    'Orders/Index': {
+        title: 'Commandes',
+        subtitle: 'Consultez l’historique de toutes les commandes.',
+    },
     'Orders/Pos': {
         title: 'Caisse',
-        subtitle: 'Prenez une commande rapidement et suivez le panier en temps reel.',
+        subtitle: 'Prenez une commande rapidement et suivez le panier en temps réel.',
     },
 };
 
@@ -43,7 +52,7 @@ function resolveHeaderContent(component, userName) {
 
     return {
         title: component?.split('/').slice(-1)[0] || 'ChefFlow',
-        subtitle: `Hello ${userName || 'User'}, welcome back!`,
+        subtitle: `Bonjour ${userName || 'Utilisateur'}, ravi de vous revoir !`,
     };
 }
 
@@ -83,17 +92,7 @@ function TopHeader({ user }) {
                     </h2>
                     <p className="text-sm text-slate-500">{headerContent.subtitle}</p>
                 </div>
-                <div className="relative w-full max-w-xl">
-                    <Search
-                        size={18}
-                        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-                    <input
-                        type="search"
-                        placeholder="Rechercher un produit, une commande, un client..."
-                        className="h-11 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-[#FF7E47]"
-                    />
-                </div>
+                <GlobalSearch />
 
                 <div className="flex items-center gap-4">
                     <Link

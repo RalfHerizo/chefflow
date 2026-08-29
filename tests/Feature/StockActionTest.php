@@ -1,38 +1,38 @@
 <?php
 
-use App\Models\Product;
-use App\Models\Ingredient;
 use App\Actions\SellProductAction;
+use App\Models\Ingredient;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 it('déduit les stocks d\'ingrédients lors d\'une vente', function () {
-    
+
     $viande = Ingredient::create([
-        'name'=>'Viande hachée',
-        'unit'=>'g',
-        'stock_quantity'=>1000,
+        'name' => 'Viande hachée',
+        'unit' => 'g',
+        'stock_quantity' => 1000,
         'alert_threshold' => 0,
     ]);
 
     $burger = Product::create([
-        'name'=>'Classic Burger',
-        'price'=>1200,
-        'is_active'=>true,
-        
+        'name' => 'Classic Burger',
+        'price' => 1200,
+        'is_active' => true,
+
     ]);
 
-    $burger->ingredients()->attach($viande->id, ['amount'=>150]);
+    $burger->ingredients()->attach($viande->id, ['amount' => 150]);
 
-    $action = new SellProductAction();
+    $action = new SellProductAction;
     $action->execute([
         ['id' => $burger->id, 'qty' => 2],
     ]);
 
     $viande->refresh();
 
-    expect((float)$viande->stock_quantity)->toBe(700.0);
+    expect((float) $viande->stock_quantity)->toBe(700.0);
 });
 
 it('deducts stocks and computes total price for a multi-product cart', function () {
@@ -75,7 +75,7 @@ it('deducts stocks and computes total price for a multi-product cart', function 
         $pain->id => ['amount' => 1],
     ]);
 
-    $action = new SellProductAction();
+    $action = new SellProductAction;
     $order = $action->execute([
         ['id' => $burger->id, 'qty' => 2],
         ['id' => $frites->id, 'qty' => 3],
@@ -93,13 +93,13 @@ it('deducts stocks and computes total price for a multi-product cart', function 
 
 it('annule toute la transaction si un ingrédient manque', function () {
 
-    $sel = Ingredient::create(['name'=>'sel','unit'=>'g', 'stock_quantity' => 2]);
-    
-    $burger = Product::create(['name'=>'Burger Salé', 'price'=>1000]);
-    $burger->ingredients()->attach($sel->id, ['amount'=>5]);
+    $sel = Ingredient::create(['name' => 'sel', 'unit' => 'g', 'stock_quantity' => 2]);
 
-    $action = new SellProductAction();
-    expect(fn() => $action->execute([
+    $burger = Product::create(['name' => 'Burger Salé', 'price' => 1000]);
+    $burger->ingredients()->attach($sel->id, ['amount' => 5]);
+
+    $action = new SellProductAction;
+    expect(fn () => $action->execute([
         ['id' => $burger->id, 'qty' => 1],
     ]))->toThrow(Exception::class);
 

@@ -12,7 +12,7 @@ const UNIT_OPTIONS = ['kg', 'g', 'L', 'ml', 'pcs'];
 
 /**
  * @param {{
- * data: {name: string, image_url?: string, unit: string, stock_quantity: number|string, alert_threshold: number|string},
+ * data: {name: string, image_url?: string, unit: string, stock_quantity: number|string, alert_threshold: number|string, cost_price: number|string},
  * setData: (key: string, value: string|number) => void,
  * errors: Record<string, string>,
  * processing: boolean,
@@ -25,7 +25,7 @@ export default function IngredientForm({
     setData,
     errors,
     processing,
-    submitLabel = 'Save',
+    submitLabel = 'Enregistrer',
     onSubmit,
 }) {
     return (
@@ -55,10 +55,10 @@ export default function IngredientForm({
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700">Unite</label>
+                <label className="text-sm font-medium text-slate-700">Unité</label>
                 <Select value={data.unit} onValueChange={(value) => setData('unit', value)}>
                     <SelectTrigger>
-                        <SelectValue placeholder="Choisir une unite" />
+                        <SelectValue placeholder="Choisir une unité" />
                     </SelectTrigger>
                     <SelectContent>
                         {UNIT_OPTIONS.map((unit) => (
@@ -99,6 +99,25 @@ export default function IngredientForm({
                     />
                     <InputError message={errors.alert_threshold} />
                 </div>
+            </div>
+
+            <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-700">
+                    Coût d'achat (€ / {data.unit || 'unité'})
+                </label>
+                <input
+                    type="number"
+                    min="0"
+                    step="0.001"
+                    value={data.cost_price}
+                    onChange={(e) => setData('cost_price', e.target.value)}
+                    placeholder="0.00"
+                    className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-[#FF7E47]"
+                />
+                <p className="text-xs text-slate-400">
+                    Sert à calculer le coût des recettes et la marge des produits.
+                </p>
+                <InputError message={errors.cost_price} />
             </div>
 
             <div className="flex justify-end">
